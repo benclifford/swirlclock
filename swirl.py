@@ -93,10 +93,16 @@ def mode3():
 
 def mode4():
     global new_mode
-    pixels_auto_write = False
+    pixels.auto_write = False
     colours = {}
     for n in range(0,50):
         colours[n] = random.random()
+
+    for n in range(0,50):
+        (red, green, blue) = colorsys.hsv_to_rgb(colours[n], 1, 1)
+        pixels[n] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+
+    pixels.show()
 
     count = 0
 
