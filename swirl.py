@@ -154,6 +154,35 @@ def mode6():
         time.sleep(1)
 
 
+def mode7():
+    global new_mode
+    pixels.auto_write = False
+
+    bottoms = [50, 49 - 3, 49 - 11, 49 - 25, 49 - 49]
+
+
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    for pixel in range(0,50):
+      for b in range(0,len(bottoms)-1):
+        if pixel < bottoms[b] and pixel >= bottoms[b+1]:
+          start = bottoms[b]
+          end = bottoms[b+1]
+          frac = (pixel - start) / (end - start)
+          print("pixel {}: frac = {}".format(pixel, frac))
+          break
+      else:
+        raise RuntimeError("could not find range for pixel {}".format(pixel))
+      (red, green, blue) = colorsys.hsv_to_rgb(frac, 1, 1)
+      pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+      
+    pixels.show()
+
+    while not new_mode:
+        time.sleep(1)
+
+
 new_mode = mode2
 
 
@@ -197,6 +226,12 @@ def set_mode5():
 def set_mode6():
     global new_mode
     new_mode = mode6
+    return flask.redirect("/", code=302)
+
+@app.route('/mode/7')
+def set_mode7():
+    global new_mode
+    new_mode = mode7
     return flask.redirect("/", code=302)
 
 
