@@ -183,6 +183,52 @@ def mode7():
         time.sleep(1)
 
 
+def mode8():
+  global new_mode
+  pixels.auto_write = False
+
+  bottoms = [50, 49 - 3, 49 - 11, 49 - 25, 49 - 49]
+
+  rot = 0
+  rot2 = 0
+
+  while not new_mode:
+
+    for pixel in range(0,50):
+      for b in range(0,len(bottoms)-1):
+        if pixel < bottoms[b] and pixel >= bottoms[b+1]:
+          start = bottoms[b]
+          end = bottoms[b+1]
+          frac = (pixel - start) / (end - start)
+          # print("pixel {}: frac = {}".format(pixel, frac))
+          break
+      else:
+        raise RuntimeError("could not find range for pixel {}".format(pixel))
+      frac_hue = (frac + rot) % 1
+      frac2 = (frac + rot2) % 1
+
+      width = 0.15
+
+      d = frac2
+      if d > width and d < (1-width):
+          intensity = 0
+      elif d >= (1-width):
+          d = 1 - d
+          intensity = (width - d) * (1/width)
+      else:
+          intensity = (width - d) * (1/width)
+
+      (red, green, blue) = colorsys.hsv_to_rgb(frac_hue, 1, intensity)
+      pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+      
+    pixels.show()
+
+    rot = rot + (1.0/600.0) % 1
+    rot2 = rot2 + (1.0/423.0) % 1
+    time.sleep(0.01)
+
+
+
 new_mode = mode2
 
 
@@ -234,6 +280,12 @@ def set_mode7():
     new_mode = mode7
     return flask.redirect("/", code=302)
 
+
+@app.route('/mode/8')
+def set_mode8():
+    global new_mode
+    new_mode = mode8
+    return flask.redirect("/", code=302)
 
 
 def go():
