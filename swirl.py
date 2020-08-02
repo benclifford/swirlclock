@@ -22,13 +22,19 @@ new_mode = None
 
 def scale(f):
     """ scale from 0..1 : float -> 0..255 : int"""
-    return int(f * 255)
+    try:
+      return int(f * 255)
+    except:
+      print("Scale got an exception on input {}".format(f))
+      reraise
 
 
 def gamma(v):
     """ gamma correct on range 0..1 : float
     Based on https://learn.adafruit.com/led-tricks-gamma-correction/the-quick-fix
     """
+    if v < 0 or v > 1:
+        raise ValueError("Attempted gamma correction on out of range value {}".format(v))
     gamma_factor = 2.8  # this is value that adafruit people like
     return (v ** gamma_factor)
 
@@ -228,8 +234,97 @@ def mode8():
     time.sleep(0.01)
 
 
+def mode9():
+  global new_mode
+  pixels.auto_write = False
 
-new_mode = mode2
+  update_period = 0.01
+
+  bottoms = [50, 49 - 3, 49 - 11, 49 - 25, 49 - 49]
+
+  rot2 = 0
+
+
+  while not new_mode:
+    pixels.fill( (0,0,0) )
+
+    now = time.localtime()
+
+    # set hour
+    for pixel in range(0,49):
+      for b in range(0,len(bottoms)-1):
+        if pixel < bottoms[b] and pixel >= bottoms[b+1]:
+          start = bottoms[b]
+          end = bottoms[b+1]
+          frac = (pixel - start) / (end - start)
+          # print("pixel {}: frac = {}".format(pixel, frac))
+          break
+      else:
+        raise RuntimeError("could not find range for pixel {}".format(pixel))
+
+      hour_frac = now.tm_hour % 12 / 12.0
+      frac_hue = (frac + rot2) % 1
+      frac2 = (frac + hour_frac + 0.5) % 1
+
+      width = 0.12
+
+      d = frac2
+      if d > width and d < (1-width):
+          intensity = 0
+          # don't set pixel because we want it "transparent" rather than black
+      elif d >= (1-width):
+          d = 1 - d
+          intensity = (width - d) * (1/width)
+          (red, green, blue) = colorsys.hsv_to_rgb(frac_hue, 1, intensity)
+          pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+      else:
+          intensity = (width - d) * (1/width)
+          (red, green, blue) = colorsys.hsv_to_rgb(frac_hue, 1, intensity)
+          pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+
+
+    """ 
+    # set minute 
+    for pixel in range(bottoms[len(bottoms)-1],bottoms[len(bottoms)-2]):
+      for b in range(0,len(bottoms)-1):
+        if pixel < bottoms[b] and pixel >= bottoms[b+1]:
+          start = bottoms[b]
+          end = bottoms[b+1]
+          frac = (pixel - start) / (end - start)
+          # print("pixel {}: frac = {}".format(pixel, frac))
+          break
+      else:
+        raise RuntimeError("could not find range for pixel {}".format(pixel))
+
+      mins_frac = now.tm_min / 60.0
+      frac_hue = (frac + mins_frac + 0.5) % 1
+      frac2 = (frac + mins_frac + 0.5) % 1
+
+      width = 0.05
+
+      d = frac2
+      if d > width and d < (1-width):
+          intensity = 0
+      elif d >= (1-width):
+          d = 1 - d
+          intensity = (width - d) * (1/width)
+          intensity = 0.5 + intensity * 0.5
+          (red, green, blue) = colorsys.hsv_to_rgb(frac_hue, 0, intensity)
+          pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+      else:
+          intensity = (width - d) * (1/width)
+          intensity = 0.5 + intensity * 0.5 # scale up to be quite bright
+          (red, green, blue) = colorsys.hsv_to_rgb(frac_hue, 0, intensity)
+          pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+    """
+      
+    pixels.show()
+
+    rot2 = rot2 + (1.0/42300.0 * (update_period / 0.01)) % 1
+    time.sleep(update_period)
+
+
+new_mode = mode9
 
 
 app = flask.Flask(__name__)
@@ -286,6 +381,13 @@ def set_mode8():
     global new_mode
     new_mode = mode8
     return flask.redirect("/", code=302)
+
+@app.route('/mode/9')
+def set_mode9():
+    global new_mode
+    new_mode = mode9
+    return flask.redirect("/", code=302)
+
 
 
 def go():
