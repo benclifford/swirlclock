@@ -35,7 +35,10 @@ def gamma(v):
     """
     if v < 0 or v > 1:
         raise ValueError("Attempted gamma correction on out of range value {}".format(v))
-    gamma_factor = 2.8  # this is value that adafruit people like
+
+    gamma_factor = 1.9  # this value comes from my subjective attempts to get the colourwheel to look even
+    # gamma_factor = 2.8  # this is value that adafruit people like
+
     return (v ** gamma_factor)
 
 def mode1():
