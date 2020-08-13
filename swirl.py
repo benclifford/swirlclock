@@ -18,6 +18,9 @@ import flask
 
 pixels = neopixel.NeoPixel(board.D18, 50)
 
+bottoms = [50, 49 - 3, 49 - 11, 49 - 25, 49 - 49]
+
+
 new_mode = None
 
 def scale(f):
@@ -167,7 +170,6 @@ def mode7():
     global new_mode
     pixels.auto_write = False
 
-    bottoms = [50, 49 - 3, 49 - 11, 49 - 25, 49 - 49]
 
 
     pixels.fill( (0,0,0) )
@@ -196,7 +198,6 @@ def mode8():
   global new_mode
   pixels.auto_write = False
 
-  bottoms = [50, 49 - 3, 49 - 11, 49 - 25, 49 - 49]
 
   rot = 0
   rot2 = 0
@@ -242,8 +243,6 @@ def mode9():
   pixels.auto_write = False
 
   update_period = 0.01
-
-  bottoms = [50, 49 - 3, 49 - 11, 49 - 25, 49 - 49]
 
   rot2 = 0
 
