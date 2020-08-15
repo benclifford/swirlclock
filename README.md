@@ -1,5 +1,6 @@
-colour spiral
-=============
+colour spiral clock/patterns
+============================
+
 Ben Clifford
 benc@hawaga.org.uk
 
