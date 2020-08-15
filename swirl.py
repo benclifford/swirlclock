@@ -337,11 +337,9 @@ def mode10():
 
     offset = 0
 
-    gamma_phase = 0
-    gamma_phase_max = 4
-
     while not new_mode:
       for pixel in range(0,50):
+
         for b in range(0,len(bottoms)-1):
           if pixel < bottoms[b] and pixel >= bottoms[b+1]:
             start = bottoms[b]
@@ -350,24 +348,22 @@ def mode10():
 
             frac = (frac + offset) % 1.0
 
+            radial_pos = b
             break
         else:
           raise RuntimeError("could not find range for pixel {}".format(pixel))
-        (red, green, blue) = colorsys.hsv_to_rgb(frac, 1, 1)
 
-        if gamma_phase < gamma_phase_max:
-          g = gamma_phase
-        else:
-          g = (2.0 * gamma_phase_max) - gamma_phase
+        radial_proportion = b / (len(bottoms)-2)
 
-        pixels[pixel] = ( scale(gamma(red, g)), scale(gamma(green, g)), scale(gamma(blue, g)) )
+        (red, green, blue) = colorsys.hsv_to_rgb(frac, radial_proportion, 0.1 + (0.9 * radial_proportion))
+
+        pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
 
       pixels.show()
 
       # 1/600th of a rotation every 0.1 should give one rotation
       # per minute
       offset = (offset + (1.0/600.0)) % 1.0
-      gamma_phase = (gamma_phase + 0.1) % (2.0 * gamma_phase_max)
 
       time.sleep(0.1)
 
