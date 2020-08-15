@@ -326,6 +326,40 @@ def mode9():
     time.sleep(update_period)
 
 
+def mode10():
+    global new_mode
+    pixels.auto_write = False
+
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    offset = 0
+
+    while not new_mode:
+      for pixel in range(0,50):
+        for b in range(0,len(bottoms)-1):
+          if pixel < bottoms[b] and pixel >= bottoms[b+1]:
+            start = bottoms[b]
+            end = bottoms[b+1]
+            frac = (pixel - start) / (end - start)
+
+            frac = (frac + offset) % 1.0
+
+            break
+        else:
+          raise RuntimeError("could not find range for pixel {}".format(pixel))
+        (red, green, blue) = colorsys.hsv_to_rgb(frac, 1, 1)
+        pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+
+      pixels.show()
+
+      # 1/600th of a rotation every 0.1 should give one rotation
+      # per minute
+      offset = (offset + (1.0/600.0)) % 1.0
+
+      time.sleep(0.1)
+
+
 new_mode = mode9
 
 
@@ -390,6 +424,12 @@ def set_mode9():
     new_mode = mode9
     return flask.redirect("/", code=302)
 
+
+@app.route('/mode/10')
+def set_mode10():
+    global new_mode
+    new_mode = mode10
+    return flask.redirect("/", code=302)
 
 
 def go():
