@@ -18,7 +18,7 @@ import flask
 
 pixels = neopixel.NeoPixel(board.D18, 50)
 
-bottoms = [50, 49 - 3, 49 - 11, 49 - 25, 49 - 49]
+bottoms = [50, 45, 37, 21, 0]
 
 
 new_mode = None
