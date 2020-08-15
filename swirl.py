@@ -344,18 +344,28 @@ def mode10():
           if pixel < bottoms[b] and pixel >= bottoms[b+1]:
             start = bottoms[b]
             end = bottoms[b+1]
-            frac = (pixel - start) / (end - start)
+            proportion_around_loop = (pixel - start) / (end - start)
 
-            frac = (frac + offset) % 1.0
+            frac = (proportion_around_loop + offset) % 1.0
 
             radial_pos = b
             break
         else:
           raise RuntimeError("could not find range for pixel {}".format(pixel))
 
-        radial_proportion = b / (len(bottoms)-2)
+        # simple radial proportion that assumes that each LED between bottom points
+        # is at a constant distance, with an immediate jump at each bottom point to
+        # be one unit further in.
+        # That leads to some abrupt changes in LED brightness, especially near the end
+        # of the strand
 
-        (red, green, blue) = colorsys.hsv_to_rgb(frac, radial_proportion, 0.1 + (0.9 * radial_proportion))
+        # this should make b into a number that decreases more smoothly than b,
+        # taking into account how far round the loop we are (which is stored
+        # in frac)
+        b_pro_rated = b + proportion_around_loop
+        radial_proportion = b_pro_rated / (len(bottoms)-1)
+
+        (red, green, blue) = colorsys.hsv_to_rgb(frac, radial_proportion, radial_proportion)
 
         pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
 
