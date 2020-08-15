@@ -32,15 +32,17 @@ def scale(f):
       reraise
 
 
-def gamma(v):
+def gamma(v, gamma_factor=1.9):
     """ gamma correct on range 0..1 : float
     Based on https://learn.adafruit.com/led-tricks-gamma-correction/the-quick-fix
+
+    gamma_factor default of 1.9 comes from my subjective attempts to get the colourwheel to look even.
+
+    gamma_factor 2.8 is the value that adafruit people like
+
     """
     if v < 0 or v > 1:
         raise ValueError("Attempted gamma correction on out of range value {}".format(v))
-
-    gamma_factor = 1.9  # this value comes from my subjective attempts to get the colourwheel to look even
-    # gamma_factor = 2.8  # this is value that adafruit people like
 
     return (v ** gamma_factor)
 
@@ -335,6 +337,9 @@ def mode10():
 
     offset = 0
 
+    gamma_phase = 0
+    gamma_phase_max = 4
+
     while not new_mode:
       for pixel in range(0,50):
         for b in range(0,len(bottoms)-1):
@@ -349,13 +354,20 @@ def mode10():
         else:
           raise RuntimeError("could not find range for pixel {}".format(pixel))
         (red, green, blue) = colorsys.hsv_to_rgb(frac, 1, 1)
-        pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+
+        if gamma_phase < gamma_phase_max:
+          g = gamma_phase
+        else:
+          g = (2.0 * gamma_phase_max) - gamma_phase
+
+        pixels[pixel] = ( scale(gamma(red, g)), scale(gamma(green, g)), scale(gamma(blue, g)) )
 
       pixels.show()
 
       # 1/600th of a rotation every 0.1 should give one rotation
       # per minute
       offset = (offset + (1.0/600.0)) % 1.0
+      gamma_phase = (gamma_phase + 0.1) % (2.0 * gamma_phase_max)
 
       time.sleep(0.1)
 
