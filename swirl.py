@@ -330,6 +330,13 @@ def mode9():
 
 
 def mode10():
+    mode_rotator()
+
+def mode12():
+    mode_rotator(spin_speed = 1.0 / 60.0)
+
+def mode_rotator(spin_speed = 1.0/600.0):
+
     global new_mode
     pixels.auto_write = False
 
@@ -372,9 +379,7 @@ def mode10():
 
       pixels.show()
 
-      # 1/600th of a rotation every 0.1 should give one rotation
-      # per minute
-      offset = (offset + (1.0/600.0)) % 1.0
+      offset = (offset + spin_speed) % 1.0
 
       time.sleep(0.1)
 
@@ -532,6 +537,13 @@ def set_mode10():
 def set_mode11():
     global new_mode
     new_mode = mode11
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/12')
+def set_mode12():
+    global new_mode
+    new_mode = mode12
     return flask.redirect("/", code=302)
 
 
