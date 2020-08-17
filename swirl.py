@@ -8,6 +8,7 @@
 
 import board
 import colorsys  # from pygame
+import math
 import neopixel
 import random
 import threading
@@ -378,6 +379,83 @@ def mode10():
       time.sleep(0.1)
 
 
+def mode11():
+
+    global new_mode
+    pixels.auto_write = False
+
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    offset = 0
+
+    hue = 0.5
+    angle = 0.3
+    width = 1
+    speed = 0.2
+    outwards = 0
+
+    while not new_mode:
+
+
+      for pixel in range(0,50):
+
+        for b in range(0,len(bottoms)-1):
+          if pixel < bottoms[b] and pixel >= bottoms[b+1]:
+            start = bottoms[b]
+            end = bottoms[b+1]
+            proportion_around_loop = (pixel - start) / (end - start)
+
+            frac = proportion_around_loop
+
+            radial_pos = b
+            break
+        else:
+          raise RuntimeError("could not find range for pixel {}".format(pixel))
+
+        # simple radial proportion that assumes that each LED between bottom points
+        # is at a constant distance, with an immediate jump at each bottom point to
+        # be one unit further in.
+        # That leads to some abrupt changes in LED brightness, especially near the end
+        # of the strand
+
+        # this should make b into a number that decreases more smoothly than b,
+        # taking into account how far round the loop we are (which is stored
+        # in frac)
+        b_pro_rated = b + proportion_around_loop
+        radial_proportion = b_pro_rated / (len(bottoms)-1)
+
+        angle_distance = angle-frac
+        if angle_distance > 0.5:
+          angle_distance = 1-angle_distance
+
+
+        distance = (math.sqrt( (angle_distance/width) ** 2 + (outwards - radial_proportion) ** 2))
+        if distance < 0.3:
+          brightness = (0.3 - distance) / 0.3
+        else:
+          brightness = 0
+
+        # print("distance = {}, brightness = {}".format(distance, brightness))
+
+        (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, brightness)
+
+        pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+
+      pixels.show()
+
+      outwards = outwards + speed
+
+      if outwards > 1.3:
+        outwards = 0
+        speed = 0.075 + random.random() * 0.225
+        hue = random.random()
+        angle = random.random()
+        width = 0.1 + random.random() * 0.9
+
+      time.sleep(0.02)
+
+
 new_mode = mode9
 
 
@@ -447,6 +525,13 @@ def set_mode9():
 def set_mode10():
     global new_mode
     new_mode = mode10
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/11')
+def set_mode11():
+    global new_mode
+    new_mode = mode11
     return flask.redirect("/", code=302)
 
 
