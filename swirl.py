@@ -19,7 +19,7 @@ import flask
 
 pixels = neopixel.NeoPixel(board.D18, 50)
 
-bottoms = [50, 45, 37, 21, 0]
+bottoms = [50, 49, 46, 37, 23, 0]
 
 
 new_mode = None
@@ -461,6 +461,32 @@ def mode11():
       time.sleep(0.02)
 
 
+def mode13():
+
+    global new_mode
+    pixels.auto_write = False
+
+    pixels.fill( (0,0,0) )
+    for b in range(1,len(bottoms)):
+      p = bottoms[b]
+      pixels[p] = (255,0,0)
+
+    for b in range(1, len(bottoms)-1):
+      diff = bottoms[b+1] - bottoms[b]
+      if diff % 2 == 0:  # even number
+        p = bottoms[b] + diff/2
+        pixels[int(p)] = (0,255,0)
+      else:
+        p = bottoms[b] + diff/2
+        pixels[int(p)] = (0,255,0)
+        pixels[int(p)+1] = (0,255,0)
+    
+
+    pixels.show()
+
+    while not new_mode:
+      time.sleep(1)
+
 new_mode = mode9
 
 
@@ -544,6 +570,13 @@ def set_mode11():
 def set_mode12():
     global new_mode
     new_mode = mode12
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/13')
+def set_mode13():
+    global new_mode
+    new_mode = mode13
     return flask.redirect("/", code=302)
 
 
