@@ -9,6 +9,8 @@ made from an
 [Adafruit Soft Flexible Wire NeoPixel Strand - 50 NeoPixels](https://www.adafruit.com/product/4560)
 arranged into a spiral on the wall, driven by a Raspberry Pi.
 
+![LEDs showing rainbow wheel](imgs/img_20200817_111438.jpg)
+
 The driver runs a web server on port 80, giving a menu
 of available modes on the main index page. Modes can be
 switched from a browser by clicking on the appropriate
