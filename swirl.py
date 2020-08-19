@@ -500,11 +500,51 @@ def mode14():
     hour = now.tm_hour % 12
     minute = now.tm_min
 
-    angle = (0.5 + hour/12.0 + minute/60.0/12.0) % 1.0
+    hour_angle = (0.5 + hour/12.0 + minute/60.0/12.0) % 1.0
+    minute_angle = (0.5 + minute/60.0) % 1.0
 
+    mins_scaled = int(minute / 15 + 1)
+
+    hour_pixels = pixels_for_angle(hour_angle, 1)
+    minute_pixels = pixels_for_angle(minute_angle, 0)
+    minute_pixels = minute_pixels[0:mins_scaled]
+
+    for dot in minute_pixels:
+        (distance, pixel) = dot
+        hour_pixels = [(d,p) for (d,p) in hour_pixels if p != pixel]
+
+    hour_pixels = hour_pixels[0:hour]
+    
+    for dot in hour_pixels:
+        (distance, pixel) = dot
+        pixels[pixel] = (255,0,0)
+
+
+    for dot in minute_pixels:
+        (distance, pixel) = dot
+        pixels[pixel] = (0,0,32)
+
+    #max_distance = 0
+    #for dot in range(0,50):
+    #    (distance, pixel) = hour_pixels[dot]
+    #    if distance > max_distance:
+    #        max_distance = distance
+
+    #for dot in range(hour,50):
+    #    (distance, pixel) = hour_pixels[dot]
+    #    # prop = dot / 50.0  # colour by ranked distance
+    #    prop = distance / max_distance  # colour by actual distance
+    #    pixels[pixel] = (0,int(gamma(prop) * 32.0),int(gamma(1-prop) * 32.0))
+
+    pixels.show()
+    time.sleep(1)
+
+
+def pixels_for_angle(angle, loop_in):
+
+    # loop_in = 
     # which loop in we're going to pick the base pixel
     # to be. 0 is the outermost loop of the spiral.
-    loop_in = 1
 
     start = bottoms[len(bottoms) - 1 - loop_in]
     end = bottoms[len(bottoms) - 2 - loop_in]
@@ -541,27 +581,7 @@ def mode14():
       # print("distances = {}".format(distances))
 
     s = sorted(distances)
-    
-    # print("s = {}".format(s))
-
-    for dot in range(0,hour):
-        (distance, pixel) = s[dot]
-        pixels[pixel] = (255,int(gamma(dot / 12.0) * 255.0),0)
-
-    max_distance = 0
-    for dot in range(0,50):
-        (distance, pixel) = s[dot]
-        if distance > max_distance:
-            max_distance = distance
-
-    for dot in range(hour,50):
-        (distance, pixel) = s[dot]
-        # prop = dot / 50.0  # colour by ranked distance
-        prop = distance / max_distance  # colour by actual distance
-        pixels[pixel] = (0,int(gamma(prop) * 32.0),int(gamma(1-prop) * 32.0))
-
-    pixels.show()
-    time.sleep(1)
+    return s
 
 new_mode = mode14
 
