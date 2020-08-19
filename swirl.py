@@ -487,7 +487,83 @@ def mode13():
     while not new_mode:
       time.sleep(1)
 
-new_mode = mode9
+
+def mode14():
+  global new_mode
+  pixels.auto_write = False
+
+  while not new_mode:
+    pixels.fill( (0,0,0) )
+    
+
+    now = time.localtime()
+    hour = now.tm_hour % 12
+    minute = now.tm_min
+
+    angle = (0.5 + hour/12.0 + minute/60.0/12.0) % 1.0
+
+    # which loop in we're going to pick the base pixel
+    # to be. 0 is the outermost loop of the spiral.
+    loop_in = 1
+
+    start = bottoms[len(bottoms) - 1 - loop_in]
+    end = bottoms[len(bottoms) - 2 - loop_in]
+    base_pixel = round(start + (end-start) * angle)
+
+    # pixels[base_pixel] = (255,0,0)
+
+    pixel_pos = {}
+    for pixel in range(0,50):
+
+      for b in range(0,len(bottoms)-1):
+        if pixel < bottoms[b] and pixel >= bottoms[b+1]:
+          start = bottoms[b]
+          end = bottoms[b+1]
+          frac = (pixel - start) / (end - start)
+          # print("pixel {}: frac = {}".format(pixel, frac))
+          break
+      else:
+        raise RuntimeError("could not find range for pixel {}".format(pixel))
+
+      tau = 3.14 * 2.0  # better source for this?
+      r = 1.0
+      p_angle = frac
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      # print("x = {}, y = {}".format(x,y))
+      pixel_pos[pixel] = (x, y)
+
+    distances = []
+    (x, y) = pixel_pos[base_pixel]
+    for pixel in range(0,50):
+      (x1, y1) = pixel_pos[pixel]
+      distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
+      # print("distances = {}".format(distances))
+
+    s = sorted(distances)
+    
+    # print("s = {}".format(s))
+
+    for dot in range(0,hour):
+        (distance, pixel) = s[dot]
+        pixels[pixel] = (255,int(gamma(dot / 12.0) * 255.0),0)
+
+    max_distance = 0
+    for dot in range(0,50):
+        (distance, pixel) = s[dot]
+        if distance > max_distance:
+            max_distance = distance
+
+    for dot in range(hour,50):
+        (distance, pixel) = s[dot]
+        # prop = dot / 50.0  # colour by ranked distance
+        prop = distance / max_distance  # colour by actual distance
+        pixels[pixel] = (0,int(gamma(prop) * 32.0),int(gamma(1-prop) * 32.0))
+
+    pixels.show()
+    time.sleep(1)
+
+new_mode = mode14
 
 
 app = flask.Flask(__name__)
@@ -577,6 +653,13 @@ def set_mode12():
 def set_mode13():
     global new_mode
     new_mode = mode13
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/14')
+def set_mode14():
+    global new_mode
+    new_mode = mode14
     return flask.redirect("/", code=302)
 
 
