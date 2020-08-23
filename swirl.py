@@ -660,7 +660,7 @@ def mode15():
       if cells[pixel] == 0:
         pixels[pixel] = (0,0,0)
       elif cells[pixel] == 1:
-        pixels[pixel] = (32,32,255)
+        pixels[pixel] = (16,16,255)
       else:
         pixels[pixel] = (255,0,0)
 
