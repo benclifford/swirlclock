@@ -693,7 +693,8 @@ def mode16():
   global new_mode
   pixels.auto_write = False
 
-  cells = [0 for n in range(0,50)]
+  start_hue = random.random()
+  cells = [start_hue for n in range(0,50)]
 
   while not new_mode:
 
