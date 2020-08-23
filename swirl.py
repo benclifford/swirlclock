@@ -688,6 +688,26 @@ def mode15():
 
     time.sleep(0.005)
 
+
+def mode16():
+  global new_mode
+  pixels.auto_write = False
+
+  cells = [0 for n in range(0,50)]
+
+  while not new_mode:
+
+    for pixel in range(49,0,-1):
+      cells[pixel] = cells[pixel - 1]
+
+    cells[0] = (cells[0] + (random.random() * 0.1 - 0.05)) % 1.0
+
+    for pixel in range(0,50):
+      hue = cells[pixel]
+      (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, 1)
+      pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+    pixels.show()
+    time.sleep(0.05)
  
 new_mode = mode14
 
@@ -793,6 +813,13 @@ def set_mode14():
 def set_mode15():
     global new_mode
     new_mode = mode15
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/16')
+def set_mode16():
+    global new_mode
+    new_mode = mode16
     return flask.redirect("/", code=302)
 
 
