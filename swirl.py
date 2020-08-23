@@ -513,7 +513,12 @@ def mode14():
         (distance, pixel) = dot
         hour_pixels = [(d,p) for (d,p) in hour_pixels if p != pixel]
 
-    hour_pixels = hour_pixels[0:hour]
+    if hour == 0:
+        hour_dot_count = 12
+    else:
+        hour_dot_count = hour
+
+    hour_pixels = hour_pixels[0:hour_dot_count]
     
     for dot in hour_pixels:
         (distance, pixel) = dot
@@ -548,12 +553,10 @@ def pixels_for_angle(angle, loop_in):
 
     start = bottoms[len(bottoms) - 1 - loop_in]
     end = bottoms[len(bottoms) - 2 - loop_in]
-    base_pixel = round(start + (end-start) * angle)
-
-    # pixels[base_pixel] = (255,0,0)
+    base_pixelish = start + (end-start) * angle  # almost a pixel, but not rounded
 
     pixel_pos = {}
-    for pixel in range(0,50):
+    for pixel in list(range(0,50)) + [base_pixelish]:
 
       for b in range(0,len(bottoms)-1):
         if pixel < bottoms[b] and pixel >= bottoms[b+1]:
@@ -574,7 +577,7 @@ def pixels_for_angle(angle, loop_in):
       pixel_pos[pixel] = (x, y)
 
     distances = []
-    (x, y) = pixel_pos[base_pixel]
+    (x, y) = pixel_pos[base_pixelish]
     for pixel in range(0,50):
       (x1, y1) = pixel_pos[pixel]
       distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
