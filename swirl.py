@@ -671,7 +671,8 @@ def mode15():
 
     if boom:
       # print("BOOM")
-      for brightness in range(255,0,-4):
+      for exponent in range(8,0,-1):
+        brightness = (2 ** exponent) - 1
         for pixel in range(0,50):
           if cells[pixel] == 0:
             pixels[pixel] = (0,0,0)
@@ -680,7 +681,7 @@ def mode15():
           else:
             pixels[pixel] = (255,0,0)
         pixels.show()
-        time.sleep(0.01)
+        time.sleep(0.04)
       cells = [0 for n in range(0,50)]
 
     boom = False
