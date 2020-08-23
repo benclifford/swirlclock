@@ -586,6 +586,108 @@ def pixels_for_angle(angle, loop_in):
     s = sorted(distances)
     return s
 
+
+def mode15():
+  global new_mode
+  pixels.auto_write = False
+
+  cells = [0 for n in range(0,50)]
+
+  particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
+
+  first = True
+  boom = False
+
+  while not new_mode:
+
+    # move particle
+    for b in range(0,len(bottoms)-1):
+      pixel = particle
+      if pixel < bottoms[b] and pixel >= bottoms[b+1]:
+        start = bottoms[b]
+        end = bottoms[b+1]
+        frac = (pixel - start) / (end - start)
+        break
+    else:
+      raise RuntimeError("could not find range for pixel {}".format(pixel))
+
+    choice = random.randint(0,2)
+
+    old_first = first
+    first = False
+
+    if choice == 0:
+      # print("choice 0")
+      new_particle = particle + 1
+      if new_particle >= bottoms[b]:
+        new_particle = bottoms[b+1]
+
+    elif choice == 1:
+      # print("choice 1")
+      new_particle = particle - 1  # TODO: mod
+      if new_particle < bottoms[b+1]:
+        new_particle = bottoms[b]-1
+    elif choice == 2:
+      # print("choice 2")
+      # move inwards
+      # determine angle now
+      if b == 0:
+        # if we reach the centre, solidify
+        # print("solidifying: first = {}, old_first = {}".format(first, old_first))
+        cells[particle] = 1
+        new_particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
+        boom = old_first
+        first = True
+        # print("boom: {}".format(boom))
+      else:
+        b = b - 1
+        new_particle = int(bottoms[b] + (bottoms[b+1] - bottoms[b])*frac)
+        # print("new particle by radius is {}".format(new_particle))
+
+    if cells[new_particle] != 0: # if we're about to move onto solid, solidify
+      # print("solidifying: first = {}, old_first = {}".format(first, old_first))
+      cells[particle] = 1
+      particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
+      boom = old_first
+      first = True
+      # print("boom: {}".format(boom))
+    else:
+      particle = new_particle
+
+    # display state
+
+    for pixel in range(0,50):
+      if cells[pixel] == 0:
+        pixels[pixel] = (0,0,0)
+      elif cells[pixel] == 1:
+        pixels[pixel] = (32,32,255)
+      else:
+        pixels[pixel] = (255,0,0)
+
+    # print("particle is {}".format(particle))
+    pixels[particle] = (0,32,0)
+
+    pixels.show()
+
+    if boom:
+      # print("BOOM")
+      for brightness in range(255,0,-4):
+        for pixel in range(0,50):
+          if cells[pixel] == 0:
+            pixels[pixel] = (0,0,0)
+          elif cells[pixel] == 1:
+            pixels[pixel] = (brightness,brightness,brightness)
+          else:
+            pixels[pixel] = (255,0,0)
+        pixels.show()
+        time.sleep(0.01)
+      cells = [0 for n in range(0,50)]
+
+    boom = False
+
+    time.sleep(0.005)
+
+ 
 new_mode = mode14
 
 
@@ -683,6 +785,13 @@ def set_mode13():
 def set_mode14():
     global new_mode
     new_mode = mode14
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/15')
+def set_mode15():
+    global new_mode
+    new_mode = mode15
     return flask.redirect("/", code=302)
 
 
