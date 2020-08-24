@@ -726,7 +726,7 @@ def mode17():
     rings[1] += random.random() * 0.15
 
     for ring in range(1, len(rings)-1):
-      for pixel in range(bottoms[ring], bottoms[ring+1], -1):
+      for pixel in range(bottoms[ring], bottoms[ring+1] - 1, -1):
         hue = rings[ring]
         (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, 1)
         pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
