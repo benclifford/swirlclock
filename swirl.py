@@ -709,6 +709,31 @@ def mode16():
       pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
     pixels.show()
     time.sleep(0.05)
+
+
+def mode17():
+  global new_mode
+  pixels.auto_write = False
+
+  start_hue = random.random()
+  rings = [start_hue for b in bottoms]
+
+  while not new_mode:
+
+    for ring in range(len(rings)-1, 1, -1):
+      rings[ring] = rings[ring-1]
+
+    rings[1] += random.random() * 0.15
+
+    for ring in range(1, len(rings)-1):
+      for pixel in range(bottoms[ring], bottoms[ring+1], -1):
+        hue = rings[ring]
+        (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, 1)
+        pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+
+    pixels.show()
+
+    time.sleep(0.1)
  
 new_mode = mode14
 
@@ -821,6 +846,13 @@ def set_mode15():
 def set_mode16():
     global new_mode
     new_mode = mode16
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/17')
+def set_mode17():
+    global new_mode
+    new_mode = mode17
     return flask.redirect("/", code=302)
 
 
