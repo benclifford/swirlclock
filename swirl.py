@@ -734,6 +734,204 @@ def mode17():
     pixels.show()
 
     time.sleep(0.1)
+
+
+def mode18():
+    global new_mode
+    pixels.auto_write = False
+
+    x = 0
+    y = 0
+    ndots = 5
+    hue = 0.2
+
+    radius = 5.0  # this is the radius that the centre point moves within - it doesn't matter if it goes outside the spiral as dots will just squish up against the edge
+
+    velocity_mag = 0.15
+
+    xv = velocity_mag + random.random() * velocity_mag
+    yv = velocity_mag + random.random() * velocity_mag
+
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)):
+
+      for b in range(0,len(bottoms)-1):
+        if pixel < bottoms[b] and pixel >= bottoms[b+1]:
+          start = bottoms[b]
+          end = bottoms[b+1]
+          frac = (pixel - start) / (end - start)
+          # print("pixel {}: frac = {}".format(pixel, frac))
+          break
+      else:
+        raise RuntimeError("could not find range for pixel {}".format(pixel))
+
+      tau = 3.14 * 2.0  # better source for this?
+      r = 1.0
+      p_angle = frac
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      # print("x = {}, y = {}".format(x,y))
+      pixel_pos[pixel] = (x, y)
+
+    while not new_mode:
+        x = x + xv
+        y = y + yv
+
+        if math.sqrt(x ** 2 + y ** 2) > radius:
+
+          hue = hue + random.random() * 0.1
+          min_dots = 3
+          max_dots = 8
+          ndots = max(min_dots, min(max_dots, ndots + random.randint(0,2) - 1))
+           
+
+          # pick a new velocity - it should be back roughly towards the centre
+          # but with a random deflection
+
+          angle_to_centre = math.atan2(y, x)
+
+          angle_range = 1.3
+          angle_to_centre = angle_to_centre + random.random() * angle_range  - (angle_range * 0.5)
+          new_mag = velocity_mag + velocity_mag * random.random()
+          xv = -math.cos(angle_to_centre) * new_mag
+          yv = -math.sin(angle_to_centre) * new_mag
+
+          # shrink back so we are inside the circle
+          # could do this better to approximate the point at which
+          # we hit the unit circle
+          rescale = radius / math.sqrt(x ** 2 + y ** 2)
+          x = x * rescale
+          y = y * rescale
+
+        # compute nearest pixels
+
+        distances = []
+        for pixel in range(0,50):
+          (x1, y1) = pixel_pos[pixel]
+          distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
+        s = sorted(distances)
+
+        dots_to_light = s[0:ndots]
+
+        pixels.fill( (0,0,0) )
+
+        for dot in dots_to_light:
+            (distance, pixel) = dot
+            (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, 1)
+            pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+
+        pixels.show()
+        time.sleep(0.01)
+
+
+def mode19():
+    global new_mode
+    pixels.auto_write = False
+
+    # hue of pixel, or None if it should be blank
+    display_pixels = [None for pixel in range(0,50)]
+
+    x = 0
+    y = 0
+    min_dots = 1
+    max_dots = 3
+    hue = 0.2
+
+    radius = 5.0  # this is the radius that the centre point moves within - it doesn't matter if it goes outside the spiral as dots will just squish up against the edge
+
+    velocity_mag = 0.15
+
+    ndots = round( (max_dots + min_dots) / 2)
+    xv = velocity_mag + random.random() * velocity_mag
+    yv = velocity_mag + random.random() * velocity_mag
+
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)):
+
+      for b in range(0,len(bottoms)-1):
+        if pixel < bottoms[b] and pixel >= bottoms[b+1]:
+          start = bottoms[b]
+          end = bottoms[b+1]
+          frac = (pixel - start) / (end - start)
+          # print("pixel {}: frac = {}".format(pixel, frac))
+          break
+      else:
+        raise RuntimeError("could not find range for pixel {}".format(pixel))
+
+      tau = 3.14 * 2.0  # better source for this?
+      r = 1.0
+      p_angle = frac
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      # print("x = {}, y = {}".format(x,y))
+      pixel_pos[pixel] = (x, y)
+
+    while not new_mode:
+        x = x + xv
+        y = y + yv
+
+        if math.sqrt(x ** 2 + y ** 2) > radius:
+
+          hue = hue + 0.05 + random.random() * 0.07
+          ndots = max(min_dots, min(max_dots, ndots + random.randint(0,2) - 1))
+           
+
+          # pick a new velocity - it should be back roughly towards the centre
+          # but with a random deflection
+
+          angle_to_centre = math.atan2(y, x)
+
+          angle_range = 1.3
+          angle_to_centre = angle_to_centre + random.random() * angle_range  - (angle_range * 0.5)
+          new_mag = velocity_mag + velocity_mag * random.random()
+          xv = -math.cos(angle_to_centre) * new_mag
+          yv = -math.sin(angle_to_centre) * new_mag
+
+          # shrink back so we are inside the circle
+          # could do this better to approximate the point at which
+          # we hit the unit circle
+          rescale = radius / math.sqrt(x ** 2 + y ** 2)
+          x = x * rescale
+          y = y * rescale
+
+        # compute nearest pixels
+
+        distances = []
+        for pixel in range(0,50):
+          (x1, y1) = pixel_pos[pixel]
+          distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
+        s = sorted(distances)
+
+        dots_to_light = s[0:ndots]
+
+        for dot in dots_to_light:
+            (distance, pixel) = dot
+            display_pixels[pixel] = (hue, 1)
+
+
+        for pixel in range(0,50):
+            if display_pixels[pixel] is None:
+                pixels[pixel] = (0,0,0)
+            else:
+                (display_hue, value) = display_pixels[pixel]
+                (red, green, blue) = colorsys.hsv_to_rgb(display_hue, 1, value)
+                pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+
+        pixels.show()
+
+        for pixel in range(0,50):
+          if display_pixels[pixel] is not None:
+            (display_hue, value) = display_pixels[pixel]
+            new_value = value - 0.0075
+            if new_value <= 0:
+              display_pixels[pixel] = None
+            else:
+              display_pixels[pixel] = (display_hue, new_value)
+
+        time.sleep(0.01)
+
  
 new_mode = mode14
 
@@ -853,6 +1051,20 @@ def set_mode16():
 def set_mode17():
     global new_mode
     new_mode = mode17
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/18')
+def set_mode18():
+    global new_mode
+    new_mode = mode18
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/19')
+def set_mode19():
+    global new_mode
+    new_mode = mode19
     return flask.redirect("/", code=302)
 
 
