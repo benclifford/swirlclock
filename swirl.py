@@ -932,7 +932,77 @@ def mode19():
 
         time.sleep(0.01)
 
- 
+def mode20():
+  global new_mode
+  pixels.auto_write = False
+
+  particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
+  hue = random.random()
+
+  first = True
+  boom = False
+
+  while not new_mode:
+
+    # move particle
+    for b in range(0,len(bottoms)-1):
+      pixel = particle
+      if pixel < bottoms[b] and pixel >= bottoms[b+1]:
+        start = bottoms[b]
+        end = bottoms[b+1]
+        frac = (pixel - start) / (end - start)
+        break
+    else:
+      raise RuntimeError("could not find range for pixel {}".format(pixel))
+
+    choice = random.randint(0,2)
+
+    old_first = first
+    first = False
+
+    if choice == 0:
+      # print("choice 0")
+      new_particle = particle + 1
+      if new_particle >= bottoms[b]:
+        new_particle = bottoms[b+1]
+
+    elif choice == 1:
+      # print("choice 1")
+      new_particle = particle - 1  # TODO: mod
+      if new_particle < bottoms[b+1]:
+        new_particle = bottoms[b]-1
+    elif choice == 2:
+      # print("choice 2")
+      # move inwards
+      # determine angle now
+      if b == 0:
+        # if we reach the centre, solidify
+        # print("solidifying: first = {}, old_first = {}".format(first, old_first))
+        new_particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
+        boom = old_first
+        first = True
+        pixels.fill( (0,0,0) )
+        hue = random.random()
+        # print("boom: {}".format(boom))
+      else:
+        b = b - 1
+        new_particle = int(bottoms[b] + (bottoms[b+1] - bottoms[b])*frac)
+        # print("new particle by radius is {}".format(new_particle))
+
+    particle = new_particle
+
+    # display state
+
+    (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, 1)
+    pixels[particle] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+
+    pixels.show()
+
+    boom = False
+
+    time.sleep(0.02)
+
+
 new_mode = mode14
 
 
@@ -1066,6 +1136,14 @@ def set_mode19():
     global new_mode
     new_mode = mode19
     return flask.redirect("/", code=302)
+
+
+@app.route('/mode/20')
+def set_mode20():
+    global new_mode
+    new_mode = mode20
+    return flask.redirect("/", code=302)
+
 
 
 def go():
