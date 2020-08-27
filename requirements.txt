@@ -1,0 +1,4 @@
+RPI.GPIO
+dafruit-blinka
+adafruit-circuitpython-neopixel
+Flask
