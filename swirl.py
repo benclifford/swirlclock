@@ -50,6 +50,7 @@ def gamma(v, gamma_factor=1.9):
 def mode1():
     global new_mode
     pixels.auto_write = True
+    pixels.fill( (0,0,0) )
     n = 0
     while not new_mode:
         pixel = random.randint(0,49)
