@@ -1003,6 +1003,44 @@ def mode20():
     time.sleep(0.02)
 
 
+def mode21():
+    global new_mode
+    pixels.auto_write = False
+
+    # the inner loops don't look good in this mode
+    # because not enough pixels so leave them empty
+    min_loop = 3
+
+    min_frac = 0.3
+    max_frac = 0.6
+
+    params = {}
+    for b in range(min_loop, len(bottoms)):
+        params[b] = {}
+        params[b]["hue"] = random.random()
+        params[b]["length"] = min_frac + random.random() * (max_frac - min_frac)
+        params[b]["offset"] = 0
+        params[b]["speed"] = random.random() + 0.3
+        if(random.random() > 0.5):
+            params[b]["speed"] = -params[b]["speed"]
+
+    while not new_mode:
+        pixels.fill( (0,0,0) )
+
+        for b in range(min_loop, len(bottoms)):
+            bottom_len = bottoms[b-1] - bottoms[b]
+            slice_len = max(1, int(bottom_len * params[b]["length"]))
+            for s in range(0,slice_len):
+                t = bottoms[b] + int( (params[b]["offset"] + s) % bottom_len)
+                hue = params[b]["hue"]
+                (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, 1)
+                pixels[t] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+            params[b]["offset"] = (params[b]["offset"] + params[b]["speed"]) % bottom_len
+
+        pixels.show()
+        time.sleep(0.01)
+
+
 new_mode = mode14
 
 
@@ -1144,6 +1182,12 @@ def set_mode20():
     new_mode = mode20
     return flask.redirect("/", code=302)
 
+
+@app.route('/mode/21')
+def set_mode21():
+    global new_mode
+    new_mode = mode21
+    return flask.redirect("/", code=302)
 
 
 def go():
