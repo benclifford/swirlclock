@@ -52,7 +52,6 @@ def mode1():
     pixels.auto_write = True
     n = 0
     while not new_mode:
-        print("tick")
         pixel = random.randint(0,49)
 
         if n == 0:
