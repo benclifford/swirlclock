@@ -16,11 +16,11 @@ import time
 
 import flask
 
+from math import tau
 
 pixels = neopixel.NeoPixel(board.D18, 50)
 
 bottoms = [50, 49, 46, 37, 22, 0]
-
 
 new_mode = None
 
@@ -465,7 +465,6 @@ def pixels_for_angle(angle, loop_in):
     for pixel in list(range(0,50)) + [base_pixelish]:
       (b, frac) = pixel_to_layer(pixel)
 
-      tau = 3.14 * 2.0  # better source for this?
       r = 1.0
       p_angle = frac
       x = math.sin(p_angle * tau) * b
@@ -630,7 +629,6 @@ def mode18():
     for pixel in list(range(0,50)):
       (b, frac) = pixel_to_layer(pixel)
 
-      tau = 3.14 * 2.0  # better source for this?
       r = 1.0
       p_angle = frac
       x = math.sin(p_angle * tau) * b
@@ -712,7 +710,6 @@ def mode19():
     for pixel in list(range(0,50)):
       (b, frac) = pixel_to_layer(pixel)
 
-      tau = 3.14 * 2.0  # better source for this?
       r = 1.0
       p_angle = frac
       x = math.sin(p_angle * tau) * b
