@@ -207,34 +207,32 @@ def mode8():
   global new_mode
   pixels.auto_write = False
 
-
-  rot = 0
-  rot2 = 0
+  rot_hue = 0
+  rot_pos = 0
 
   while not new_mode:
 
     for pixel in range(0,50):
       (b, frac) = pixel_to_layer(pixel)
-      frac_hue = (frac + rot) % 1
-      frac2 = (frac + rot2) % 1
+      frac_hue = (frac + rot_hue) % 1
+      frac_pos = (frac + rot_pos) % 1
 
       width = 0.15
 
-      d = frac2
-      if d > width and d < (1-width):
+      if frac_pos > width and frac_pos < (1-width):
           intensity = 0
-      elif d >= (1-width):
-          d = 1 - d
-          intensity = (width - d) * (1/width)
+      elif frac_pos >= (1-width):
+          frac_pos = 1 - frac_pos
+          intensity = (width - frac_pos) * (1/width)
       else:
-          intensity = (width - d) * (1/width)
+          intensity = (width - frac_pos) * (1/width)
 
       pixels[pixel] = hsv_to_neo_rgb(frac_hue, v=intensity)
       
     pixels.show()
 
-    rot = rot + (1.0/600.0) % 1
-    rot2 = rot2 + (1.0/423.0) % 1
+    rot_hue = rot_hue + (1.0/600.0) % 1
+    rot_pos = rot_pos + (1.0/423.0) % 1
     time.sleep(0.01)
 
 
