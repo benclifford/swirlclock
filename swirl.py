@@ -919,11 +919,33 @@ def mode23():
     display_pixels = [None for n in range(0,50)]
 
     end_rainbow_increase_factor = 1.1
-    blanking_probability = 0.99
+    blanking_probability = 0.999
+    rotate_period = 0.07
+
+    rotate_time = time.time()
 
     while not new_mode:
 
+        # rotate along spiral with a certain percentage
+        # hopefully this makes the spiralness more visible
+        # than a static display
+
+        new_rotate_time = time.time()
+        if False and new_rotate_time > rotate_time+rotate_period:
+
+            tmp = display_pixels[49]
+            for n in range(49,0,-1):
+                display_pixels[n] = display_pixels[n-1]
+            display_pixels[0] = tmp
+            rotate_time = new_rotate_time
+
+
         active_pixel = random.randint(0,49)
+
+        # this lets us watch how fast things are considered
+        if False:
+            pixels[active_pixel] = (255,255,255)
+            pixels.show()
 
         total_lit = 0
         for p in display_pixels:
@@ -946,7 +968,7 @@ def mode23():
 
         if display_pixels[active_pixel] is None:
             # off-rules:
-            if total_lit < 40:
+            if total_lit < 32:
                 # dark pixel turning on
                 # according to assorted rainbow-forming rules
 
@@ -959,8 +981,12 @@ def mode23():
                   diff = (display_pixels[active_pixel + 1] - display_pixels[active_pixel - 1]) 
                   if diff > 0.5:
                       diff -= 1.0
-                  new_hue = (display_pixels[active_pixel - 1] + diff / 2.0) % 1.0
-                  display_pixels[active_pixel] = new_hue 
+
+                  if abs(diff) < 0.2:  # only do an infill for close colours
+                    new_hue = (display_pixels[active_pixel - 1] + diff / 2.0) % 1.0
+                    display_pixels[active_pixel] = new_hue 
+                  else:
+                    display_pixels[active_pixel] = None
 
                 # pixel downwards is on. pixel upwards is not on, otherwise caught by previous case.
                 elif active_pixel >= 2 and \
@@ -1002,7 +1028,7 @@ def mode23():
                     display_pixels[active_pixel] = random.random()
 
         else:
-            if total_lit > 30 and random.random() > blanking_probability: # some hysteresis with the off-mode equivalent to keep a decent twinkling zone, perhaps
+            if total_lit > 20 and random.random() > blanking_probability: # some hysteresis with the off-mode equivalent to keep a decent twinkling zone, perhaps
                 display_pixels[active_pixel] = None
  
             # if we're between two lit pixels, choose a hue that is
@@ -1025,8 +1051,10 @@ def mode23():
                 diff = display_pixels[active_pixel - 1] - display_pixels[active_pixel - 2]
                 if diff > 0.5:
                     diff -= 1.0
+
+                forced_diff = max(-0.1, min(0.1, diff * end_rainbow_increase_factor))
                 # multiple diff up a bit to try to force the rainbowness
-                new_hue = (display_pixels[active_pixel - 1] + (diff * end_rainbow_increase_factor)) % 1.0
+                new_hue = (display_pixels[active_pixel - 1] + forced_diff) % 1.0
                 display_pixels[active_pixel] = new_hue 
 
             elif active_pixel <= 47 and \
@@ -1036,12 +1064,21 @@ def mode23():
                 diff = display_pixels[active_pixel + 1] - display_pixels[active_pixel + 2]
                 if diff > 0.5:
                     diff -= 1.0
-                new_hue = (display_pixels[active_pixel + 1] + (diff * end_rainbow_increase_factor)) % 1.0
+                forced_diff = max(-0.1, min(0.1, diff * end_rainbow_increase_factor))
+                new_hue = (display_pixels[active_pixel + 1] + forced_diff) % 1.0
                 display_pixels[active_pixel] = new_hue 
 
             else:
+                # we can't do anything to this pixel to enhance rainbowness, so
+                # with a certain percentage, blank it so we can get a new chance
+                # elsewhere. Otherwise leave it untouched.
+
+                if random.random() < 0.1:
+                    display_pixels[active_pixel] = None
+
                 # if we can't enhance the rainbowness of an existing pixel, just leave it as.
-                pass  
+                # pass  
+
                 ##                display_pixels[active_pixel] = (display_pixels[active_pixel] + random.random() * 0.01) % 1.0
 
         for pixel in range(0,50):
