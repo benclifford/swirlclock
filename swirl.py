@@ -1092,6 +1092,44 @@ def mode23():
         # time.sleep(0.1)
 
 
+def mode24():
+    global new_mode
+    pixels.auto_write = False
+
+    red_exp = 1
+    green_exp = 0
+    blue_exp = 0
+
+    while not new_mode:
+        for pixel in range(0,50):
+            (b, frac) = pixel_to_layer(pixel)
+
+            (red, green, blue) = colorsys.hsv_to_rgb(frac, 1, 1)
+
+            red *= red_exp
+            green *= green_exp
+            blue *= blue_exp
+
+            (red, green, blue) = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+
+            pixels[pixel] = (red, green, blue)
+      
+        pixels.show()
+
+        red_exp = max(0, red_exp - 0.09)
+        green_exp = max(0, green_exp - 0.09)
+        blue_exp = max(0, blue_exp - 0.09)
+
+        if random.random() < 0.05:
+            red_exp = 1
+        if random.random() < 0.05:
+            green_exp = 1
+        if random.random() < 0.05:
+            blue_exp = 1
+
+        time.sleep(0.03)
+
+
 new_mode = mode14
 
 
@@ -1252,6 +1290,13 @@ def set_mode22():
 def set_mode23():
     global new_mode
     new_mode = mode23
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/24')
+def set_mode24():
+    global new_mode
+    new_mode = mode24
     return flask.redirect("/", code=302)
 
 
