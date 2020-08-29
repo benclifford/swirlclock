@@ -57,6 +57,21 @@ def hsv_to_neo_rgb(h, s=1, v=1):
     return ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
 
 
+def pixel_to_layer(pixel):
+    """Given a pixel, return the loop number and fraction around the
+    loop for this pixel.
+    """
+    for b in range(0,len(bottoms)-1):
+      if pixel < bottoms[b] and pixel >= bottoms[b+1]:
+        start = bottoms[b]
+        end = bottoms[b+1]
+        frac = (pixel - start) / (end - start)
+        break
+    else:
+      raise RuntimeError("could not find range for pixel {}".format(pixel))
+    return (b, frac)
+
+
 def mode1():
     global new_mode
     pixels.auto_write = True
@@ -181,16 +196,9 @@ def mode7():
     pixels.fill( (0,0,0) )
     pixels.show()
 
+
     for pixel in range(0,50):
-      for b in range(0,len(bottoms)-1):
-        if pixel < bottoms[b] and pixel >= bottoms[b+1]:
-          start = bottoms[b]
-          end = bottoms[b+1]
-          frac = (pixel - start) / (end - start)
-          print("pixel {}: frac = {}".format(pixel, frac))
-          break
-      else:
-        raise RuntimeError("could not find range for pixel {}".format(pixel))
+      (b, frac) = pixel_to_layer(pixel)
       pixels[pixel] = hsv_to_neo_rgb(frac)
       
     pixels.show()
@@ -210,14 +218,7 @@ def mode8():
   while not new_mode:
 
     for pixel in range(0,50):
-      for b in range(0,len(bottoms)-1):
-        if pixel < bottoms[b] and pixel >= bottoms[b+1]:
-          start = bottoms[b]
-          end = bottoms[b+1]
-          frac = (pixel - start) / (end - start)
-          break
-      else:
-        raise RuntimeError("could not find range for pixel {}".format(pixel))
+      (b, frac) = pixel_to_layer(pixel)
       frac_hue = (frac + rot) % 1
       frac2 = (frac + rot2) % 1
 
@@ -257,14 +258,7 @@ def mode9():
 
     # set hour
     for pixel in range(0,49):
-      for b in range(0,len(bottoms)-1):
-        if pixel < bottoms[b] and pixel >= bottoms[b+1]:
-          start = bottoms[b]
-          end = bottoms[b+1]
-          frac = (pixel - start) / (end - start)
-          break
-      else:
-        raise RuntimeError("could not find range for pixel {}".format(pixel))
+      (b, frac) = pixel_to_layer(pixel)
 
       hour_frac = now.tm_hour % 12 / 12.0
       frac_hue = (frac + rot2) % 1
@@ -308,19 +302,8 @@ def mode_rotator(spin_speed = 1.0/600.0):
 
     while not new_mode:
       for pixel in range(0,50):
-
-        for b in range(0,len(bottoms)-1):
-          if pixel < bottoms[b] and pixel >= bottoms[b+1]:
-            start = bottoms[b]
-            end = bottoms[b+1]
-            proportion_around_loop = (pixel - start) / (end - start)
-
-            frac = (proportion_around_loop + offset) % 1.0
-
-            radial_pos = b
-            break
-        else:
-          raise RuntimeError("could not find range for pixel {}".format(pixel))
+        (b, proportion_around_loop) = pixel_to_layer(pixel)
+        frac = (proportion_around_loop + offset) % 1.0
 
         # simple radial proportion that assumes that each LED between bottom points
         # is at a constant distance, with an immediate jump at each bottom point to
@@ -351,8 +334,6 @@ def mode11():
     pixels.fill( (0,0,0) )
     pixels.show()
 
-    offset = 0
-
     hue = 0.5
     angle = 0.3
     width = 1
@@ -363,19 +344,8 @@ def mode11():
 
 
       for pixel in range(0,50):
-
-        for b in range(0,len(bottoms)-1):
-          if pixel < bottoms[b] and pixel >= bottoms[b+1]:
-            start = bottoms[b]
-            end = bottoms[b+1]
-            proportion_around_loop = (pixel - start) / (end - start)
-
-            frac = proportion_around_loop
-
-            radial_pos = b
-            break
-        else:
-          raise RuntimeError("could not find range for pixel {}".format(pixel))
+        (b, proportion_around_loop) = pixel_to_layer(pixel)
+        frac = proportion_around_loop
 
         # simple radial proportion that assumes that each LED between bottom points
         # is at a constant distance, with an immediate jump at each bottom point to
@@ -512,15 +482,7 @@ def pixels_for_angle(angle, loop_in):
 
     pixel_pos = {}
     for pixel in list(range(0,50)) + [base_pixelish]:
-
-      for b in range(0,len(bottoms)-1):
-        if pixel < bottoms[b] and pixel >= bottoms[b+1]:
-          start = bottoms[b]
-          end = bottoms[b+1]
-          frac = (pixel - start) / (end - start)
-          break
-      else:
-        raise RuntimeError("could not find range for pixel {}".format(pixel))
+      (b, frac) = pixel_to_layer(pixel)
 
       tau = 3.14 * 2.0  # better source for this?
       r = 1.0
@@ -553,15 +515,7 @@ def mode15():
   while not new_mode:
 
     # move particle
-    for b in range(0,len(bottoms)-1):
-      pixel = particle
-      if pixel < bottoms[b] and pixel >= bottoms[b+1]:
-        start = bottoms[b]
-        end = bottoms[b+1]
-        frac = (pixel - start) / (end - start)
-        break
-    else:
-      raise RuntimeError("could not find range for pixel {}".format(pixel))
+    (b, frac) = pixel_to_layer(particle)
 
     choice = random.randint(0,2)
 
@@ -693,15 +647,7 @@ def mode18():
 
     pixel_pos = {}
     for pixel in list(range(0,50)):
-
-      for b in range(0,len(bottoms)-1):
-        if pixel < bottoms[b] and pixel >= bottoms[b+1]:
-          start = bottoms[b]
-          end = bottoms[b+1]
-          frac = (pixel - start) / (end - start)
-          break
-      else:
-        raise RuntimeError("could not find range for pixel {}".format(pixel))
+      (b, frac) = pixel_to_layer(pixel)
 
       tau = 3.14 * 2.0  # better source for this?
       r = 1.0
@@ -783,15 +729,7 @@ def mode19():
 
     pixel_pos = {}
     for pixel in list(range(0,50)):
-
-      for b in range(0,len(bottoms)-1):
-        if pixel < bottoms[b] and pixel >= bottoms[b+1]:
-          start = bottoms[b]
-          end = bottoms[b+1]
-          frac = (pixel - start) / (end - start)
-          break
-      else:
-        raise RuntimeError("could not find range for pixel {}".format(pixel))
+      (b, frac) = pixel_to_layer(pixel)
 
       tau = 3.14 * 2.0  # better source for this?
       r = 1.0
@@ -876,15 +814,7 @@ def mode20():
   while not new_mode:
 
     # move particle
-    for b in range(0,len(bottoms)-1):
-      pixel = particle
-      if pixel < bottoms[b] and pixel >= bottoms[b+1]:
-        start = bottoms[b]
-        end = bottoms[b+1]
-        frac = (pixel - start) / (end - start)
-        break
-    else:
-      raise RuntimeError("could not find range for pixel {}".format(pixel))
+    (b, frac) = pixel_to_layer(particle)
 
     choice = random.randint(0,2)
 
@@ -1021,15 +951,7 @@ def mode23():
             if p is not None:
                 total_lit = total_lit + 1
 
-        for b in range(0,len(bottoms)-1):
-            pixel = active_pixel
-            if pixel < bottoms[b] and pixel >= bottoms[b+1]:
-                start = bottoms[b]
-                end = bottoms[b+1]
-                frac = (pixel - start) / (end - start)
-                break
-        else:
-            raise RuntimeError("could not find range for pixel {}".format(pixel))
+        (b, frac) = pixel_to_layer(active_pixel)
 
         if b >= 1:
             inwards_particle = int(bottoms[b-1] + (bottoms[b] - bottoms[b-1])*frac)
