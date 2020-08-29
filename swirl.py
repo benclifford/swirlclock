@@ -47,6 +47,16 @@ def gamma(v, gamma_factor=1.9):
 
     return (v ** gamma_factor)
 
+
+def hsv_to_neo_rgb(h, s=1, v=1):
+    """Convert specified HSV values to neopixel compatible RGB. S and V default
+    to full brightness, fully saturated, as that is a common use mode
+    for designs.
+    """
+    (red, green, blue) = colorsys.hsv_to_rgb(h, s, v)
+    return ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+
+
 def mode1():
     global new_mode
     pixels.auto_write = True
@@ -59,8 +69,8 @@ def mode1():
             (red, green, blue) = (0,0,0)
         else:
             hue = random.random()
-            (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, 1)
-        pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)))
+            (red, green, blue) = hsv_to_neo_rgb(hue)
+        pixels[pixel] = (red, green, blue)
         n = (n+1) % 3
         time.sleep(1)
 
@@ -80,15 +90,13 @@ def mode2():
 
     while not new_mode:
         print("Hue: {}".format(hue))
-        (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, 1)
-        pixels.fill( ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue))) )
+        pixels.fill(hsv_to_neo_rgb(hue))
 
         secs = t % 60
 
         tick_pixel = int(secs/60.0 * 50.0)
 
-        (red, green, blue) = colorsys.hsv_to_rgb((hue + 0.5) % 1, 1, 1)
-        pixels[tick_pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+        pixels[tick_pixel] = hsv_to_neo_rgb((hue + 0.5) % 1)
 
         pixels.show()
 
@@ -114,8 +122,7 @@ def mode4():
         colours[n] = random.random()
 
     for n in range(0,50):
-        (red, green, blue) = colorsys.hsv_to_rgb(colours[n], 1, 1)
-        pixels[n] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+        pixels[n] = hsv_to_neo_rgb(colours[n])
 
     pixels.show()
 
@@ -145,9 +152,7 @@ def mode4():
 
         if swapped:
             for n in range(0,50):
-
-                (red, green, blue) = colorsys.hsv_to_rgb(colours[n], 1, 1)
-                pixels[n] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+                pixels[n] = hsv_to_neo_rgb(colours[n])
 
             pixels.show()
             print("one pass")
@@ -188,8 +193,7 @@ def mode7():
           break
       else:
         raise RuntimeError("could not find range for pixel {}".format(pixel))
-      (red, green, blue) = colorsys.hsv_to_rgb(frac, 1, 1)
-      pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+      pixels[pixel] = hsv_to_neo_rgb(frac)
       
     pixels.show()
 
@@ -231,8 +235,7 @@ def mode8():
       else:
           intensity = (width - d) * (1/width)
 
-      (red, green, blue) = colorsys.hsv_to_rgb(frac_hue, 1, intensity)
-      pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+      pixels[pixel] = hsv_to_neo_rgb(frac_hue, v=intensity)
       
     pixels.show()
 
@@ -280,12 +283,10 @@ def mode9():
       elif d >= (1-width):
           d = 1 - d
           intensity = (width - d) * (1/width)
-          (red, green, blue) = colorsys.hsv_to_rgb(frac_hue, 1, intensity)
-          pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+          pixels[pixel] = hsv_to_neo_rgb(frac_hue, v=intensity)
       else:
           intensity = (width - d) * (1/width)
-          (red, green, blue) = colorsys.hsv_to_rgb(frac_hue, 1, intensity)
-          pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+          pixels[pixel] = hsv_to_neo_rgb(frac_hue, v=intensity)
 
     pixels.show()
 
@@ -337,9 +338,7 @@ def mode_rotator(spin_speed = 1.0/600.0):
         b_pro_rated = b + proportion_around_loop
         radial_proportion = b_pro_rated / (len(bottoms)-1)
 
-        (red, green, blue) = colorsys.hsv_to_rgb(frac, radial_proportion, radial_proportion)
-
-        pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+        pixels[pixel] = hsv_to_neo_rgb(frac, s=radial_proportion, v=radial_proportion)
 
       pixels.show()
 
@@ -407,9 +406,7 @@ def mode11():
 
         # print("distance = {}, brightness = {}".format(distance, brightness))
 
-        (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, brightness)
-
-        pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+        pixels[pixel] = hsv_to_neo_rgb(hue, v=brightness)
 
       pixels.show()
 
@@ -668,9 +665,7 @@ def mode16():
     cells[0] = (cells[0] + (random.random() * 0.1 - 0.05)) % 1.0
 
     for pixel in range(0,50):
-      hue = cells[pixel]
-      (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, 1)
-      pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+      pixels[pixel] = hsv_to_neo_rgb(cells[pixel])
     pixels.show()
     time.sleep(0.05)
 
@@ -691,9 +686,7 @@ def mode17():
 
     for ring in range(1, len(rings)-1):
       for pixel in range(bottoms[ring], bottoms[ring+1] - 1, -1):
-        hue = rings[ring]
-        (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, 1)
-        pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+        pixels[pixel] = hsv_to_neo_rgb(rings[ring])
 
     pixels.show()
 
@@ -781,9 +774,7 @@ def mode18():
         pixels.fill( (0,0,0) )
 
         for dot in dots_to_light:
-            (distance, pixel) = dot
-            (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, 1)
-            pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+            pixels[pixel] = hsv_to_neo_rgb(hue)
 
         pixels.show()
         time.sleep(0.01)
@@ -880,8 +871,7 @@ def mode19():
                 pixels[pixel] = (0,0,0)
             else:
                 (display_hue, value) = display_pixels[pixel]
-                (red, green, blue) = colorsys.hsv_to_rgb(display_hue, 1, value)
-                pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+                pixels[pixel] = hsv_to_neo_rgb(display_hue, v=value)
 
         pixels.show()
 
@@ -957,8 +947,7 @@ def mode20():
 
     # display state
 
-    (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, 1)
-    pixels[particle] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+    pixels[particle] = hsv_to_neo_rgb(hue)
 
     pixels.show()
 
@@ -997,8 +986,7 @@ def mode21():
             for s in range(0,slice_len):
                 t = bottoms[b] + int( (params[b]["offset"] + s) % bottom_len)
                 hue = params[b]["hue"]
-                (red, green, blue) = colorsys.hsv_to_rgb(hue, 1, 1)
-                pixels[t] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+                pixels[t] = hsv_to_neo_rgb(hue)
             params[b]["offset"] = (params[b]["offset"] + params[b]["speed"]) % bottom_len
 
         pixels.show()
@@ -1036,9 +1024,7 @@ def mode22():
             if display_pixels[pixel] is None:
                 pixels[pixel] = (0,0,0)
             else:
-                display_hue = display_pixels[pixel]
-                (red, green, blue) = colorsys.hsv_to_rgb(display_hue, 1, 1)
-                pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+                pixels[pixel] = hsv_to_neo_rgb(display_pixels[pixel])
 
         pixels.show()
 
@@ -1190,9 +1176,7 @@ def mode23():
             if display_pixels[pixel] is None:
                 pixels[pixel] = (0,0,0)
             else:
-                display_hue = display_pixels[pixel]
-                (red, green, blue) = colorsys.hsv_to_rgb(display_hue, 1, 1)
-                pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+                pixels[pixel] = hsv_to_neo_rgb(display_pixels[pixel])
 
         pixels.show()
 
