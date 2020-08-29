@@ -150,7 +150,6 @@ def mode4():
         if count == 0:
             new_pixel = random.randint(0,49)
             new_hue = random.random()
-            # colours[new_pixel] = new_hue
 
         count = (count + 1) % 200
 
