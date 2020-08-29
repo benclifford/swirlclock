@@ -241,8 +241,9 @@ def mode9():
   pixels.auto_write = False
 
   update_period = 0.01
+  width = 0.12
 
-  rot2 = 0
+  rot_hue = 0
 
 
   while not new_mode:
@@ -255,12 +256,10 @@ def mode9():
       (b, frac) = pixel_to_layer(pixel)
 
       hour_frac = now.tm_hour % 12 / 12.0
-      frac_hue = (frac + rot2) % 1
-      frac2 = (frac + hour_frac + 0.5) % 1
+      frac_hue = (frac + rot_hue) % 1
 
-      width = 0.12
 
-      d = frac2
+      d = (frac + hour_frac + 0.5) % 1
       if d > width and d < (1-width):
           intensity = 0
           # don't set pixel because we want it "transparent" rather than black
@@ -274,7 +273,7 @@ def mode9():
 
     pixels.show()
 
-    rot2 = rot2 + (1.0/42300.0 * (update_period / 0.01)) % 1
+    rot_hue = rot_hue + (1.0/42300.0 * (update_period / 0.01)) % 1
     time.sleep(update_period)
 
 
