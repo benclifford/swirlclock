@@ -89,6 +89,7 @@ def mode1():
         n = (n+1) % 3
         time.sleep(1)
 
+
 def mode2():
     global new_mode
 
