@@ -1096,9 +1096,11 @@ def mode24():
     global new_mode
     pixels.auto_write = False
 
+    gamma_factor = 1.4
+
     red_exp = 1
-    green_exp = 0
-    blue_exp = 0
+    green_exp = 1
+    blue_exp = 1
 
     while not new_mode:
         for pixel in range(0,50):
@@ -1110,7 +1112,9 @@ def mode24():
             green *= green_exp
             blue *= blue_exp
 
-            (red, green, blue) = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+            (red, green, blue) = ( scale(gamma(red, gamma_factor=gamma_factor)),
+                                   scale(gamma(green, gamma_factor=gamma_factor)),
+                                   scale(gamma(blue, gamma_factor=gamma_factor)) )
 
             pixels[pixel] = (red, green, blue)
       
