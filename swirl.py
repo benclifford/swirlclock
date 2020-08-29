@@ -1041,6 +1041,200 @@ def mode21():
         time.sleep(0.01)
 
 
+def mode22():
+    global new_mode
+    pixels.auto_write = False
+
+    # None = blank, otherwise a hue
+    display_pixels = [None for n in range(0,50)]
+
+    while not new_mode:
+
+        active_pixel = random.randint(0,49)
+
+        if display_pixels[active_pixel] is None:
+            # off-rules:
+
+            total_lit = 0
+            for p in display_pixels:
+                if p is not None:
+                    total_lit = total_lit + 1
+
+            if total_lit < 30:
+                display_pixels[active_pixel] = random.random()
+
+        else:
+            display_pixels[active_pixel] = (display_pixels[active_pixel] + 0.1)
+            if display_pixels[active_pixel] >= 1.0:
+                display_pixels[active_pixel] = None
+
+        for pixel in range(0,50):
+            if display_pixels[pixel] is None:
+                pixels[pixel] = (0,0,0)
+            else:
+                display_hue = display_pixels[pixel]
+                (red, green, blue) = colorsys.hsv_to_rgb(display_hue, 1, 1)
+                pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+
+        pixels.show()
+
+        time.sleep(0.1)
+
+
+def mode23():
+    global new_mode
+    pixels.auto_write = False
+
+    # None = blank, otherwise a hue
+    display_pixels = [None for n in range(0,50)]
+
+    end_rainbow_increase_factor = 1.1
+    blanking_probability = 0.99
+
+    while not new_mode:
+
+        active_pixel = random.randint(0,49)
+
+        total_lit = 0
+        for p in display_pixels:
+            if p is not None:
+                total_lit = total_lit + 1
+
+        for b in range(0,len(bottoms)-1):
+            pixel = active_pixel
+            if pixel < bottoms[b] and pixel >= bottoms[b+1]:
+                start = bottoms[b]
+                end = bottoms[b+1]
+                frac = (pixel - start) / (end - start)
+                break
+        else:
+            raise RuntimeError("could not find range for pixel {}".format(pixel))
+
+        if b >= 1:
+            inwards_particle = int(bottoms[b-1] + (bottoms[b] - bottoms[b-1])*frac)
+            inwards_hue = display_pixels[inwards_particle]
+        else:
+            inwards_hue = None
+
+        if b < len(bottoms):
+            outwards_particle = int(bottoms[b] + (bottoms[b+1] - bottoms[b])*frac)
+            outwards_hue = display_pixels[outwards_particle]
+        else:
+            outwards_hue = None
+
+        if display_pixels[active_pixel] is None:
+            # off-rules:
+            if total_lit < 40:
+                # dark pixel turning on
+                # according to assorted rainbow-forming rules
+
+                # if we're between two lit pixels, choose a hue that is
+                # part of a rainbow between the two:
+                if active_pixel >= 1 and active_pixel <= 48 and \
+                   display_pixels[active_pixel - 1] is not None and \
+                   display_pixels[active_pixel + 1] is not None:
+
+                  diff = (display_pixels[active_pixel + 1] - display_pixels[active_pixel - 1]) 
+                  if diff > 0.5:
+                      diff -= 1.0
+                  new_hue = (display_pixels[active_pixel - 1] + diff / 2.0) % 1.0
+                  display_pixels[active_pixel] = new_hue 
+
+                # pixel downwards is on. pixel upwards is not on, otherwise caught by previous case.
+                elif active_pixel >= 2 and \
+                    display_pixels[active_pixel - 1] is not None and \
+                    display_pixels[active_pixel - 2] is not None:
+
+                    diff = display_pixels[active_pixel - 1] - display_pixels[active_pixel - 2]
+                    if diff > 0.5:
+                        diff -= 1.0
+                    # multiple diff up a bit to try to force the rainbowness
+                    new_hue = (display_pixels[active_pixel - 1] + (diff * end_rainbow_increase_factor)) % 1.0
+                    display_pixels[active_pixel] = new_hue 
+
+                elif active_pixel <= 47 and \
+                    display_pixels[active_pixel + 1] is not None and \
+                    display_pixels[active_pixel + 2] is not None:
+
+                    diff = display_pixels[active_pixel + 1] - display_pixels[active_pixel + 2]
+                    if diff > 0.5:
+                        diff -= 1.0
+                    new_hue = (display_pixels[active_pixel + 1] + (diff * end_rainbow_increase_factor)) % 1.0
+                    display_pixels[active_pixel] = new_hue 
+
+                # possible elif here: look inwards and outwards rather than around the spiral to
+                # find other nearby colours
+                elif inwards_hue is not None or outwards_hue is not None:
+                    if inwards_hue is not None and outwards_hue is None:
+                        display_pixels[active_pixel] = inwards_hue
+                    elif inwards_hue is None and outwards_hue is not None:
+                        display_pixels[active_pixel] = outwards_hue
+                    else:
+                        diff = inwards_hue - outwards_hue
+                        if diff > 0.5:
+                            diff -= 1.0
+                        new_hue = (outwards_hue + diff / 2.0) % 1.0
+                        display_pixels[active_pixel] = new_hue
+
+                else:  # all we can do now is pick a random hue
+                    display_pixels[active_pixel] = random.random()
+
+        else:
+            if total_lit > 30 and random.random() > blanking_probability: # some hysteresis with the off-mode equivalent to keep a decent twinkling zone, perhaps
+                display_pixels[active_pixel] = None
+ 
+            # if we're between two lit pixels, choose a hue that is
+            # part of a rainbow between the two:
+            elif active_pixel >= 1 and active_pixel <= 48 and \
+                display_pixels[active_pixel - 1] is not None and \
+                display_pixels[active_pixel + 1] is not None:
+
+                diff = (display_pixels[active_pixel + 1] - display_pixels[active_pixel - 1]) 
+                if diff > 0.5:
+                    diff -= 1.0
+                new_hue = (display_pixels[active_pixel - 1] + diff / 2.0) % 1.0
+                display_pixels[active_pixel] = new_hue 
+
+            # pixel downwards is on. pixel upwards is not on, otherwise caught by previous case.
+            elif active_pixel >= 2 and \
+                display_pixels[active_pixel - 1] is not None and \
+                display_pixels[active_pixel - 2] is not None:
+
+                diff = display_pixels[active_pixel - 1] - display_pixels[active_pixel - 2]
+                if diff > 0.5:
+                    diff -= 1.0
+                # multiple diff up a bit to try to force the rainbowness
+                new_hue = (display_pixels[active_pixel - 1] + (diff * end_rainbow_increase_factor)) % 1.0
+                display_pixels[active_pixel] = new_hue 
+
+            elif active_pixel <= 47 and \
+                display_pixels[active_pixel + 1] is not None and \
+                display_pixels[active_pixel + 2] is not None:
+
+                diff = display_pixels[active_pixel + 1] - display_pixels[active_pixel + 2]
+                if diff > 0.5:
+                    diff -= 1.0
+                new_hue = (display_pixels[active_pixel + 1] + (diff * end_rainbow_increase_factor)) % 1.0
+                display_pixels[active_pixel] = new_hue 
+
+            else:
+                # if we can't enhance the rainbowness of an existing pixel, just leave it as.
+                pass  
+                ##                display_pixels[active_pixel] = (display_pixels[active_pixel] + random.random() * 0.01) % 1.0
+
+        for pixel in range(0,50):
+            if display_pixels[pixel] is None:
+                pixels[pixel] = (0,0,0)
+            else:
+                display_hue = display_pixels[pixel]
+                (red, green, blue) = colorsys.hsv_to_rgb(display_hue, 1, 1)
+                pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
+
+        pixels.show()
+
+        # time.sleep(0.1)
+
+
 new_mode = mode14
 
 
@@ -1187,6 +1381,20 @@ def set_mode20():
 def set_mode21():
     global new_mode
     new_mode = mode21
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/22')
+def set_mode22():
+    global new_mode
+    new_mode = mode22
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/23')
+def set_mode23():
+    global new_mode
+    new_mode = mode23
     return flask.redirect("/", code=302)
 
 
