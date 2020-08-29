@@ -132,7 +132,6 @@ def mode4():
 
         swapped = False
 
-        # print("pass")
         if count == 0:
             new_pixel = random.randint(0,49)
             new_hue = random.random()
@@ -144,7 +143,6 @@ def mode4():
         p2 = p1 + 1
 
         if colours[p1] > colours[p2]:
-            # print("swap")
             tmp = colours[p1]
             colours[p1] = colours[p2]
             colours[p2] = tmp
@@ -217,7 +215,6 @@ def mode8():
           start = bottoms[b]
           end = bottoms[b+1]
           frac = (pixel - start) / (end - start)
-          # print("pixel {}: frac = {}".format(pixel, frac))
           break
       else:
         raise RuntimeError("could not find range for pixel {}".format(pixel))
@@ -265,7 +262,6 @@ def mode9():
           start = bottoms[b]
           end = bottoms[b+1]
           frac = (pixel - start) / (end - start)
-          # print("pixel {}: frac = {}".format(pixel, frac))
           break
       else:
         raise RuntimeError("could not find range for pixel {}".format(pixel))
@@ -404,8 +400,6 @@ def mode11():
         else:
           brightness = 0
 
-        # print("distance = {}, brightness = {}".format(distance, brightness))
-
         pixels[pixel] = hsv_to_neo_rgb(hue, v=brightness)
 
       pixels.show()
@@ -524,7 +518,6 @@ def pixels_for_angle(angle, loop_in):
           start = bottoms[b]
           end = bottoms[b+1]
           frac = (pixel - start) / (end - start)
-          # print("pixel {}: frac = {}".format(pixel, frac))
           break
       else:
         raise RuntimeError("could not find range for pixel {}".format(pixel))
@@ -534,7 +527,6 @@ def pixels_for_angle(angle, loop_in):
       p_angle = frac
       x = math.sin(p_angle * tau) * b
       y = math.cos(p_angle * tau) * b
-      # print("x = {}, y = {}".format(x,y))
       pixel_pos[pixel] = (x, y)
 
     distances = []
@@ -542,7 +534,6 @@ def pixels_for_angle(angle, loop_in):
     for pixel in range(0,50):
       (x1, y1) = pixel_pos[pixel]
       distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
-      # print("distances = {}".format(distances))
 
     s = sorted(distances)
     return s
@@ -578,40 +569,32 @@ def mode15():
     first = False
 
     if choice == 0:
-      # print("choice 0")
       new_particle = particle + 1
       if new_particle >= bottoms[b]:
         new_particle = bottoms[b+1]
 
     elif choice == 1:
-      # print("choice 1")
       new_particle = particle - 1  # TODO: mod
       if new_particle < bottoms[b+1]:
         new_particle = bottoms[b]-1
     elif choice == 2:
-      # print("choice 2")
       # move inwards
       # determine angle now
       if b == 0:
         # if we reach the centre, solidify
-        # print("solidifying: first = {}, old_first = {}".format(first, old_first))
         cells[particle] = 1
         new_particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
         boom = old_first
         first = True
-        # print("boom: {}".format(boom))
       else:
         b = b - 1
         new_particle = int(bottoms[b] + (bottoms[b+1] - bottoms[b])*frac)
-        # print("new particle by radius is {}".format(new_particle))
 
     if cells[new_particle] != 0: # if we're about to move onto solid, solidify
-      # print("solidifying: first = {}, old_first = {}".format(first, old_first))
       cells[particle] = 1
       particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
       boom = old_first
       first = True
-      # print("boom: {}".format(boom))
     else:
       particle = new_particle
 
@@ -625,13 +608,11 @@ def mode15():
       else:
         pixels[pixel] = (255,0,0)
 
-    # print("particle is {}".format(particle))
     pixels[particle] = (0,32,0)
 
     pixels.show()
 
     if boom:
-      # print("BOOM")
       for exponent in range(8,0,-1):
         brightness = (2 ** exponent) - 1
         for pixel in range(0,50):
@@ -718,7 +699,6 @@ def mode18():
           start = bottoms[b]
           end = bottoms[b+1]
           frac = (pixel - start) / (end - start)
-          # print("pixel {}: frac = {}".format(pixel, frac))
           break
       else:
         raise RuntimeError("could not find range for pixel {}".format(pixel))
@@ -728,7 +708,6 @@ def mode18():
       p_angle = frac
       x = math.sin(p_angle * tau) * b
       y = math.cos(p_angle * tau) * b
-      # print("x = {}, y = {}".format(x,y))
       pixel_pos[pixel] = (x, y)
 
     while not new_mode:
@@ -810,7 +789,6 @@ def mode19():
           start = bottoms[b]
           end = bottoms[b+1]
           frac = (pixel - start) / (end - start)
-          # print("pixel {}: frac = {}".format(pixel, frac))
           break
       else:
         raise RuntimeError("could not find range for pixel {}".format(pixel))
@@ -820,7 +798,6 @@ def mode19():
       p_angle = frac
       x = math.sin(p_angle * tau) * b
       y = math.cos(p_angle * tau) * b
-      # print("x = {}, y = {}".format(x,y))
       pixel_pos[pixel] = (x, y)
 
     while not new_mode:
@@ -915,33 +892,27 @@ def mode20():
     first = False
 
     if choice == 0:
-      # print("choice 0")
       new_particle = particle + 1
       if new_particle >= bottoms[b]:
         new_particle = bottoms[b+1]
 
     elif choice == 1:
-      # print("choice 1")
       new_particle = particle - 1  # TODO: mod
       if new_particle < bottoms[b+1]:
         new_particle = bottoms[b]-1
     elif choice == 2:
-      # print("choice 2")
       # move inwards
       # determine angle now
       if b == 0:
         # if we reach the centre, solidify
-        # print("solidifying: first = {}, old_first = {}".format(first, old_first))
         new_particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
         boom = old_first
         first = True
         pixels.fill( (0,0,0) )
         hue = random.random()
-        # print("boom: {}".format(boom))
       else:
         b = b - 1
         new_particle = int(bottoms[b] + (bottoms[b+1] - bottoms[b])*frac)
-        # print("new particle by radius is {}".format(new_particle))
 
     particle = new_particle
 
