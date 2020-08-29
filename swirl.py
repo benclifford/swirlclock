@@ -1120,11 +1120,11 @@ def mode24():
         green_exp = max(0, green_exp - 0.09)
         blue_exp = max(0, blue_exp - 0.09)
 
-        if random.random() < 0.05:
+        if random.random() < 0.08:
             red_exp = 1
-        if random.random() < 0.05:
+        if random.random() < 0.08:
             green_exp = 1
-        if random.random() < 0.05:
+        if random.random() < 0.08:
             blue_exp = 1
 
         time.sleep(0.03)
