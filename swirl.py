@@ -447,18 +447,6 @@ def mode14():
         (distance, pixel) = dot
         pixels[pixel] = (0,0,32)
 
-    #max_distance = 0
-    #for dot in range(0,50):
-    #    (distance, pixel) = hour_pixels[dot]
-    #    if distance > max_distance:
-    #        max_distance = distance
-
-    #for dot in range(hour,50):
-    #    (distance, pixel) = hour_pixels[dot]
-    #    # prop = dot / 50.0  # colour by ranked distance
-    #    prop = distance / max_distance  # colour by actual distance
-    #    pixels[pixel] = (0,int(gamma(prop) * 32.0),int(gamma(1-prop) * 32.0))
-
     pixels.show()
     time.sleep(1)
 
