@@ -287,42 +287,6 @@ def mode9():
           (red, green, blue) = colorsys.hsv_to_rgb(frac_hue, 1, intensity)
           pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
 
-
-    """ 
-    # set minute 
-    for pixel in range(bottoms[len(bottoms)-1],bottoms[len(bottoms)-2]):
-      for b in range(0,len(bottoms)-1):
-        if pixel < bottoms[b] and pixel >= bottoms[b+1]:
-          start = bottoms[b]
-          end = bottoms[b+1]
-          frac = (pixel - start) / (end - start)
-          # print("pixel {}: frac = {}".format(pixel, frac))
-          break
-      else:
-        raise RuntimeError("could not find range for pixel {}".format(pixel))
-
-      mins_frac = now.tm_min / 60.0
-      frac_hue = (frac + mins_frac + 0.5) % 1
-      frac2 = (frac + mins_frac + 0.5) % 1
-
-      width = 0.05
-
-      d = frac2
-      if d > width and d < (1-width):
-          intensity = 0
-      elif d >= (1-width):
-          d = 1 - d
-          intensity = (width - d) * (1/width)
-          intensity = 0.5 + intensity * 0.5
-          (red, green, blue) = colorsys.hsv_to_rgb(frac_hue, 0, intensity)
-          pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
-      else:
-          intensity = (width - d) * (1/width)
-          intensity = 0.5 + intensity * 0.5 # scale up to be quite bright
-          (red, green, blue) = colorsys.hsv_to_rgb(frac_hue, 0, intensity)
-          pixels[pixel] = ( scale(gamma(red)), scale(gamma(green)), scale(gamma(blue)) )
-    """
-      
     pixels.show()
 
     rot2 = rot2 + (1.0/42300.0 * (update_period / 0.01)) % 1
