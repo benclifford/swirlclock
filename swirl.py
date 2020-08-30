@@ -1243,7 +1243,7 @@ def mode25():
             else:
                 iterations_since_last_change += 1
 
-        if iterations_since_last_change > 50:
+        if iterations_since_last_change > 500:
             print("NO CHANGE THRESHOLD REACHED")
             iterations_since_last_change = 0
             live_pixels = [pixel for pixel in range(0,50) if state[pixel] is not None]
@@ -1263,6 +1263,41 @@ def mode25():
                     # so it's game over
                     # restart this game
                     new_mode = mode25
+
+        hues_sorted = sorted([state[n] for n in range(0,50) if state[n] is not None])
+
+        hues = [h for (h, _) in itertools.groupby(hues_sorted)]
+
+        if len(hues) > 1:
+          this_hue_n = random.randint(0, len(hues) - 1)
+
+          this_hue = hues[this_hue_n]
+          old_hue = this_hue
+          next_hue = hues[(this_hue_n + 1) % len(hues)]
+
+          diff = next_hue - this_hue
+
+          if diff > 0.5:
+              diff -= 1.0
+
+          if abs(diff) < 0.2:
+
+            if diff > 0:
+                new_hue = (this_hue - 0.001) % 1.0
+            else:
+                new_hue = (this_hue + 0.001) % 1.0
+
+
+            new_state = []
+            for n in range(0,50):
+                if state[n] == old_hue:
+                    new_state.append(new_hue)
+                else:
+                    new_state.append(state[n])
+
+            state = new_state
+
+        
 
         for pixel in range(0,50):
             if state[pixel] is None:
