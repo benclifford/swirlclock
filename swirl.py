@@ -1139,6 +1139,8 @@ def mode25():
     global new_mode
     pixels.auto_write = False
 
+    target_frac = 0.6
+
     # state = [random.random() > 0.5 for c in range(0,50)]
     state = [None for c in range(0,50)]
 
@@ -1193,10 +1195,13 @@ def mode25():
             if state[p] is not None:
                 count_on += 1
 
+        if state[active_pixel] is not None:
+            count_on += 1
+
         if state[active_pixel] is not None and count_on == 0: 
             iterations_since_last_change += 1
             pass  # leave on, but do not do colour selection
-        elif count_on >= len(ball) * 0.75:
+        elif count_on >= len(ball) * target_frac:
             # print("turning pixel off")
             if state[active_pixel] is None:
                 iterations_since_last_change += 1
@@ -1217,12 +1222,12 @@ def mode25():
                 hues_grouped = [list(it) for (h, it) in itertools.groupby(hues_sorted)]
                 hues_counted = [(len(l), l[0]) for l in hues_grouped]
                 hues_counted_sorted = sorted(hues_counted)
-                print("hues_grouped = {}".format(hues_grouped))
-                print("hues_counted_sorted = {}".format(hues_counted_sorted))
+                # print("hues_grouped = {}".format(hues_grouped))
+                # print("hues_counted_sorted = {}".format(hues_counted_sorted))
                 (last_count, _) = hues_counted_sorted[-1]
-                print("last_count = {}".format(last_count))
+                # print("last_count = {}".format(last_count))
                 minimal_hues = [hue for (count, hue) in hues_counted_sorted if count == last_count]
-                print("minimal_hues = {}".format(minimal_hues))
+                # print("minimal_hues = {}".format(minimal_hues))
                 new_hue = minimal_hues[random.randint(0, len(minimal_hues)-1)]
                 state[active_pixel] = new_hue
         else:
