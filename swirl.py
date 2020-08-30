@@ -8,6 +8,7 @@
 
 import board
 import colorsys  # from pygame
+import itertools
 import math
 import neopixel
 import random
@@ -1211,8 +1212,19 @@ def mode25():
             if ball_live == []:
                 state[active_pixel] = random.random()
             else:
-                (d1, p1) = ball_live[random.randint(0, len(ball_live)-1)]
-                state[active_pixel] = state[p1]
+                hues_live = [state[p1] for (d1, p1) in ball_live]
+                hues_sorted = sorted(hues_live)
+                hues_grouped = [list(it) for (h, it) in itertools.groupby(hues_sorted)]
+                hues_counted = [(len(l), l[0]) for l in hues_grouped]
+                hues_counted_sorted = sorted(hues_counted)
+                print("hues_grouped = {}".format(hues_grouped))
+                print("hues_counted_sorted = {}".format(hues_counted_sorted))
+                (last_count, _) = hues_counted_sorted[-1]
+                print("last_count = {}".format(last_count))
+                minimal_hues = [hue for (count, hue) in hues_counted_sorted if count == last_count]
+                print("minimal_hues = {}".format(minimal_hues))
+                new_hue = minimal_hues[random.randint(0, len(minimal_hues)-1)]
+                state[active_pixel] = new_hue
         else:
             ball_live = [(d, p) for (d, p) in ball if state[p] is not None]
             hues_live = [state[p] for (d, p) in ball_live if state[p] != state[active_pixel]]
