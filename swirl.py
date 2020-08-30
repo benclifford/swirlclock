@@ -1134,6 +1134,142 @@ def mode24():
         time.sleep(0.03)
 
 
+def mode25():
+    global new_mode
+    pixels.auto_write = False
+
+    # state = [random.random() > 0.5 for c in range(0,50)]
+    state = [None for c in range(0,50)]
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)):
+      (b, frac) = pixel_to_layer(pixel)
+
+      r = 1.0
+      p_angle = frac
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      pixel_pos[pixel] = (x, y)
+
+    iterations_since_last_change = 0
+
+    while not new_mode:
+
+        active_pixel = random.randint(0,49)
+
+        # highlight the chosen pixel
+        # pixels[active_pixel] = (255,0,0)
+        # pixels.show()
+
+        (x,y) = pixel_pos[active_pixel]
+
+        distances = []
+        for pixel in range(0,50):
+          (x1, y1) = pixel_pos[pixel]
+          distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
+        s = sorted(distances)
+
+        # print("---")
+        ball = [(d, n) for (d,n) in s if d < 1.5]
+
+        # remove self from ball
+        # print("len ball first: {}".format(len(ball)))
+        ball = [(d, n) for (d,n) in ball if n != active_pixel]
+        # print("len ball after removing self: {}".format(len(ball)))
+
+        # print("ball size: {}".format(len(ball)))
+
+        # for (d, p) in ball:
+        #    pixels[p] = (0,255,0)
+        # pixels.show()
+        # time.sleep(0.5)
+
+        # main rule:
+        # aim to have 50% of pixels on
+
+        count_on = 0
+        for (d,p) in ball:
+            if state[p] is not None:
+                count_on += 1
+
+        # print("count_on / len_ball = {} / {}".format(count_on, len(ball)))
+
+        # if count_on <= 1:
+        #     state[active_pixel] = False
+        # if count_on == 3 or count_on == 2:
+        #     state[active_pixel] = True
+        # elif count_on >= len(ball) * 0.75:
+        # elif count_on >= 4:
+        #    # turn off due to overpopulation
+        #    state[active_pixel] = False
+        #else: 
+        #    # status quo
+        #    pass  # don't change anything
+
+        if state[active_pixel] is not None and count_on == 0: 
+            iterations_since_last_change += 1
+            pass  # leave on, but do not do colour selection
+        elif count_on >= len(ball) * 0.75:
+            # print("turning pixel off")
+            if state[active_pixel] is None:
+                iterations_since_last_change += 1
+            else:
+                iterations_since_last_change = 0
+            state[active_pixel] = None
+        elif state[active_pixel] is None:
+            iterations_since_last_change = 0
+            # turn on
+            #print("turning pixel on")
+            ball_live = [(d, p) for (d, p) in ball if state[p] is not None]
+            # print("len live_ball = {}".format(len(ball_live)))
+            if ball_live == []:
+                state[active_pixel] = random.random()
+            else:
+                (d1, p1) = ball_live[random.randint(0, len(ball_live)-1)]
+                state[active_pixel] = state[p1]
+        else:
+            ball_live = [(d, p) for (d, p) in ball if state[p] is not None]
+            hues_live = [state[p] for (d, p) in ball_live if state[p] != state[active_pixel]]
+            # hues_live now has the list of colours that are not the colour of this
+            # pixel
+
+            # turn off if any nearby different colours
+            if hues_live != []:
+                state[active_pixel] = None
+                iterations_since_last_change = 0
+            else:
+                iterations_since_last_change += 1
+
+        if iterations_since_last_change > 50:
+            print("NO CHANGE THRESHOLD REACHED")
+            iterations_since_last_change = 0
+            live_pixels = [pixel for pixel in range(0,50) if state[pixel] is not None]
+            # assume some live pixels else we would be getting changes
+            if live_pixels != []:
+                p = random.randint(0, len(live_pixels)-1)
+                state[p] = None
+
+            hues_live = [state[p] for p in range(0,50) if state[p] is not None]
+            if hues_live != []:
+                # then we have some colours
+                first_hue = hues_live[0]
+                other_hues = [h for h in hues_live if h != first_hue]
+                if other_hues == []:
+                    print("Game over - restarting")
+                    # one hue has won!
+                    # so it's game over
+                    # restart this game
+                    new_mode = mode25
+
+        for pixel in range(0,50):
+            if state[pixel] is None:
+                pixels[pixel] = (0,0,0)
+            else:
+                pixels[pixel] = hsv_to_neo_rgb(state[pixel])
+
+        pixels.show()
+
+
 new_mode = mode14
 
 
@@ -1301,6 +1437,13 @@ def set_mode23():
 def set_mode24():
     global new_mode
     new_mode = mode24
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/25')
+def set_mode25():
+    global new_mode
+    new_mode = mode25
     return flask.redirect("/", code=302)
 
 
