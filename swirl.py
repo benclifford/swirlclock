@@ -1192,20 +1192,6 @@ def mode25():
             if state[p] is not None:
                 count_on += 1
 
-        # print("count_on / len_ball = {} / {}".format(count_on, len(ball)))
-
-        # if count_on <= 1:
-        #     state[active_pixel] = False
-        # if count_on == 3 or count_on == 2:
-        #     state[active_pixel] = True
-        # elif count_on >= len(ball) * 0.75:
-        # elif count_on >= 4:
-        #    # turn off due to overpopulation
-        #    state[active_pixel] = False
-        #else: 
-        #    # status quo
-        #    pass  # don't change anything
-
         if state[active_pixel] is not None and count_on == 0: 
             iterations_since_last_change += 1
             pass  # leave on, but do not do colour selection
