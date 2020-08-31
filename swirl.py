@@ -1139,7 +1139,7 @@ def mode25():
     global new_mode
     pixels.auto_write = False
 
-    target_frac = 0.6
+    target_frac = 0.5
 
     # state = [random.random() > 0.5 for c in range(0,50)]
     state = [None for c in range(0,50)]
@@ -1157,6 +1157,24 @@ def mode25():
     iterations_since_last_change = 0
 
     while not new_mode:
+        """
+        # print("====")
+        global_hues_live = [state[p1] for p1 in range(0,50) if state[p1] is not None]
+
+        if global_hues_live != []:
+            global_hues_sorted = sorted(global_hues_live)
+            global_hues_grouped = [list(it) for (h, it) in itertools.groupby(global_hues_sorted)]
+            global_hues_counted = [(len(l), l[0]) for l in global_hues_grouped]
+            global_hues_counted_sorted = sorted(global_hues_counted)
+            # print("global_hues_counted_sorted = {}".format(global_hues_counted_sorted))
+            (top_count, _) = global_hues_counted_sorted[0]
+            if top_count > 10:
+                global_maximal_hues = [hue for (count, hue) in global_hues_counted_sorted if count == top_count]
+            else:
+                global_maximal_hues = []
+        else:
+            global_maximal_hues = []
+        """
 
         active_pixel = random.randint(0,49)
 
@@ -1209,13 +1227,13 @@ def mode25():
                 iterations_since_last_change = 0
             state[active_pixel] = None
         elif state[active_pixel] is None:
-            iterations_since_last_change = 0
             # turn on
             #print("turning pixel on")
             ball_live = [(d, p) for (d, p) in ball if state[p] is not None]
             # print("len live_ball = {}".format(len(ball_live)))
             if ball_live == []:
                 state[active_pixel] = random.random()
+                iterations_since_last_change = 0
             else:
                 hues_live = [state[p1] for (d1, p1) in ball_live]
                 hues_sorted = sorted(hues_live)
@@ -1224,12 +1242,20 @@ def mode25():
                 hues_counted_sorted = sorted(hues_counted)
                 # print("hues_grouped = {}".format(hues_grouped))
                 # print("hues_counted_sorted = {}".format(hues_counted_sorted))
-                (last_count, _) = hues_counted_sorted[-1]
+                (last_count, _) = hues_counted_sorted[0]
                 # print("last_count = {}".format(last_count))
                 minimal_hues = [hue for (count, hue) in hues_counted_sorted if count == last_count]
+                # print("suppressing global_maximal_hues {}".format(global_maximal_hues))
+                # minimal_hues = [h for h in minimal_hues if h not in global_maximal_hues]
+                # print("remaining minimal hues: {}".format(minimal_hues))
+
+                if minimal_hues != []:
                 # print("minimal_hues = {}".format(minimal_hues))
-                new_hue = minimal_hues[random.randint(0, len(minimal_hues)-1)]
-                state[active_pixel] = new_hue
+                    new_hue = minimal_hues[random.randint(0, len(minimal_hues)-1)]
+                    iterations_since_last_change = 0
+                    state[active_pixel] = new_hue
+                else:
+                    iterations_since_last_change += 1
         else:
             ball_live = [(d, p) for (d, p) in ball if state[p] is not None]
             hues_live = [state[p] for (d, p) in ball_live if state[p] != state[active_pixel]]
@@ -1280,7 +1306,7 @@ def mode25():
           if diff > 0.5:
               diff -= 1.0
 
-          if abs(diff) < 0.2:
+          if abs(diff) < 0.1:
 
             if diff > 0:
                 new_hue = (this_hue - 0.001) % 1.0
