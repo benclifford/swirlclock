@@ -647,7 +647,6 @@ def mode18():
           min_dots = 3
           max_dots = 8
           ndots = max(min_dots, min(max_dots, ndots + random.randint(0,2) - 1))
-           
 
           # pick a new velocity - it should be back roughly towards the centre
           # but with a random deflection
@@ -679,7 +678,7 @@ def mode18():
 
         pixels.fill( (0,0,0) )
 
-        for dot in dots_to_light:
+        for (d, pixel) in dots_to_light:
             pixels[pixel] = hsv_to_neo_rgb(hue)
 
         pixels.show()
