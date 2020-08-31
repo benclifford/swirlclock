@@ -1135,13 +1135,18 @@ def mode24():
         time.sleep(0.03)
 
 
+
+class M25_state:
+    def __init__(self, hue):
+        self.hue = hue
+        self.born = time.time()
+
 def mode25():
     global new_mode
     pixels.auto_write = False
 
     target_frac = 0.5
 
-    # state = [random.random() > 0.5 for c in range(0,50)]
     state = [None for c in range(0,50)]
 
     pixel_pos = {}
@@ -1159,7 +1164,7 @@ def mode25():
     while not new_mode:
         """
         # print("====")
-        global_hues_live = [state[p1] for p1 in range(0,50) if state[p1] is not None]
+        global_hues_live = [state[p1].hue for p1 in range(0,50) if state[p1] is not None]
 
         if global_hues_live != []:
             global_hues_sorted = sorted(global_hues_live)
@@ -1232,10 +1237,10 @@ def mode25():
             ball_live = [(d, p) for (d, p) in ball if state[p] is not None]
             # print("len live_ball = {}".format(len(ball_live)))
             if ball_live == []:
-                state[active_pixel] = random.random()
+                state[active_pixel] = M25_state(random.random())
                 iterations_since_last_change = 0
             else:
-                hues_live = [state[p1] for (d1, p1) in ball_live]
+                hues_live = [state[p1].hue for (d1, p1) in ball_live]
                 hues_sorted = sorted(hues_live)
                 hues_grouped = [list(it) for (h, it) in itertools.groupby(hues_sorted)]
                 hues_counted = [(len(l), l[0]) for l in hues_grouped]
@@ -1253,12 +1258,12 @@ def mode25():
                 # print("minimal_hues = {}".format(minimal_hues))
                     new_hue = minimal_hues[random.randint(0, len(minimal_hues)-1)]
                     iterations_since_last_change = 0
-                    state[active_pixel] = new_hue
+                    state[active_pixel] = M25_state(new_hue)
                 else:
                     iterations_since_last_change += 1
         else:
             ball_live = [(d, p) for (d, p) in ball if state[p] is not None]
-            hues_live = [state[p] for (d, p) in ball_live if state[p] != state[active_pixel]]
+            hues_live = [state[p].hue for (d, p) in ball_live if state[p].hue != state[active_pixel].hue]
             # hues_live now has the list of colours that are not the colour of this
             # pixel
 
@@ -1278,7 +1283,7 @@ def mode25():
                 p = random.randint(0, len(live_pixels)-1)
                 state[p] = None
 
-            hues_live = [state[p] for p in range(0,50) if state[p] is not None]
+            hues_live = [state[p].hue for p in range(0,50) if state[p] is not None]
             if hues_live != []:
                 # then we have some colours
                 first_hue = hues_live[0]
@@ -1290,7 +1295,7 @@ def mode25():
                     # restart this game
                     new_mode = mode25
 
-        hues_sorted = sorted([state[n] for n in range(0,50) if state[n] is not None])
+        hues_sorted = sorted([state[n].hue for n in range(0,50) if state[n] is not None])
 
         hues = [h for (h, _) in itertools.groupby(hues_sorted)]
 
@@ -1314,22 +1319,24 @@ def mode25():
                 new_hue = (this_hue + 0.001) % 1.0
 
 
-            new_state = []
             for n in range(0,50):
-                if state[n] == old_hue:
-                    new_state.append(new_hue)
-                else:
-                    new_state.append(state[n])
+                if state[n] and state[n].hue == old_hue:
+                    state[n].hue = new_hue
 
-            state = new_state
-
-        
+        # expire pixels that haven't changed for a while
+        now = time.time()
+        for n in range(0,50):
+            if state[n]:
+                expire_time = state[n].born + 30
+                if expire_time < now:
+                    print("expire a pixel")
+                    state[n] = None
 
         for pixel in range(0,50):
             if state[pixel] is None:
                 pixels[pixel] = (0,0,0)
             else:
-                pixels[pixel] = hsv_to_neo_rgb(state[pixel])
+                pixels[pixel] = hsv_to_neo_rgb(state[pixel].hue)
 
         pixels.show()
 
