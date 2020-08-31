@@ -609,6 +609,35 @@ def mode17():
 
     time.sleep(0.1)
 
+def mode26():
+  global new_mode
+  pixels.auto_write = False
+
+  start_hue = random.random()
+  rings = [None for b in bottoms]
+
+  while not new_mode:
+
+    for ring in range(len(rings)-1, 1, -1):
+      rings[ring] = rings[ring-1]
+
+    if random.random() > 0.66:
+        rings[1] = random.random()
+    else:
+        rings[1] = None
+
+    for ring in range(1, len(rings)-1):
+      for pixel in range(bottoms[ring], bottoms[ring+1] - 1, -1):
+        if rings[ring]:
+            pixels[pixel] = hsv_to_neo_rgb(rings[ring])
+        else:
+            pixels[pixel] = (0,0,0)
+
+    pixels.show()
+
+    time.sleep(0.1)
+
+
 
 def mode18():
     global new_mode
@@ -1514,6 +1543,13 @@ def set_mode24():
 def set_mode25():
     global new_mode
     new_mode = mode25
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/26')
+def set_mode26():
+    global new_mode
+    new_mode = mode26
     return flask.redirect("/", code=302)
 
 
