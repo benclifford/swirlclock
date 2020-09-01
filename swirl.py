@@ -25,6 +25,8 @@ bottoms = [50, 49, 46, 37, 22, 0]
 
 new_mode = None
 
+disco_thread = None
+
 def scale(f):
     """ scale from 0..1 : float -> 0..255 : int"""
     try:
@@ -1369,6 +1371,45 @@ def mode25():
         pixels.show()
 
 
+
+def disco_manager():
+    global disco_thread
+    global new_mode
+
+    me = disco_thread  # assume disco thread hasn't changed since start, a tiny race condition
+
+    print("starting disco manager")
+
+    disco_modes = [mode8,
+                   mode11,
+                   mode15,
+                   mode20,
+                   mode16,
+                   mode17,
+                   mode26,
+                   mode18,
+                   mode19,
+                   mode21,
+                   mode24]
+
+    remaining_disco_modes = disco_modes.copy()
+
+    while disco_thread == me:
+        new_mode_num = random.randint(0, len(remaining_disco_modes) - 1)
+        new_mode = remaining_disco_modes[new_mode_num]
+        print("selected new disco mode {}".format(new_mode))
+
+        remaining_disco_modes.remove(new_mode)
+
+        if remaining_disco_modes == []:
+            remaining_disco_modes = disco_modes.copy()
+
+        time.sleep(180)
+
+    print("ended disco manager")
+
+
+
 new_mode = mode14
 
 
@@ -1550,6 +1591,22 @@ def set_mode25():
 def set_mode26():
     global new_mode
     new_mode = mode26
+    return flask.redirect("/", code=302)
+
+
+@app.route('/disco/on')
+def disco_on():
+    global disco_thread
+    if not disco_thread:
+        disco_thread = threading.Thread(target=disco_manager)
+        disco_thread.start()
+    return flask.redirect("/", code=302)
+
+
+@app.route('/disco/off')
+def disco_off():
+    global disco_thread
+    disco_thread = None
     return flask.redirect("/", code=302)
 
 
