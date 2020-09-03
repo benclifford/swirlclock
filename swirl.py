@@ -1427,7 +1427,7 @@ def mode27():
       y = math.cos(p_angle * tau) * b
       pixel_pos[pixel] = (x, y)
 
-    k1 = random.random() + 1.1
+    k1 = random.random() + 1.01
 
     hue = random.random()
     rgb = hsv_to_neo_rgb(hue)
@@ -1437,7 +1437,11 @@ def mode27():
 
     num_extra = random.randint(0,3)
 
+
     while not new_mode:
+
+        theta = (time.time() % 3600.0) * 20
+
         pixels.fill( (0,0,0) )
         x = math.cos(theta*k1) * 4.0
         y = math.sin(theta) * 4.0
@@ -1454,9 +1458,6 @@ def mode27():
         for n in range(0, num_extra):
             (d, p) = s[n+1]
             pixels[p] = compl_rgb
-
-        theta = theta + 0.3
-        # print("pixel {} near x={} y={}".format(p, x, y))
 
         pixels.show()
         # time.sleep(0.001)
