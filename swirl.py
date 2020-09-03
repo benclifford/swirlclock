@@ -1391,7 +1391,9 @@ def disco_manager():
                    mode19,
                    mode21,
                    mode24,
-                   mode27]
+                   mode27,
+                   mode28,
+                   mode29]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -1462,6 +1464,89 @@ def mode27():
 
         pixels.show()
         # time.sleep(0.001)
+
+
+def mode28():
+    global new_mode
+    pixels.auto_write = False
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    hue = random.random()
+
+    h = 0
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)):
+      (b, frac) = pixel_to_layer(pixel)
+
+      r = 1.0
+      p_angle = frac
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      pixel_pos[pixel] = (x, y)
+
+
+    while not new_mode:
+
+        for p in range(0,50):
+            (x, y) = pixel_pos[p]
+
+            d = min(1, abs(y - h) / 5.0)
+
+            pixels[p] = hsv_to_neo_rgb(hue, v = d)
+
+   
+        pixels.show()
+
+        h = min(4, max(-4, h + random.random() - 0.5))
+
+
+def mode29():
+    """This could be merged with mode28 because only hue
+    choice differs"""
+    global new_mode
+    pixels.auto_write = False
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    hue1 = random.random()
+
+    # make the 2nd hue is at least 0.15 away in both directions
+    hue2 = (hue1 + 0.15 + random.random()*0.7) % 1.0
+
+    h = 0
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)):
+      (b, frac) = pixel_to_layer(pixel)
+
+      r = 1.0
+      p_angle = frac
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      pixel_pos[pixel] = (x, y)
+
+
+    while not new_mode:
+
+        for p in range(0,50):
+            (x, y) = pixel_pos[p]
+
+            d = min(1, abs(y - h) / 5.0)
+
+            if y > h:
+                hue = hue1
+            else:
+                hue = hue2
+
+            pixels[p] = hsv_to_neo_rgb(hue, v = d)
+
+   
+        pixels.show()
+
+        h = min(4, max(-4, h + random.random() - 0.5))
+
 
 new_mode = mode14
 
@@ -1651,6 +1736,20 @@ def set_mode26():
 def set_mode27():
     global new_mode
     new_mode = mode27
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/28')
+def set_mode28():
+    global new_mode
+    new_mode = mode28
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/29')
+def set_mode29():
+    global new_mode
+    new_mode = mode29
     return flask.redirect("/", code=302)
 
 
