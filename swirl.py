@@ -1409,6 +1409,57 @@ def disco_manager():
     print("ended disco manager")
 
 
+def mode27():
+    global new_mode
+    pixels.auto_write = False
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    theta = 0
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)):
+      (b, frac) = pixel_to_layer(pixel)
+
+      r = 1.0
+      p_angle = frac
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      pixel_pos[pixel] = (x, y)
+
+    k1 = random.random() + 1.1
+
+    hue = random.random()
+    rgb = hsv_to_neo_rgb(hue)
+
+    compl_hue = (hue+0.5) % 1.0
+    compl_rgb = hsv_to_neo_rgb(compl_hue)
+
+    num_extra = random.randint(0,3)
+
+    while not new_mode:
+        pixels.fill( (0,0,0) )
+        x = math.cos(theta*k1) * 4.0
+        y = math.sin(theta) * 4.0
+
+        distances = []
+        for pixel in range(0,50):
+            (x1, y1) = pixel_pos[pixel]
+            distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
+
+        s = sorted(distances)
+
+        (d, p) = s[0]
+        pixels[p] = rgb
+        for n in range(0, num_extra):
+            (d, p) = s[n+1]
+            pixels[p] = compl_rgb
+
+        theta = theta + 0.3
+        # print("pixel {} near x={} y={}".format(p, x, y))
+
+        pixels.show()
+        # time.sleep(0.001)
 
 new_mode = mode14
 
@@ -1591,6 +1642,13 @@ def set_mode25():
 def set_mode26():
     global new_mode
     new_mode = mode26
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/27')
+def set_mode27():
+    global new_mode
+    new_mode = mode27
     return flask.redirect("/", code=302)
 
 
