@@ -135,7 +135,7 @@ def mode3():
 
 def mode31():
     global new_mode
-    pixels.auto_write = True
+    pixels.auto_write = False
 
     hue = random.random()
 
@@ -145,10 +145,11 @@ def mode31():
     for p in range(0,50):
         brightness.append(b)
         b = max(0.1, min(1.0, b + random.random() * 0.4 - 0.2))
-   
+
     while not new_mode:
         for p in range(0,50):
             pixels[p] = hsv_to_neo_rgb(hue, s=0.75, v=brightness[p]) 
+        pixels.show()
 
         # rotate through all hues every 3 hours
         hue = (hue + 1.0 / (3.0 * 60.0 * 60.0) ) % 1.0
