@@ -1437,7 +1437,6 @@ def disco_manager():
                    mode24,
                    mode27,
                    mode28,
-                   mode29,
                    mode30]
 
     remaining_disco_modes = disco_modes.copy()
@@ -1818,13 +1817,6 @@ def set_mode27():
 def set_mode28():
     global new_mode
     new_mode = mode28
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/29')
-def set_mode29():
-    global new_mode
-    new_mode = mode29
     return flask.redirect("/", code=302)
 
 
