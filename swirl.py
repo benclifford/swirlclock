@@ -1436,9 +1436,10 @@ def mode27():
     rgb = hsv_to_neo_rgb(hue)
 
     compl_hue = (hue+0.5) % 1.0
-    compl_rgb = hsv_to_neo_rgb(compl_hue)
+    compl_rgb = hsv_to_neo_rgb(compl_hue, v=0.3 + random.random() * 0.7)
 
-    num_extra = random.randint(0,3)
+    num_first = random.randint(1,2)
+    num_extra = random.randint(num_first,5)
 
 
     while not new_mode:
@@ -1456,10 +1457,12 @@ def mode27():
 
         s = sorted(distances)
 
-        (d, p) = s[0]
-        pixels[p] = rgb
-        for n in range(0, num_extra):
-            (d, p) = s[n+1]
+        for n in range(0, num_first):
+            (d, p) = s[n]
+            pixels[p] = rgb
+
+        for n in range(num_first, num_extra):
+            (d, p) = s[n]
             pixels[p] = compl_rgb
 
         pixels.show()
