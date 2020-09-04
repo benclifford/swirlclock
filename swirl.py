@@ -1393,7 +1393,8 @@ def disco_manager():
                    mode24,
                    mode27,
                    mode28,
-                   mode29]
+                   mode29,
+                   mode30]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -1505,7 +1506,7 @@ def mode28():
         h = min(4, max(-4, h + random.random() - 0.5))
 
 
-def mode29():
+def mode30():
     """This could be merged with mode28 because only hue
     choice differs"""
     global new_mode
@@ -1549,6 +1550,10 @@ def mode29():
         pixels.show()
 
         h = min(4, max(-4, h + random.random() - 0.5))
+        if h == 4:  # hue1 is invisible, pick new
+            hue1 = (hue2 + 0.15 + random.random()*0.7) % 1.0
+        if h == -4: # hue2 is invisible, pick new
+            hue2 = (hue1 + 0.15 + random.random()*0.7) % 1.0
 
 
 new_mode = mode14
@@ -1753,6 +1758,13 @@ def set_mode28():
 def set_mode29():
     global new_mode
     new_mode = mode29
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/30')
+def set_mode30():
+    global new_mode
+    new_mode = mode30
     return flask.redirect("/", code=302)
 
 
