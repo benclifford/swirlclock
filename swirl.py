@@ -410,7 +410,7 @@ def mode13():
       time.sleep(1)
 
 
-def mode14():
+def mode14(display_seconds = False):
   global new_mode
   pixels.auto_write = False
 
@@ -421,19 +421,23 @@ def mode14():
     now = time.localtime()
     hour = now.tm_hour % 12
     minute = now.tm_min
+    second = now.tm_sec
 
     hour_angle = (0.5 + hour/12.0 + minute/60.0/12.0) % 1.0
     minute_angle = (0.5 + minute/60.0) % 1.0
+    second_angle = (0.5 + second/60.0) % 1.0
 
     mins_scaled = int(minute / 15 + 1)
 
     hour_pixels = pixels_for_angle(hour_angle, 1)
     minute_pixels = pixels_for_angle(minute_angle, 0)
-    minute_pixels = minute_pixels[0:mins_scaled]
+    second_pixels = pixels_for_angle(second_angle, 0)
 
+    minute_pixels = minute_pixels[0:mins_scaled]
     for dot in minute_pixels:
         (distance, pixel) = dot
         hour_pixels = [(d,p) for (d,p) in hour_pixels if p != pixel]
+        second_pixels = [(d,p) for (d,p) in second_pixels if p != pixel]
 
     if hour == 0:
         hour_dot_count = 12
@@ -441,6 +445,11 @@ def mode14():
         hour_dot_count = hour
 
     hour_pixels = hour_pixels[0:hour_dot_count]
+    for dot in hour_pixels:
+        (distance, pixel) = dot
+        second_pixels = [(d,p) for (d,p) in second_pixels if p != pixel]
+
+    second_pixels = second_pixels[0:1]
     
     for dot in hour_pixels:
         (distance, pixel) = dot
@@ -451,8 +460,20 @@ def mode14():
         (distance, pixel) = dot
         pixels[pixel] = (0,0,32)
 
+    for dot in minute_pixels:
+        (distance, pixel) = dot
+        pixels[pixel] = (0,0,32)
+
+    if display_seconds:
+        for dot in second_pixels:
+            (distance, pixel) = dot
+            if now.tm_sec % 2 == 0:
+                pixels[pixel] = (0,32,0)
+            else:
+                pixels[pixel] = (0,1,0)
+
     pixels.show()
-    time.sleep(1)
+    time.sleep(0.05)
 
 
 def pixels_for_angle(angle, loop_in):
