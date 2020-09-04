@@ -133,6 +133,28 @@ def mode3():
         time.sleep(1)
 
 
+def mode31():
+    global new_mode
+    pixels.auto_write = True
+
+    hue = random.random()
+
+    brightness = []
+
+    b = 0.5
+    for p in range(0,50):
+        brightness.append(b)
+        b = max(0.1, min(1.0, b + random.random() * 0.4 - 0.2))
+   
+    while not new_mode:
+        for p in range(0,50):
+            pixels[p] = hsv_to_neo_rgb(hue, s=0.75, v=brightness[p]) 
+
+        # rotate through all hues every 3 hours
+        hue = (hue + 1.0 / (3.0 * 60.0 * 60.0) ) % 1.0
+        time.sleep(0.5)
+
+
 def mode4():
     global new_mode
     pixels.auto_write = False
@@ -1786,6 +1808,13 @@ def set_mode29():
 def set_mode30():
     global new_mode
     new_mode = mode30
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/31')
+def set_mode31():
+    global new_mode
+    new_mode = mode31
     return flask.redirect("/", code=302)
 
 
