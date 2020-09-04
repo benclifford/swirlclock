@@ -1600,7 +1600,30 @@ def mode30():
             hue2 = (hue1 + 0.15 + random.random()*0.7) % 1.0
 
 
-new_mode = mode14
+def mode32():
+    global new_mode
+    pixels.auto_write = False
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    ro = random.random()
+    bo = random.random()
+    go = random.random()
+
+    while not new_mode:
+        for p in range(0,50):
+            theta = p/50.0 * tau
+            r = int(128 + 127 * math.sin(ro + theta))
+            g = int(128 + 127 * math.sin(bo + theta * 1.1))
+            b = int(128 + 127 * math.sin(go + theta * (-1.06)))
+            pixels[p] = (r, g, b) 
+            ro = (ro + 0.0013) % tau
+            go = (go + 0.0011) % tau
+            bo = (bo + 0.0009) % tau
+        pixels.show()
+        time.sleep(0.05)
+
+new_mode = mode32
 
 
 app = flask.Flask(__name__)
@@ -1817,6 +1840,14 @@ def set_mode31():
     global new_mode
     new_mode = mode31
     return flask.redirect("/", code=302)
+
+
+@app.route('/mode/32')
+def set_mode32():
+    global new_mode
+    new_mode = mode32
+    return flask.redirect("/", code=302)
+
 
 
 @app.route('/disco/on')
