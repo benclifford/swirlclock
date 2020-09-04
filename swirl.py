@@ -1400,7 +1400,7 @@ def disco_manager():
     while disco_thread == me:
         new_mode_num = random.randint(0, len(remaining_disco_modes) - 1)
         new_mode = remaining_disco_modes[new_mode_num]
-        print("selected new disco mode {}".format(new_mode))
+        print("selected new disco mode {} from {} possibilities".format(new_mode, len(remaining_disco_modes)))
 
         remaining_disco_modes.remove(new_mode)
 
@@ -1446,8 +1446,8 @@ def mode27():
         theta = (time.time() % 3600.0) * 20
 
         pixels.fill( (0,0,0) )
-        x = math.cos(theta*k1) * 4.0
-        y = math.sin(theta) * 4.0
+        x = math.cos(theta*k1) * 3.5
+        y = math.sin(theta) * 3.5
 
         distances = []
         for pixel in range(0,50):
