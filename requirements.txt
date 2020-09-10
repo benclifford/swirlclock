@@ -1,4 +1,4 @@
 RPI.GPIO
-dafruit-blinka
+adafruit-blinka
 adafruit-circuitpython-neopixel
 Flask

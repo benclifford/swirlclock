@@ -38,16 +38,23 @@ The driver code needs to know how many LEDs are in each loop of the
 spiral, and that is configured in the 'bottoms' variable
 defined in swirl.py
 
+Installing the code
+===================
+
+On a clean Raspberry Pi OS install:
+
+```
+sudo apt-get update
+sudo apt-get install python3-pip
+sudo pip3 install -r requirements.txt
+```
 
 Running the code
 ================
-Install necessary prereqs (you'll have to figure that out yourself
-for now)
-
-As root, run:
+Run:
 
 ```
-FLASK_APP=swirl.py flask run -h 0 -p 80
+sudo FLASK_APP=swirl.py flask run -h 0 -p 80
 
 ```
 
