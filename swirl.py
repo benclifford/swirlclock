@@ -408,10 +408,19 @@ def mode11():
 
 def mode13():
 
-    global new_mode
-    pixels.auto_write = False
+  global new_mode
+  pixels.auto_write = False
 
-    pixels.fill( (0,0,0) )
+  toggle = True
+  while not new_mode:
+
+    if toggle:
+      pixels.fill( (0,0,32) )
+    else:
+      pixels.fill( (0,0,0) )
+
+    toggle = not toggle
+
     for b in range(1,len(bottoms)):
       p = bottoms[b]
       pixels[p] = (255,0,0)
@@ -426,11 +435,9 @@ def mode13():
         pixels[int(p)] = (0,255,0)
         pixels[int(p)+1] = (0,255,0)
     
-
     pixels.show()
 
-    while not new_mode:
-      time.sleep(1)
+    time.sleep(0.3)
 
 
 def mode14(display_seconds = False):
