@@ -1683,9 +1683,9 @@ def mode34():
   g_ang = random.random()
   b_ang = random.random()
 
-  r_speed = random.random() * 0.1 - 0.05
-  g_speed = random.random() * 0.1 - 0.05
-  b_speed = random.random() * 0.1 - 0.05
+  r_speed = random.random() * 0.05 - 0.025
+  g_speed = random.random() * 0.05 - 0.025
+  b_speed = random.random() * 0.05 - 0.025
 
   while not new_mode:
 
@@ -1714,7 +1714,7 @@ def mode34():
     g_ang = (g_ang + g_speed) % 1.0
     b_ang = (b_ang + b_speed) % 1.0
 
-    time.sleep(0.1)
+    time.sleep(0.05)
 
 
 def mode35():
