@@ -1448,7 +1448,9 @@ def disco_manager():
                    mode34,
                    mode30,
                    mode35,
-                   mode36]
+                   mode36,
+                   mode38,
+                   mode39]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -1799,6 +1801,95 @@ def mode36():
       time.sleep(0.025)
 
 
+def mode38():
+    global new_mode
+    pixels.auto_write = False
+
+    rot = 0
+
+    hue_1 = random.random()
+    hue_2 = random.random()
+    hue_3 = random.random()
+
+    hue_speed_1 = random.random() * 0.01
+    hue_speed_2 = random.random() * 0.01
+    hue_speed_3 = random.random() * 0.01
+
+    while not new_mode:
+      for pixel in range(0,50):
+        (b, pixel_rot) = pixel_to_layer(pixel)
+
+        v_frac = float(b) / float(len(bottoms))
+
+        frac = (pixel_rot + rot + v_frac / 1.5) % 1.0
+
+        if frac < 2.0/6.0:
+            (h, v) = (hue_1, v_frac)
+        elif frac < 4.0/6.0:
+            (h, v) = (hue_2, v_frac)
+        else:
+            (h, v) = (hue_3, v_frac)
+
+        pixels[pixel] = hsv_to_neo_rgb(h, v=v)
+
+      pixels.show()
+
+      rot = rot + 0.025
+
+      hue_1 = (hue_1 + hue_speed_1) % 1.0
+      hue_2 = (hue_2 + hue_speed_2) % 1.0
+      hue_3 = (hue_3 + hue_speed_3) % 1.0
+
+      time.sleep(0.025)
+
+
+def mode39():
+    global new_mode
+    pixels.auto_write = False
+
+    rot = 0
+
+    hue_1 = random.random()
+    hue_2 = random.random()
+    hue_3 = random.random()
+
+    hue_speed_1 = random.random() * 0.01
+    hue_speed_2 = random.random() * 0.01
+    hue_speed_3 = random.random() * 0.01
+
+    while not new_mode:
+      for pixel in range(0,50):
+        (b, pixel_rot) = pixel_to_layer(pixel)
+
+        v_frac = float(b) / float(len(bottoms))
+
+        frac = (pixel_rot + rot) % 1.0
+
+        if frac < 2.0/6.0:
+            k = 1 - frac / (2.0/6.0)
+            (h, v) = (hue_1, v_frac * k)
+        elif frac < 4.0/6.0:
+            k = 1- (frac - 2.0/6.0) / (2.0/6.0)
+            (h, v) = (hue_2, v_frac * k)
+        else:
+            k = 1- (frac - 4.0/6.0) / (2.0/6.0)
+            (h, v) = (hue_3, v_frac * k)
+
+        pixels[pixel] = hsv_to_neo_rgb(h, v=v)
+
+      pixels.show()
+
+      rot = rot + 0.025
+
+      hue_1 = (hue_1 + hue_speed_1) % 1.0
+      hue_2 = (hue_2 + hue_speed_2) % 1.0
+      hue_3 = (hue_3 + hue_speed_3) % 1.0
+
+      time.sleep(0.025)
+
+
+
+
 def mode37():
     global new_mode
     pixels.auto_write = False
@@ -2060,6 +2151,20 @@ def set_mode35():
 def set_mode36():
     global new_mode
     new_mode = mode36
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/38')
+def set_mode38():
+    global new_mode
+    new_mode = mode38
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/39')
+def set_mode39():
+    global new_mode
+    new_mode = mode39
     return flask.redirect("/", code=302)
 
 
