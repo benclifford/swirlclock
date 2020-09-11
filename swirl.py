@@ -1446,7 +1446,8 @@ def disco_manager():
                    mode28,
                    mode33,
                    mode34,
-                   mode30]
+                   mode30,
+                   mode35]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -1715,7 +1716,40 @@ def mode34():
 
     time.sleep(0.1)
 
-     
+
+def mode35():
+  global new_mode
+  pixels.auto_write = False
+
+  start_hue = random.random()
+  cells = [(start_hue, 0.1) for n in range(0,50)]
+
+  while not new_mode:
+
+    for pixel in range(49,0,-1):
+      cells[pixel] = cells[pixel - 1]
+
+    (old_hue, old_v) = cells[0]
+
+    new_hue = old_hue
+
+    # deliberately biased downwards so we hit 0 more
+    new_v = min(1.0, max(0, old_v + random.random() * 0.4 - 0.2))
+    # print("new_v = {}".format(new_v))
+
+    if new_v == 0:
+      new_hue = random.random()
+
+
+    cells[0] = (new_hue, new_v)
+
+    for pixel in range(0,50):
+      (h, v) = cells[pixel]
+      pixels[pixel] = hsv_to_neo_rgb(h, v=v)
+    pixels.show()
+    time.sleep(0.01)
+
+
 new_mode = mode32
 
 
@@ -1946,6 +1980,13 @@ def set_mode33():
 def set_mode34():
     global new_mode
     new_mode = mode34
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/35')
+def set_mode35():
+    global new_mode
+    new_mode = mode35
     return flask.redirect("/", code=302)
 
 
