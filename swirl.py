@@ -1450,7 +1450,8 @@ def disco_manager():
                    mode35,
                    mode36,
                    mode38,
-                   mode39]
+                   mode39,
+                   mode40]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -1507,6 +1508,72 @@ def mode27():
         pixels.fill( (0,0,0) )
         x = math.cos(theta*k1) * 3.5
         y = math.sin(theta) * 3.5
+
+        distances = []
+        for pixel in range(0,50):
+            (x1, y1) = pixel_pos[pixel]
+            distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
+
+        s = sorted(distances)
+
+        for n in range(0, num_first):
+            (d, p) = s[n]
+            pixels[p] = rgb
+
+        for n in range(num_first, num_extra):
+            (d, p) = s[n]
+            pixels[p] = compl_rgb
+
+        pixels.show()
+        # time.sleep(0.001)
+
+
+
+def mode40():
+    global new_mode
+    pixels.auto_write = False
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    theta = 0
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)):
+      (b, frac) = pixel_to_layer(pixel)
+
+      r = 1.0
+      p_angle = frac
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      pixel_pos[pixel] = (x, y)
+
+    k1 = random.random()*2 + 0.7
+
+    hue = random.random()
+    rgb = hsv_to_neo_rgb(hue)
+
+    compl_hue = (hue+0.5) % 1.0
+    compl_rgb = hsv_to_neo_rgb(compl_hue, v=0.3 + random.random() * 0.7)
+
+    num_first = 1 # random.randint(1,2)
+    num_extra = num_first # random.randint(num_first,5)
+
+    timescale = random.random() + 1
+
+    star_factor = random.random() * 5 + 2
+
+    while not new_mode:
+
+        theta = (time.time() % 3600.0) * (timescale * 10 + 10)
+
+        pixels.fill( (0,0,0) )
+
+        scale_r = 4
+
+        r = math.cos(theta * star_factor) * scale_r/2.5 + scale_r/2.0 + 0.5
+
+        x = math.cos(theta) * r
+        y = math.sin(theta) * r
 
         distances = []
         for pixel in range(0,50):
@@ -2174,6 +2241,14 @@ def set_mode37():
     global new_mode
     new_mode = mode37
     return flask.redirect("/", code=302)
+
+
+@app.route('/mode/40')
+def set_mode40():
+    global new_mode
+    new_mode = mode40
+    return flask.redirect("/", code=302)
+
 
 
 @app.route('/disco/on')
