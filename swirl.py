@@ -1498,10 +1498,11 @@ def mode27():
     num_first = random.randint(1,2)
     num_extra = random.randint(num_first,5)
 
+    timescale = random.random()
 
     while not new_mode:
 
-        theta = (time.time() % 3600.0) * 20
+        theta = (time.time() % 3600.0) * (timescale * 10 + 10)
 
         pixels.fill( (0,0,0) )
         x = math.cos(theta*k1) * 3.5
