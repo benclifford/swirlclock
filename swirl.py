@@ -1799,6 +1799,23 @@ def mode36():
       time.sleep(0.025)
 
 
+def mode37():
+    global new_mode
+    pixels.auto_write = False
+    while not new_mode:
+
+        for pixel in range(0,50):
+
+            intensity = pixel / 50.0
+
+            v = scale(gamma(intensity, gamma_factor=4))
+
+            pixels[pixel] = (v,v,v) 
+
+        pixels.show()
+        time.sleep(1)
+
+
 new_mode = mode32
 
 
@@ -2043,6 +2060,13 @@ def set_mode35():
 def set_mode36():
     global new_mode
     new_mode = mode36
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/37')
+def set_mode37():
+    global new_mode
+    new_mode = mode37
     return flask.redirect("/", code=302)
 
 
