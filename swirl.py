@@ -1487,7 +1487,7 @@ def mode27():
       y = math.cos(p_angle * tau) * b
       pixel_pos[pixel] = (x, y)
 
-    k1 = random.random() + 1.01
+    k1 = random.random()*2 + 0.7
 
     hue = random.random()
     rgb = hsv_to_neo_rgb(hue)
