@@ -1444,6 +1444,8 @@ def disco_manager():
                    mode24,
                    mode27,
                    mode28,
+                   mode33,
+                   mode34,
                    mode30]
 
     remaining_disco_modes = disco_modes.copy()
@@ -1629,6 +1631,91 @@ def mode32():
         pixels.show()
         time.sleep(0.05)
 
+
+def mode33():
+  
+  global new_mode
+  pixels.auto_write = False
+  pixels.fill( (0,0,0) )
+  pixels.show()
+
+
+  while not new_mode:
+
+    r_ang = random.random()
+    g_ang = random.random()
+    b_ang = random.random()
+
+    r_width = random.random() * 0.15 + 0.05
+    g_width = random.random() * 0.15 + 0.05
+    b_width = random.random() * 0.15 + 0.05
+
+    for pixel in range(0,50):
+      (b, frac) = pixel_to_layer(pixel)
+      frac_red = (frac + r_ang) % 1
+      frac_green = (frac + g_ang) % 1
+      frac_blue = (frac + b_ang) % 1
+
+      def f(pos, width):
+        if pos > width and pos < (1-width):
+            intensity = 0
+        elif pos >= (1-width):
+            pos = 1 - pos
+            intensity = (width - pos) * (1/width)
+        else:
+            intensity = (width - pos) * (1/width)
+        return int(intensity * 255)
+
+      pixels[pixel] = ( f(frac_red, r_width), f(frac_green, g_width), f(frac_blue, b_width) )
+    pixels.show()
+    time.sleep(0.1)
+     
+
+def mode34():
+  
+  global new_mode
+  pixels.auto_write = False
+  pixels.fill( (0,0,0) )
+  pixels.show()
+
+  r_ang = random.random()
+  g_ang = random.random()
+  b_ang = random.random()
+
+  r_speed = random.random() * 0.1 - 0.05
+  g_speed = random.random() * 0.1 - 0.05
+  b_speed = random.random() * 0.1 - 0.05
+
+  while not new_mode:
+
+    for pixel in range(0,50):
+      (b, frac) = pixel_to_layer(pixel)
+      frac_red = (frac + r_ang) % 1
+      frac_green = (frac + g_ang) % 1
+      frac_blue = (frac + b_ang) % 1
+
+      width = 0.15
+
+      def f(pos):
+        if pos > width and pos < (1-width):
+            intensity = 0
+        elif pos >= (1-width):
+            pos = 1 - pos
+            intensity = (width - pos) * (1/width)
+        else:
+            intensity = (width - pos) * (1/width)
+        return int(intensity * 255)
+
+      pixels[pixel] = ( f(frac_red), f(frac_green), f(frac_blue) )
+    pixels.show()
+
+    r_ang = (r_ang + r_speed) % 1.0
+    g_ang = (g_ang + g_speed) % 1.0
+    b_ang = (b_ang + b_speed) % 1.0
+
+    time.sleep(0.1)
+
+     
 new_mode = mode32
 
 
@@ -1847,6 +1934,19 @@ def set_mode32():
     new_mode = mode32
     return flask.redirect("/", code=302)
 
+
+@app.route('/mode/33')
+def set_mode33():
+    global new_mode
+    new_mode = mode33
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/34')
+def set_mode34():
+    global new_mode
+    new_mode = mode34
+    return flask.redirect("/", code=302)
 
 
 @app.route('/disco/on')
