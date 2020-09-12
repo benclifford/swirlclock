@@ -1452,7 +1452,8 @@ def disco_manager():
                    mode38,
                    mode39,
                    mode40,
-                   mode41]
+                   mode41,
+                   mode42]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -1994,6 +1995,43 @@ def mode41():
     rot_speed = random.random() * 0.05 + 0.025
 
     while not new_mode:
+        pixel_pos = {}
+        for pixel in list(range(0,50)):
+          (b, frac) = pixel_to_layer(pixel)
+
+          r = 1.0
+          p_angle = (frac + rot) % 1.0
+          x = math.sin(p_angle * tau) * b
+          y = math.cos(p_angle * tau) * b
+          pixel_pos[pixel] = (x, y)
+
+
+        for p in range(0,50):
+            (x, y) = pixel_pos[p]
+
+            d = min(1, abs(y - h) / 2.0)
+
+            pixels[p] = hsv_to_neo_rgb(hue, v = (1-d))
+        pixels.show()
+
+        rot = (rot + rot_speed) % 1.0
+        time.sleep(0.05)
+ 
+
+def mode42():
+
+    global new_mode
+    pixels.auto_write = False
+
+    h = 0.5
+
+
+    rot = 0
+    rot_speed = 0
+
+    while not new_mode:
+        hue = random.random()
+        h = random.random() * 8.0 - 4.0
         pixel_pos = {}
         for pixel in list(range(0,50)):
           (b, frac) = pixel_to_layer(pixel)
