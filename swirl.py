@@ -1604,18 +1604,21 @@ def mode28():
 
     h = 0
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
-
+    rot = random.random()
+    rot_speed = 0.001 * random.random()
 
     while not new_mode:
+        pixel_pos = {}
+        for pixel in list(range(0,50)):
+          (b, frac) = pixel_to_layer(pixel)
+
+          r = 1.0
+          p_angle = (frac + rot) % 1.0
+          x = math.sin(p_angle * tau) * b
+          y = math.cos(p_angle * tau) * b
+          pixel_pos[pixel] = (x, y)
+
+
 
         for p in range(0,50):
             (x, y) = pixel_pos[p]
@@ -1628,6 +1631,8 @@ def mode28():
         pixels.show()
 
         h = min(4, max(-4, h + random.random() - 0.5))
+
+        rot = (rot + rot_speed) % 1.0
 
 
 def mode30():
