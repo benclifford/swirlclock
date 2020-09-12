@@ -1451,7 +1451,8 @@ def disco_manager():
                    mode36,
                    mode38,
                    mode39,
-                   mode40]
+                   mode40,
+                   mode41]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -1980,6 +1981,42 @@ def mode37():
         time.sleep(1)
 
 
+def mode41():
+
+    global new_mode
+    pixels.auto_write = False
+
+    h = 0.5
+
+    hue = random.random()
+
+    rot = random.random()
+    rot_speed = random.random() * 0.05 + 0.025
+
+    while not new_mode:
+        pixel_pos = {}
+        for pixel in list(range(0,50)):
+          (b, frac) = pixel_to_layer(pixel)
+
+          r = 1.0
+          p_angle = (frac + rot) % 1.0
+          x = math.sin(p_angle * tau) * b
+          y = math.cos(p_angle * tau) * b
+          pixel_pos[pixel] = (x, y)
+
+
+        for p in range(0,50):
+            (x, y) = pixel_pos[p]
+
+            d = min(1, abs(y - h) / 2.0)
+
+            pixels[p] = hsv_to_neo_rgb(hue, v = (1-d))
+        pixels.show()
+
+        rot = (rot + rot_speed) % 1.0
+        time.sleep(0.05)
+ 
+
 new_mode = mode32
 
 
@@ -2254,6 +2291,12 @@ def set_mode40():
     new_mode = mode40
     return flask.redirect("/", code=302)
 
+
+@app.route('/mode/41')
+def set_mode41():
+    global new_mode
+    new_mode = mode41
+    return flask.redirect("/", code=302)
 
 
 @app.route('/disco/on')
