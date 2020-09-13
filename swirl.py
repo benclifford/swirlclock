@@ -1454,7 +1454,8 @@ def disco_manager():
                    mode40,
                    mode41,
                    mode42,
-                   mode43]
+                   mode43,
+                   mode44]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2131,7 +2132,80 @@ def mode43():
 
         rot = (rot + rot_speed) % 1.0
         time.sleep(0.05)
- 
+
+
+def mode44():
+    global new_mode
+    pixels.auto_write = False
+
+    n = 4
+
+    base_hue = random.random()
+
+    # (x,y,hue, count, xv, yv)
+    state = [(random.random()*8.0 - 4.0, random.random()*8.0 - 4.0, base_hue + float(i) / float(n), 7, random.random(), random.random()) for i in range(0,n)]
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)):
+      (b, frac) = pixel_to_layer(pixel)
+      r = 1.0
+      p_angle = frac
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      pixel_pos[pixel] = (x, y)
+
+
+    while not new_mode:
+        pixels.fill( (0, 0, 0) )
+        used_pixels = []
+
+        for (x,y,hue,count,xv,yv) in state:
+       
+
+          distances = []
+          for pixel in range(0,50):
+            (x1, y1) = pixel_pos[pixel]
+            distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
+
+          s = sorted(distances)
+
+          def snd(t):
+            (a, b) = t
+            return b
+
+          s = [e for e in s if snd(e) not in used_pixels]
+
+          # print("count = {}".format(count))
+          for p in range(0, count):
+            (d, pix) = s[p]
+            # print("pixel = {}".format(pix))
+            pixels[pix] = hsv_to_neo_rgb(hue)
+            used_pixels.append(pix)
+
+        # print("used_pixels = {}".format(used_pixels))
+        pixels.show()
+
+
+        for target in range(0, n):
+          (x,y,hue,count,xv,yv) = state[target]
+
+          v_k = 0.2
+          new_x = x + xv * v_k
+          new_y = y + yv * v_k
+
+          if new_x > 5 or new_x < -5:
+              new_x = x
+              xv = -xv
+
+          if new_y > 5 or new_y < -5:
+              new_y = y
+              yv = -yv
+
+          state[target] = (new_x, new_y, hue, count, xv, yv)
+
+        time.sleep(0.02)
+
+
 
 new_mode = mode32
 
@@ -2426,6 +2500,13 @@ def set_mode42():
 def set_mode43():
     global new_mode
     new_mode = mode43
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/44')
+def set_mode44():
+    global new_mode
+    new_mode = mode44
     return flask.redirect("/", code=302)
 
 
