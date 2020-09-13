@@ -1453,7 +1453,8 @@ def disco_manager():
                    mode39,
                    mode40,
                    mode41,
-                   mode42]
+                   mode42,
+                   mode43]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2053,6 +2054,83 @@ def mode42():
 
         rot = (rot + rot_speed) % 1.0
         time.sleep(0.05)
+
+
+def mode43():
+
+    global new_mode
+    pixels.auto_write = False
+
+    h = 0.5
+
+    display_pixels = [None for n in range(0,50)]
+
+    rot = 0
+    rot_speed = 0
+
+    hue0 = random.random()
+    hue1 = (hue0 + 0.333) % 1.0
+    hue2 = (hue1 + 0.333) % 1.0
+
+    while not new_mode:
+        skip = False
+        # h = random.random() * 8.0 - 4.0
+        pos = random.randint(0,12)
+        if pos == 0:
+          h = 3
+          hue = hue0
+        elif pos == 1:
+          h = 0
+          hue = hue1
+        elif pos == 2:
+          h = -3
+          hue = hue2
+        else:
+          skip = True
+
+        if not skip:
+          pixel_pos = {}
+          for pixel in list(range(0,50)):
+            (b, frac) = pixel_to_layer(pixel)
+
+            r = 1.0
+            p_angle = (frac + rot) % 1.0
+            x = math.sin(p_angle * tau) * b
+            y = math.cos(p_angle * tau) * b
+            pixel_pos[pixel] = (x, y)
+
+
+          for p in range(0,50):
+              (x, y) = pixel_pos[p]
+
+              d = min(1, abs(y - h) / 2.0)
+
+              v = 1-d
+              if v > 0:
+                display_pixels[p] = (hue, v)
+
+        for pixel in range(0,50):
+            if display_pixels[pixel] is None:
+                pixels[pixel] = (0,0,0)
+            else:
+                (hue_dp, value_dp) = display_pixels[pixel]
+                pixels[pixel] = hsv_to_neo_rgb(hue_dp, v=value_dp)
+
+
+        pixels.show()
+
+        for pixel in range(0,50):
+          if display_pixels[pixel] is not None:
+            (display_hue, value) = display_pixels[pixel]
+            new_value = value - 0.05
+            if new_value <= 0:
+              display_pixels[pixel] = None
+            else:
+              display_pixels[pixel] = (display_hue, new_value)
+
+
+        rot = (rot + rot_speed) % 1.0
+        time.sleep(0.05)
  
 
 new_mode = mode32
@@ -2334,6 +2412,20 @@ def set_mode40():
 def set_mode41():
     global new_mode
     new_mode = mode41
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/42')
+def set_mode42():
+    global new_mode
+    new_mode = mode42
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/43')
+def set_mode43():
+    global new_mode
+    new_mode = mode43
     return flask.redirect("/", code=302)
 
 
