@@ -2207,6 +2207,42 @@ def mode44():
 
 
 
+def mode45():
+    global new_mode
+    pixels.auto_write = False
+
+    k = 0
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)):
+      (b, frac) = pixel_to_layer(pixel)
+      r = 1.0
+      p_angle = frac
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      pixel_pos[pixel] = (x, y)
+
+
+    while not new_mode:
+
+        for p in range(0,50):
+
+            (b, frac) = pixel_to_layer(p)
+
+            red = scale(gamma(0.5 + 0.5 * math.sin(k*1.1 + tau * float(b) / float(len(bottoms)))))
+            green = scale(gamma(0.5 + 0.5 * math.sin(k*1.2 + tau * frac)))
+
+            (x,y) = pixel_pos[p]
+            blue = scale(gamma(0.5 + 0.5 * math.sin(k*1.3 + tau * (x + 6.0) / 12.0)))
+
+            pixels[p] = (red, green, blue)
+
+        k = k + 0.002
+        pixels.show()
+        time.sleep(0.02)
+
+
+
 new_mode = mode32
 
 
@@ -2507,6 +2543,13 @@ def set_mode43():
 def set_mode44():
     global new_mode
     new_mode = mode44
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/45')
+def set_mode45():
+    global new_mode
+    new_mode = mode45
     return flask.redirect("/", code=302)
 
 
