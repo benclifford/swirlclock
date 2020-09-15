@@ -2229,11 +2229,17 @@ def mode45():
 
             (b, frac) = pixel_to_layer(p)
 
-            red = scale(gamma(0.5 + 0.5 * math.sin(k*1.1 + tau * float(b) / float(len(bottoms)))))
-            green = scale(gamma(0.5 + 0.5 * math.sin(k*1.2 + tau * frac)))
+            red = scale(gamma(0.5 + 0.5 * math.sin(k*1.1 + tau * float(b) / float(len(bottoms)-1))))
+
+            b_prop = float(b) / float(len(bottoms) - 1)
+            v1 = b_prop * (0.5 + 0.5 * math.sin(k*1.2 + tau * frac))
+            v2 = 1 - b_prop
+            fade_frac = 0.5 + 0.5 * math.sin(k/5.0)
+            val = fade_frac * v1 + (1-fade_frac) * v2
+            green = scale(gamma( val ))
 
             (x,y) = pixel_pos[p]
-            blue = scale(gamma(0.5 + 0.5 * math.sin(k*1.3 + tau * (x + 6.0) / 12.0)))
+            blue = scale(gamma(0.5 + 0.25 * math.sin(k*1.4 + 1.5 * tau * (y + 6.0) / 12.0) + 0.25 * math.sin(k*1.3 + 1.5 * tau * (x + 6.0) / 12.0)))
 
             pixels[p] = (red, green, blue)
 
