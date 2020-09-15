@@ -1455,7 +1455,8 @@ def disco_manager():
                    mode41,
                    mode42,
                    mode43,
-                   mode44]
+                   mode44,
+                   mode46]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2206,8 +2207,13 @@ def mode44():
         time.sleep(0.02)
 
 
-
 def mode45():
+    parameterised_rgb_swirl(delay=0.02, k_step=0.002, active_blue=True)
+
+def mode46():
+    parameterised_rgb_swirl(delay=0, k_step=0.02, active_blue=False)
+
+def parameterised_rgb_swirl(*, delay, k_step, active_blue):
     global new_mode
     pixels.auto_write = False
 
@@ -2238,14 +2244,17 @@ def mode45():
             val = fade_frac * v1 + (1-fade_frac) * v2
             green = scale(gamma( val ))
 
-            (x,y) = pixel_pos[p]
-            blue = scale(gamma(0.5 + 0.25 * math.sin(k*1.4 + 1.5 * tau * (y + 6.0) / 12.0) + 0.25 * math.sin(k*1.3 + 1.5 * tau * (x + 6.0) / 12.0)))
+            if active_blue:
+                (x,y) = pixel_pos[p]
+                blue = scale(gamma(0.5 + 0.25 * math.sin(k*1.4 + 1.5 * tau * (y + 6.0) / 12.0) + 0.25 * math.sin(k*1.3 + 1.5 * tau * (x + 6.0) / 12.0)))
+            else:
+                blue = 0
 
             pixels[p] = (red, green, blue)
 
-        k = k + 0.002
+        k = k + k_step
         pixels.show()
-        time.sleep(0.02)
+        time.sleep(delay)
 
 
 
@@ -2556,6 +2565,13 @@ def set_mode44():
 def set_mode45():
     global new_mode
     new_mode = mode45
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/46')
+def set_mode46():
+    global new_mode
+    new_mode = mode46
     return flask.redirect("/", code=302)
 
 
