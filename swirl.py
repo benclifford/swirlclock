@@ -1457,7 +1457,8 @@ def disco_manager():
                    mode43,
                    mode44,
                    mode46,
-                   mode47]
+                   mode47,
+                   mode48]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2293,6 +2294,55 @@ def mode47():
         time.sleep(delay)
 
 
+def mode48():
+    global new_mode
+    pixels.auto_write = False
+
+    k = float(random.randint(0,100)) # 100 is just some arbitrary max... would be better to work out where the three phase contacts co-incide again and use that range (and mod it there for better precision in the loop too)
+    k_step = 0.5
+    delay = 0.02
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)):
+      (b, frac) = pixel_to_layer(pixel)
+      r = 1.0
+      p_angle = frac
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      pixel_pos[pixel] = (x, y)
+
+    def f(x):
+      x = x / 5.0
+      x = x % 4.0
+
+      if x>1.0:
+          return 0
+      elif x>0.5:  # x = 0.5 .. 1.0
+          return 0.5 - (x - 0.5)
+      else: # x = 0 .. 0.5
+          return x
+
+    ang1 = random.random() * tau
+    ang2 = (ang1 + tau / 3.0) % tau
+    ang3 = (ang2 + tau / 3.0) % tau
+
+    while not new_mode:
+
+        for p in range(0,50):
+
+            (b, frac) = pixel_to_layer(p)
+            (x, y) = pixel_pos[p]
+
+            red = scale(gamma( f(k * 1.03 + x * math.sin(ang1) + y*math.cos(ang1) )))
+            green = scale(gamma( f(k * 1.07 + x * math.sin(ang2) + y * math.cos(ang2))))
+            blue = scale(gamma( f(k * 1.11 + x * math.sin(ang3) + y * math.cos(ang3))))
+
+            pixels[p] = (red, green, blue)
+
+        k = k + k_step
+        pixels.show()
+        time.sleep(delay)
+
 
 new_mode = mode32
 
@@ -2615,6 +2665,13 @@ def set_mode46():
 def set_mode47():
     global new_mode
     new_mode = mode47
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/48')
+def set_mode48():
+    global new_mode
+    new_mode = mode48
     return flask.redirect("/", code=302)
 
 
