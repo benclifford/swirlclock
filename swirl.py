@@ -1458,7 +1458,8 @@ def disco_manager():
                    mode44,
                    mode46,
                    mode47,
-                   mode48]
+                   mode48,
+                   mode49]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2209,6 +2210,94 @@ def mode44():
         time.sleep(0.02)
 
 
+def mode49():
+    global new_mode
+    pixels.auto_write = False
+
+    display_pixels = [None for pixel in range(0,50)]
+
+    n = 4
+
+    base_hue = random.random()
+
+    # (x,y,hue, count, xv, yv)
+    state = [(random.random()*8.0 - 4.0, random.random()*8.0 - 4.0, base_hue + float(i) / float(n), 7, random.random(), random.random()) for i in range(0,n)]
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)):
+      (b, frac) = pixel_to_layer(pixel)
+      r = 1.0
+      p_angle = frac
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      pixel_pos[pixel] = (x, y)
+
+
+    while not new_mode:
+        pixels.fill( (0, 0, 0) )
+        used_pixels = []
+
+        for (x,y,hue,count,xv,yv) in state:
+       
+
+          distances = []
+          for pixel in range(0,50):
+            (x1, y1) = pixel_pos[pixel]
+            distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
+
+          s = sorted(distances)
+
+          def snd(t):
+            (a, b) = t
+            return b
+
+          s = [e for e in s if snd(e) not in used_pixels]
+
+          # print("count = {}".format(count))
+          for p in range(0, count):
+            (d, pix) = s[p]
+            display_pixels[pix] = (hue, 1.0 - min(1.0, d/8.0))
+            used_pixels.append(pix)
+
+        for pixel in range(0,50):
+            if display_pixels[pixel] is None:
+                pixels[pixel] = (0,0,0)
+            else:
+                (hue_dp, value_dp) = display_pixels[pixel]
+                pixels[pixel] = hsv_to_neo_rgb(hue_dp, v=value_dp)
+
+        pixels.show()
+
+        for pixel in range(0,50):
+          if display_pixels[pixel] is not None:
+            (display_hue, value) = display_pixels[pixel]
+            new_value = value - 0.05
+            if new_value <= 0:
+              display_pixels[pixel] = None
+            else:
+              display_pixels[pixel] = (display_hue, new_value)
+
+
+        for target in range(0, n):
+          (x,y,hue,count,xv,yv) = state[target]
+
+          v_k = 0.2
+          new_x = x + xv * v_k
+          new_y = y + yv * v_k
+
+          if new_x > 5 or new_x < -5:
+              new_x = x
+              xv = -xv
+
+          if new_y > 5 or new_y < -5:
+              new_y = y
+              yv = -yv
+
+          state[target] = (new_x, new_y, hue, count, xv, yv)
+
+        time.sleep(0.02)
+
+
 def mode45():
     parameterised_rgb_swirl(delay=0.02, k_step=0.002, active_blue=True)
 
@@ -2677,6 +2766,14 @@ def set_mode48():
     global new_mode
     new_mode = mode48
     return flask.redirect("/", code=302)
+
+
+@app.route('/mode/49')
+def set_mode49():
+    global new_mode
+    new_mode = mode49
+    return flask.redirect("/", code=302)
+
 
 
 @app.route('/disco/on')
