@@ -2267,6 +2267,10 @@ def mode47():
     k_step = 0.1
     delay = 0
 
+    k_scale_1 = 1 + random.random()
+    k_scale_2 = 1 + random.random()
+    k_scale_3 = 1 + random.random()
+
     pixel_pos = {}
     for pixel in list(range(0,50)):
       (b, frac) = pixel_to_layer(pixel)
@@ -2284,8 +2288,8 @@ def mode47():
             (x, y) = pixel_pos[p]
 
             red = scale(gamma(0.5 + 0.5 * math.sin(k + x)))
-            green = scale(gamma(0.5 + 0.5 * math.sin(k*1.1 + x)))
-            blue = scale(gamma(0.5 + 0.5 * math.sin(k*1.2 + x)))
+            green = scale(gamma(0.5 + 0.5 * math.sin(k*k_scale_1 + x)))
+            blue = scale(gamma(0.5 + 0.5 * math.sin(k*k_scale_2 + x)))
 
             pixels[p] = (red, green, blue)
 
