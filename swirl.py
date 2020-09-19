@@ -2493,14 +2493,7 @@ def mode51():
 
       hue = random.random()
  
-      x = -100
-      y = -100
-
-      # keep inside the radius 5 circle
-      while math.sqrt(x ** 2 + y **2) > 5 **2:
-
-        x = random.random() * 8 - 4
-        y = random.random() * 8 - 4
+      (x, y) = random_in_radius(5)
 
       for p in range(0,50):
 
@@ -2540,18 +2533,14 @@ def mode51():
 
 
 def random_in_radius(r):
+    """Pick a random point inside the radius r circle"""
+    while True:
 
-    x = -100
-    y = -100
+      x = random.random() * 2*r - r
+      y = random.random() * 2*r - r
 
-    # keep inside the radius r circle
-    while math.sqrt(x ** 2 + y **2) > r **2:
-
-      x = random.random() * 8 - 4
-      y = random.random() * 8 - 4
-
-
-    return (x,y)
+      if math.sqrt(x ** 2 + y **2) <= r **2:
+        return (x,y)
 
 def mode52():
     global new_mode
@@ -2569,7 +2558,7 @@ def mode52():
     centre_info = []
 
     for centres in range(0,3):
-      (x,y) = random_in_radius(5)
+      (x,y) = random_in_radius(4)
       hue = random.random()
 
       centre_info.append( (x, y, hue, 1.0) )
@@ -2625,7 +2614,7 @@ def mode52():
       else:
         del centre_info[0]
 
-        (x,y) = random_in_radius(5)
+        (x,y) = random_in_radius(4)
         hue = random.random()
         centre_info.append( (x, y, hue, 1.0) )
 
