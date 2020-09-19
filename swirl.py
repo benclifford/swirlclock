@@ -514,8 +514,19 @@ def pixels_for_angle(angle, loop_in):
 
     pixel_pos = generate_pixel_pos(extra_pixels=[base_pixelish])
 
-    distances = []
     (x, y) = pixel_pos[base_pixelish]
+
+    return distances_from_point(x, y, pixel_pos=pixel_pos)
+
+
+def distances_from_point(x, y, *, pixel_pos):
+    """Return a sorted list of pixels by distance from the specified
+    point, the list being tuples (distance, pixel number).
+
+    pixel_pos should come from generate_pixel_pos.
+    """
+
+    distances = []
     for pixel in range(0,50):
       (x1, y1) = pixel_pos[pixel]
       distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
@@ -755,13 +766,7 @@ def mode18():
           x = x * rescale
           y = y * rescale
 
-        # compute nearest pixels
-
-        distances = []
-        for pixel in range(0,50):
-          (x1, y1) = pixel_pos[pixel]
-          distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
-        s = sorted(distances)
+        s = distances_from_point(x, y, pixel_pos = pixel_pos)
 
         dots_to_light = s[0:ndots]
 
@@ -826,13 +831,7 @@ def mode19():
           x = x * rescale
           y = y * rescale
 
-        # compute nearest pixels
-
-        distances = []
-        for pixel in range(0,50):
-          (x1, y1) = pixel_pos[pixel]
-          distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
-        s = sorted(distances)
+        s = distances_from_point(x,y,pixel_pos=pixel_pos)
 
         dots_to_light = s[0:ndots]
 
@@ -1245,11 +1244,7 @@ def mode25():
 
         (x,y) = pixel_pos[active_pixel]
 
-        distances = []
-        for pixel in range(0,50):
-          (x1, y1) = pixel_pos[pixel]
-          distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
-        s = sorted(distances)
+        s = distances_from_point(x, y, pixel_pos=pixel_pos)
 
         # print("---")
         ball = [(d, n) for (d,n) in s if d < 1.5]
@@ -1487,12 +1482,7 @@ def mode27():
         x = math.cos(theta*k1) * 3.5
         y = math.sin(theta) * 3.5
 
-        distances = []
-        for pixel in range(0,50):
-            (x1, y1) = pixel_pos[pixel]
-            distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
-
-        s = sorted(distances)
+        s = distances_from_point(x, y, pixel_pos=pixel_pos)
 
         for n in range(0, num_first):
             (d, p) = s[n]
@@ -1545,12 +1535,7 @@ def mode40():
         x = math.cos(theta) * r
         y = math.sin(theta) * r
 
-        distances = []
-        for pixel in range(0,50):
-            (x1, y1) = pixel_pos[pixel]
-            distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
-
-        s = sorted(distances)
+        s = distances_from_point(x, y, pixel_pos = pixel_pos)
 
         for n in range(0, num_first):
             (d, p) = s[n]
@@ -2024,12 +2009,7 @@ def mode44():
         for (x,y,hue,count,xv,yv) in state:
        
 
-          distances = []
-          for pixel in range(0,50):
-            (x1, y1) = pixel_pos[pixel]
-            distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
-
-          s = sorted(distances)
+          s = distances_from_point(x, y, pixel_pos = pixel_pos)
 
           def snd(t):
             (a, b) = t
@@ -2088,14 +2068,8 @@ def mode49():
         used_pixels = []
 
         for (x,y,hue,count,xv,yv) in state:
-       
 
-          distances = []
-          for pixel in range(0,50):
-            (x1, y1) = pixel_pos[pixel]
-            distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
-
-          s = sorted(distances)
+          s = distances_from_point(x, y, pixel_pos = pixel_pos)
 
           def snd(t):
             (a, b) = t
