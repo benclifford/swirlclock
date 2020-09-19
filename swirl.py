@@ -2606,6 +2606,9 @@ def mode52():
 
       pixels.show()
 
+      # i think this fading is unnecessary for this particular mode
+      # because all the fading is done by the centre_info intensity
+      # value and display_pixels is regerenated each frame...
       for pixel in range(0,50):
           if display_pixels[pixel] is not None:
             (display_hue, value) = display_pixels[pixel]
