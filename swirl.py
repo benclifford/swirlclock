@@ -612,23 +612,51 @@ def mode15():
 
 
 def mode16():
+    iterator_spiral(iterator=generate_mode16(), delay=0.05)
+
+
+def generate_mode16():
+    hue = random.random()
+
+    while True:
+        hue = (hue + random.random() * 0.1 - 0.05) % 1.0
+        yield hsv_to_neo_rgb(hue)
+
+
+def iterator_spiral(*, iterator, delay):
   global new_mode
   pixels.auto_write = False
 
-  start_hue = random.random()
-  cells = [start_hue for n in range(0,50)]
+  ps = [(0,0,0) for n in range(0,50)]
 
   while not new_mode:
-
     for pixel in range(49,0,-1):
-      cells[pixel] = cells[pixel - 1]
+      ps[pixel] = ps[pixel-1]
 
-    cells[0] = (cells[0] + (random.random() * 0.1 - 0.05)) % 1.0
+    ps[0] = next(iterator)
 
     for pixel in range(0,50):
-      pixels[pixel] = hsv_to_neo_rgb(cells[pixel])
+      pixels[pixel] = ps[pixel]
+
     pixels.show()
-    time.sleep(0.05)
+    time.sleep(delay)
+
+
+def mode35():
+    iterator_spiral(iterator=generate_mode35(), delay=0.01)
+
+
+def generate_mode35():
+    hue = random.random()
+    v = 0.1
+
+    while True:
+        # deliberately biased downwards so we hit 0 more
+        v = min(1.0, max(0, v + random.random() * 0.4 - 0.2))
+        if v == 0:
+            hue = random.random()
+
+        yield hsv_to_neo_rgb(hue, v=v)
 
 
 def mode17():
@@ -1718,39 +1746,6 @@ def mode34():
     b_ang = (b_ang + b_speed) % 1.0
 
     time.sleep(0.05)
-
-
-def mode35():
-  global new_mode
-  pixels.auto_write = False
-
-  start_hue = random.random()
-  cells = [(start_hue, 0.1) for n in range(0,50)]
-
-  while not new_mode:
-
-    for pixel in range(49,0,-1):
-      cells[pixel] = cells[pixel - 1]
-
-    (old_hue, old_v) = cells[0]
-
-    new_hue = old_hue
-
-    # deliberately biased downwards so we hit 0 more
-    new_v = min(1.0, max(0, old_v + random.random() * 0.4 - 0.2))
-    # print("new_v = {}".format(new_v))
-
-    if new_v == 0:
-      new_hue = random.random()
-
-
-    cells[0] = (new_hue, new_v)
-
-    for pixel in range(0,50):
-      (h, v) = cells[pixel]
-      pixels[pixel] = hsv_to_neo_rgb(h, v=v)
-    pixels.show()
-    time.sleep(0.01)
 
 
 def mode36():
