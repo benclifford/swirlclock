@@ -817,18 +817,8 @@ def mode19():
             display_pixels[pixel] = (hue, 1)
 
         render_hv_fadepixel(pixels, display_pixels)
-
-        pixels.show()
-
-        for pixel in range(0,50):
-          if display_pixels[pixel] is not None:
-            (display_hue, value) = display_pixels[pixel]
-            new_value = value - 0.0075
-            if new_value <= 0:
-              display_pixels[pixel] = None
-            else:
-              display_pixels[pixel] = (display_hue, new_value)
-
+        fade_hv_fadepixel(display_pixels, 0.0075)
+        
         time.sleep(0.01)
 
 def mode20():
@@ -2018,16 +2008,7 @@ def mode43():
                 display_pixels[p] = (hue, v)
 
         render_hv_fadepixel(pixels, display_pixels)
-
-        for pixel in range(0,50):
-          if display_pixels[pixel] is not None:
-            (display_hue, value) = display_pixels[pixel]
-            new_value = value - 0.05
-            if new_value <= 0:
-              display_pixels[pixel] = None
-            else:
-              display_pixels[pixel] = (display_hue, new_value)
-
+        fade_hv_fadepixel(display_pixels, 0.05)
 
         rot = (rot + rot_speed) % 1.0
         time.sleep(0.05)
@@ -2139,16 +2120,7 @@ def mode49():
             used_pixels.append(pix)
 
         render_hv_fadepixel(pixel, display_pixels)
-
-        for pixel in range(0,50):
-          if display_pixels[pixel] is not None:
-            (display_hue, value) = display_pixels[pixel]
-            new_value = value - 0.05
-            if new_value <= 0:
-              display_pixels[pixel] = None
-            else:
-              display_pixels[pixel] = (display_hue, new_value)
-
+        fade_hv_fadepixel(display_pixels, 0.05)
 
         for target in range(0, n):
           (x,y,hue,count,xv,yv) = state[target]
@@ -2345,15 +2317,7 @@ def mode51():
             display_pixels[p] = (hue, v)
 
       render_hv_fadepixel(pixels, display_pixels)
-
-      for pixel in range(0,50):
-          if display_pixels[pixel] is not None:
-            (display_hue, value) = display_pixels[pixel]
-            new_value = value - 0.05
-            if new_value <= 0:
-              display_pixels[pixel] = None
-            else:
-              display_pixels[pixel] = (display_hue, new_value)
+      fade_hv_fadepixel(display_pixels, 0.05)
 
       time.sleep(0.05)
 
@@ -2402,6 +2366,19 @@ def render_hv_fadepixel(pixels, display_pixels):
     pixels.show()
 
 
+def fade_hv_fadepixel(display_pixels, amount):
+
+      for pixel in range(0,50):
+          if display_pixels[pixel] is not None:
+            (display_hue, value) = display_pixels[pixel]
+            new_value = value - amount
+            if new_value <= 0:
+              display_pixels[pixel] = None
+            else:
+              display_pixels[pixel] = (display_hue, new_value)
+
+
+
 def mode52():
     global new_mode
     pixels.auto_write = False
@@ -2441,17 +2418,11 @@ def mode52():
 
       render_hv_fadepixel(pixels, display_pixels)
 
+
       # i think this fading is unnecessary for this particular mode
       # because all the fading is done by the centre_info intensity
       # value and display_pixels is regerenated each frame...
-      for pixel in range(0,50):
-          if display_pixels[pixel] is not None:
-            (display_hue, value) = display_pixels[pixel]
-            new_value = value - 0.05
-            if new_value <= 0:
-              display_pixels[pixel] = None
-            else:
-              display_pixels[pixel] = (display_hue, new_value)
+      fade_hv_fadepixel(display_pixels, 0.05)
 
       (ox, oy, ohue, ointensity) = centre_info[0]
       new_intensity = max(0, ointensity - 0.05)
