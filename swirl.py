@@ -2111,7 +2111,6 @@ def mode49():
 
           s = [e for e in s if snd(e) not in used_pixels]
 
-          # print("count = {}".format(count))
           for p in range(0, count):
             (d, pix) = s[p]
             display_pixels[pix] = (hue, 1.0 - min(1.0, d/8.0))
