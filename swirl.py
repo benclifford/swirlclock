@@ -1460,7 +1460,9 @@ def disco_manager():
                    mode47,
                    mode48,
                    mode49,
-                   mode50]
+                   mode50,
+                   mode51,
+                   mode52]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2471,6 +2473,163 @@ def mode50():
       pixels.show()
       time.sleep(0.3)
 
+
+def mode51():
+    global new_mode
+    pixels.auto_write = False
+
+    display_pixels = [None for pixel in range(0,50)]
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)):
+      (b, frac) = pixel_to_layer(pixel)
+      r = 1.0
+      p_angle = frac
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      pixel_pos[pixel] = (x, y)
+
+    while not new_mode:
+
+      hue = random.random()
+ 
+      x = -100
+      y = -100
+
+      # keep inside the radius 5 circle
+      while math.sqrt(x ** 2 + y **2) > 5 **2:
+
+        x = random.random() * 8 - 4
+        y = random.random() * 8 - 4
+
+      for p in range(0,50):
+
+        (x1, y1) = pixel_pos[p]
+
+        d = math.sqrt( (x1 - x) ** 2 + (y1 - y) ** 2)
+
+        v = 1-min(1,math.sqrt(d)/2.5)
+
+        opix = display_pixels[p]
+        if opix is None: 
+          display_pixels[p] = (hue, v)
+        else:
+          (oh, ov) = display_pixels[p]
+          if v > ov:
+            display_pixels[p] = (hue, v)
+
+      for pixel in range(0,50):
+          if display_pixels[pixel] is None:
+              pixels[pixel] = (0,0,0)
+          else:
+              (hue_dp, value_dp) = display_pixels[pixel]
+              pixels[pixel] = hsv_to_neo_rgb(hue_dp, v=value_dp)
+
+      pixels.show()
+
+      for pixel in range(0,50):
+          if display_pixels[pixel] is not None:
+            (display_hue, value) = display_pixels[pixel]
+            new_value = value - 0.05
+            if new_value <= 0:
+              display_pixels[pixel] = None
+            else:
+              display_pixels[pixel] = (display_hue, new_value)
+
+      time.sleep(0.05)
+
+
+def random_in_radius(r):
+
+    x = -100
+    y = -100
+
+    # keep inside the radius r circle
+    while math.sqrt(x ** 2 + y **2) > r **2:
+
+      x = random.random() * 8 - 4
+      y = random.random() * 8 - 4
+
+
+    return (x,y)
+
+def mode52():
+    global new_mode
+    pixels.auto_write = False
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)):
+      (b, frac) = pixel_to_layer(pixel)
+      r = 1.0
+      p_angle = frac
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      pixel_pos[pixel] = (x, y)
+
+    centre_info = []
+
+    for centres in range(0,3):
+      (x,y) = random_in_radius(5)
+      hue = random.random()
+
+      centre_info.append( (x, y, hue, 1.0) )
+
+    while not new_mode:
+
+      display_pixels = [None for pixel in range(0,50)]
+
+      for (x,y,hue,intensity) in centre_info:
+
+        for p in range(0,50):
+
+          (x1, y1) = pixel_pos[p]
+
+          d = math.sqrt( (x1 - x) ** 2 + (y1 - y) ** 2)
+
+          v = 1-min(1,math.sqrt(d)/2.5)
+          v *= intensity
+
+          opix = display_pixels[p]
+          if opix is None: 
+            display_pixels[p] = (hue, v)
+          else:
+            (oh, ov) = display_pixels[p]
+            if v > ov:
+              display_pixels[p] = (hue, v)
+
+      for pixel in range(0,50):
+          if display_pixels[pixel] is None:
+              pixels[pixel] = (0,0,0)
+          else:
+              (hue_dp, value_dp) = display_pixels[pixel]
+              pixels[pixel] = hsv_to_neo_rgb(hue_dp, v=value_dp)
+
+      pixels.show()
+
+      for pixel in range(0,50):
+          if display_pixels[pixel] is not None:
+            (display_hue, value) = display_pixels[pixel]
+            new_value = value - 0.05
+            if new_value <= 0:
+              display_pixels[pixel] = None
+            else:
+              display_pixels[pixel] = (display_hue, new_value)
+
+      (ox, oy, ohue, ointensity) = centre_info[0]
+      new_intensity = max(0, ointensity - 0.05)
+      if new_intensity > 0:
+        centre_info[0] = (ox, oy, ohue, new_intensity)
+      else:
+        del centre_info[0]
+
+        (x,y) = random_in_radius(5)
+        hue = random.random()
+        centre_info.append( (x, y, hue, 1.0) )
+
+      time.sleep(0.05)
+
+
+
 new_mode = mode32
 
 
@@ -2813,6 +2972,20 @@ def set_mode49():
 def set_mode50():
     global new_mode
     new_mode = mode50
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/51')
+def set_mode51():
+    global new_mode
+    new_mode = mode51
+    return flask.redirect("/", code=302)
+
+
+@app.route('/mode/52')
+def set_mode52():
+    global new_mode
+    new_mode = mode52
     return flask.redirect("/", code=302)
 
 
