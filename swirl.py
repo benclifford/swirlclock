@@ -216,9 +216,6 @@ def mode7():
     global new_mode
     pixels.auto_write = False
 
-    pixels.fill( (0,0,0) )
-    pixels.show()
-
     for pixel in range(0,50):
       (b, frac) = pixel_to_layer(pixel)
       pixels[pixel] = hsv_to_neo_rgb(frac)
