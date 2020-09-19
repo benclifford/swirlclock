@@ -2082,7 +2082,7 @@ def mode49():
             display_pixels[pix] = (hue, 1.0 - min(1.0, d/8.0))
             used_pixels.append(pix)
 
-        render_hv_fadepixel(pixel, display_pixels)
+        render_hv_fadepixel(pixels, display_pixels)
         fade_hv_fadepixel(display_pixels, 0.05)
 
         for target in range(0, n):
