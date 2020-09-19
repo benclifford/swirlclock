@@ -125,11 +125,20 @@ def mode2():
 
 
 def mode3():
+    mode_solid( (255, 0, 32) )
+
+
+def mode6():
+    mode_solid( (0, 0, 0) )
+
+
+def mode_solid(rgb):
+
     global new_mode
     pixels.auto_write = True
     
     while not new_mode:
-        pixels.fill( (255,0,32) )
+        pixels.fill( rgb )
         time.sleep(1)
 
 
@@ -200,15 +209,6 @@ def mode4():
 def mode5():
     global new_mode
     while not new_mode:
-        time.sleep(1)
-
-
-def mode6():
-    global new_mode
-    pixels.auto_write = True
-    
-    while not new_mode:
-        pixels.fill( (0,0,0) )
         time.sleep(1)
 
 
