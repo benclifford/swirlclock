@@ -516,15 +516,7 @@ def pixels_for_angle(angle, loop_in):
     end = bottoms[len(bottoms) - 2 - loop_in]
     base_pixelish = start + (end-start) * angle  # almost a pixel, but not rounded
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)) + [base_pixelish]:
-      (b, frac) = pixel_to_layer(pixel)
-
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
+    pixel_pos = generate_pixel_pos(extra_pixels=[base_pixelish])
 
     distances = []
     (x, y) = pixel_pos[base_pixelish]
@@ -708,16 +700,7 @@ def mode18():
     xv = velocity_mag + random.random() * velocity_mag
     yv = velocity_mag + random.random() * velocity_mag
 
-
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
+    pixel_pos = generate_pixel_pos()
 
     while not new_mode:
         x = x + xv
@@ -789,15 +772,7 @@ def mode19():
     yv = velocity_mag + random.random() * velocity_mag
 
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
+    pixel_pos = generate_pixel_pos()
 
     while not new_mode:
         x = x + xv
@@ -1230,15 +1205,7 @@ def mode25():
 
     state = [None for c in range(0,50)]
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
+    pixel_pos = generate_pixel_pos()
 
     iterations_since_last_change = 0
 
@@ -1489,15 +1456,7 @@ def mode27():
 
     theta = 0
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
+    pixel_pos = generate_pixel_pos()
 
     k1 = random.random()*2 + 0.7
 
@@ -1548,15 +1507,7 @@ def mode40():
 
     theta = 0
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
+    pixel_pos = generate_pixel_pos()
 
     k1 = random.random()*2 + 0.7
 
@@ -1619,17 +1570,8 @@ def mode28():
     rot_speed = 0.001 * random.random()
 
     while not new_mode:
-        pixel_pos = {}
-        for pixel in list(range(0,50)):
-          (b, frac) = pixel_to_layer(pixel)
 
-          r = 1.0
-          p_angle = (frac + rot) % 1.0
-          x = math.sin(p_angle * tau) * b
-          y = math.cos(p_angle * tau) * b
-          pixel_pos[pixel] = (x, y)
-
-
+        pixel_pos = generate_pixel_pos(rot=rot)
 
         for p in range(0,50):
             (x, y) = pixel_pos[p]
@@ -1661,16 +1603,7 @@ def mode30():
 
     h = 0
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
-
+    pixel_pos = generate_pixel_pos()
 
     while not new_mode:
 
@@ -2004,16 +1937,7 @@ def mode41():
     rot_speed = random.random() * 0.05 + 0.025
 
     while not new_mode:
-        pixel_pos = {}
-        for pixel in list(range(0,50)):
-          (b, frac) = pixel_to_layer(pixel)
-
-          r = 1.0
-          p_angle = (frac + rot) % 1.0
-          x = math.sin(p_angle * tau) * b
-          y = math.cos(p_angle * tau) * b
-          pixel_pos[pixel] = (x, y)
-
+        pixel_pos = generate_pixel_pos(rot=rot)
 
         for p in range(0,50):
             (x, y) = pixel_pos[p]
@@ -2041,16 +1965,7 @@ def mode42():
     while not new_mode:
         hue = random.random()
         h = random.random() * 8.0 - 4.0
-        pixel_pos = {}
-        for pixel in list(range(0,50)):
-          (b, frac) = pixel_to_layer(pixel)
-
-          r = 1.0
-          p_angle = (frac + rot) % 1.0
-          x = math.sin(p_angle * tau) * b
-          y = math.cos(p_angle * tau) * b
-          pixel_pos[pixel] = (x, y)
-
+        pixel_pos = generate_pixel_pos(rot=rot)
 
         for p in range(0,50):
             (x, y) = pixel_pos[p]
@@ -2097,16 +2012,7 @@ def mode43():
           skip = True
 
         if not skip:
-          pixel_pos = {}
-          for pixel in list(range(0,50)):
-            (b, frac) = pixel_to_layer(pixel)
-
-            r = 1.0
-            p_angle = (frac + rot) % 1.0
-            x = math.sin(p_angle * tau) * b
-            y = math.cos(p_angle * tau) * b
-            pixel_pos[pixel] = (x, y)
-
+          pixel_pos = generate_pixel_pos(rot=rot)
 
           for p in range(0,50):
               (x, y) = pixel_pos[p]
@@ -2152,15 +2058,7 @@ def mode44():
     # (x,y,hue, count, xv, yv)
     state = [(random.random()*8.0 - 4.0, random.random()*8.0 - 4.0, base_hue + float(i) / float(n), 7, random.random(), random.random()) for i in range(0,n)]
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
-
+    pixel_pos = generate_pixel_pos()
 
     while not new_mode:
         pixels.fill( (0, 0, 0) )
@@ -2226,15 +2124,7 @@ def mode49():
     # (x,y,hue, count, xv, yv)
     state = [(random.random()*8.0 - 4.0, random.random()*8.0 - 4.0, base_hue + float(i) / float(n), 7, random.random(), random.random()) for i in range(0,n)]
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
-
+    pixel_pos = generate_pixel_pos()
 
     while not new_mode:
         pixels.fill( (0, 0, 0) )
@@ -2313,15 +2203,7 @@ def parameterised_rgb_swirl(*, delay, k_step, active_blue):
 
     k = 0
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
-
+    pixel_pos = generate_pixel_pos()
 
     while not new_mode:
 
@@ -2363,14 +2245,7 @@ def mode47():
     k_scale_2 = 1 + random.random()
     k_scale_3 = 1 + random.random()
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
+    pixel_pos = generate_pixel_pos()
 
     while not new_mode:
 
@@ -2398,14 +2273,7 @@ def mode48():
     k_step = 0.5
     delay = 0.02
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
+    pixel_pos = generate_pixel_pos()
 
     def f(x):
       x = x / 5.0
@@ -2444,14 +2312,7 @@ def mode50():
     global new_mode
     pixels.auto_write = False
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
+    pixel_pos = generate_pixel_pos()
 
     while not new_mode:
 
@@ -2480,14 +2341,7 @@ def mode51():
 
     display_pixels = [None for pixel in range(0,50)]
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
+    pixel_pos = generate_pixel_pos()
 
     while not new_mode:
 
@@ -2542,18 +2396,31 @@ def random_in_radius(r):
       if math.sqrt(x ** 2 + y **2) <= r **2:
         return (x,y)
 
+
+def generate_pixel_pos(*, extra_pixels=[], rot = 0):
+    """Generate a list of each pixel's x,y position
+    based on bottoms info.
+
+    A better implementation might take into account the
+    decreasing radius around the spiral (and perhaps
+    I've done that somewhere already?)"""
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)) + extra_pixels:
+      (b, frac) = pixel_to_layer(pixel)
+      p_angle = (frac + rot) % 1.0
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      pixel_pos[pixel] = (x, y)
+
+    return pixel_pos
+
+
 def mode52():
     global new_mode
     pixels.auto_write = False
 
-    pixel_pos = {}
-    for pixel in list(range(0,50)):
-      (b, frac) = pixel_to_layer(pixel)
-      r = 1.0
-      p_angle = frac
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
+    pixel_pos = generate_pixel_pos()
 
     centre_info = []
 
