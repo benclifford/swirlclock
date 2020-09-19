@@ -194,7 +194,6 @@ def mode4():
                 pixels[n] = hsv_to_neo_rgb(colours[n])
 
             pixels.show()
-            print("one pass")
             time.sleep(0.1)
 
 
