@@ -1980,7 +1980,6 @@ def mode43():
 
     while not new_mode:
         skip = False
-        # h = random.random() * 8.0 - 4.0
         pos = random.randint(0,12)
         if pos == 0:
           h = 3
