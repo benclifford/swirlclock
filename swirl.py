@@ -2509,6 +2509,8 @@ def index_page():
 
 def set_mode(m):
     global new_mode
+    global disco_thread
+    disco_thread = None
     new_mode = m
     return flask.redirect("/", code=302)
 
