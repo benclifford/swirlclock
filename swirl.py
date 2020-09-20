@@ -2151,11 +2151,18 @@ def parameterised_rgb_swirl(*, delay, k_step, active_blue):
 
 
 def mode47():
+    mode_vertical_prism(k_step = 0.1)
+
+
+def mode55():
+    mode_vertical_prism(k_step = 0.003)
+
+
+def mode_vertical_prism(*, k_step):
     global new_mode
     pixels.auto_write = False
 
-    k = 0
-    k_step = 0.1
+    k = random.random() * tau
     delay = 0
 
     k_scale_1 = 1 + random.random()
@@ -2535,6 +2542,7 @@ declare_mode("51", mode51)
 declare_mode("52", mode52)
 declare_mode("53", mode53)
 declare_mode("54", mode54)
+declare_mode("55", mode55)
 
 
 @app.route('/disco/on')
