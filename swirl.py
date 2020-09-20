@@ -1477,7 +1477,7 @@ def disco_manager():
         if remaining_disco_modes == []:
             remaining_disco_modes = disco_modes.copy()
 
-        time.sleep(180)
+        time.sleep(60)
 
     print("ended disco manager")
 
