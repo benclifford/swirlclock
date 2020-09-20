@@ -1877,7 +1877,7 @@ def mode37():
 
         for pixel in range(0,50):
 
-            intensity = pixel / 50.0
+            intensity = 0.25 + 0.75 * pixel / 50.0
 
             v = scale(gamma(intensity, gamma_factor=4))
 
