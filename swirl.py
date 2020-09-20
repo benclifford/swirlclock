@@ -1551,7 +1551,7 @@ def mode40():
 
     timescale = random.random() + 1
 
-    star_factor = random.random() * 5 + 2
+    star_factor = float(random.randint(1,4)) + random.random() * 0.1
 
     while not new_mode:
 
@@ -1561,7 +1561,7 @@ def mode40():
 
         scale_r = 4
 
-        r = math.cos(theta * star_factor) * scale_r/2.5 + scale_r/2.0 + 0.5
+        r = math.cos(theta * star_factor) * scale_r/2.5 + scale_r/2.0
 
         x = math.cos(theta) * r
         y = math.sin(theta) * r
