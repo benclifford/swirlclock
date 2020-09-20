@@ -1434,7 +1434,8 @@ def disco_manager():
                    mode50,
                    mode51,
                    mode52,
-                   mode53]
+                   mode53,
+                   mode54]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2423,6 +2424,44 @@ def mode53():
         hue = (hue + 0.005) % 1.0
 
 
+def mode54():
+    global new_mode
+    pixels.auto_write = False
+    
+    pixel_pos = generate_pixel_pos()
+
+    display_pixels = [None for pixel in range(0,50)]
+
+    hue = random.random()
+    pixel = random.randint(0, 49)
+
+    while not new_mode:
+
+        display_pixels[pixel] = (hue, 1)
+
+        render_hv_fadepixel(pixels, display_pixels)
+        fade_hv_fadepixel(display_pixels, 0.03)
+
+        time.sleep(0.01)
+
+        (x, y) = pixel_pos[pixel]
+
+        candidates = distances_from_point(x, y, pixel_pos = pixel_pos)
+
+        candidates = [(d, n) for (d, n) in candidates if display_pixels[n] is None]
+
+        if candidates != []:
+            (least_d, _) = candidates[0]
+
+            candidates = [(d, n) for (d, n) in candidates if d < least_d * 1.25]
+
+            x = random.randint(0, len(candidates) - 1)
+
+            (d, n) = candidates[x]
+
+            pixel = n
+
+
 new_mode = mode32
 
 
@@ -2495,6 +2534,7 @@ declare_mode("50", mode50)
 declare_mode("51", mode51)
 declare_mode("52", mode52)
 declare_mode("53", mode53)
+declare_mode("54", mode54)
 
 
 @app.route('/disco/on')
