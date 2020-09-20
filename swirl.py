@@ -17,6 +17,7 @@ import time
 
 import flask
 
+from functools import partial
 from math import tau
 
 pixels = neopixel.NeoPixel(board.D18, 50)
@@ -2411,354 +2412,68 @@ app = flask.Flask(__name__)
 def index_page():
     return flask.send_file("./index.html")
 
-@app.route('/mode/1')
-def set_mode1():
+
+def set_mode(m):
     global new_mode
-    new_mode = mode1
+    new_mode = m
     return flask.redirect("/", code=302)
 
-@app.route('/mode/2')
-def set_mode2():
-    global new_mode
-    new_mode = mode2
-    return flask.redirect("/", code=302)
-
-@app.route('/mode/3')
-def set_mode3():
-    global new_mode
-    new_mode = mode3
-    return flask.redirect("/", code=302)
-
-@app.route('/mode/4')
-def set_mode4():
-    global new_mode
-    new_mode = mode4
-    return flask.redirect("/", code=302)
-
-@app.route('/mode/5')
-def set_mode5():
-    global new_mode
-    new_mode = mode5
-    return flask.redirect("/", code=302)
-
-@app.route('/mode/6')
-def set_mode6():
-    global new_mode
-    new_mode = mode6
-    return flask.redirect("/", code=302)
-
-@app.route('/mode/7')
-def set_mode7():
-    global new_mode
-    new_mode = mode7
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/8')
-def set_mode8():
-    global new_mode
-    new_mode = mode8
-    return flask.redirect("/", code=302)
-
-@app.route('/mode/9')
-def set_mode9():
-    global new_mode
-    new_mode = mode9
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/10')
-def set_mode10():
-    global new_mode
-    new_mode = mode10
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/11')
-def set_mode11():
-    global new_mode
-    new_mode = mode11
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/12')
-def set_mode12():
-    global new_mode
-    new_mode = mode12
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/13')
-def set_mode13():
-    global new_mode
-    new_mode = mode13
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/14')
-def set_mode14():
-    global new_mode
-    new_mode = mode14
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/15')
-def set_mode15():
-    global new_mode
-    new_mode = mode15
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/16')
-def set_mode16():
-    global new_mode
-    new_mode = mode16
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/17')
-def set_mode17():
-    global new_mode
-    new_mode = mode17
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/18')
-def set_mode18():
-    global new_mode
-    new_mode = mode18
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/19')
-def set_mode19():
-    global new_mode
-    new_mode = mode19
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/20')
-def set_mode20():
-    global new_mode
-    new_mode = mode20
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/21')
-def set_mode21():
-    global new_mode
-    new_mode = mode21
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/22')
-def set_mode22():
-    global new_mode
-    new_mode = mode22
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/23')
-def set_mode23():
-    global new_mode
-    new_mode = mode23
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/24')
-def set_mode24():
-    global new_mode
-    new_mode = mode24
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/25')
-def set_mode25():
-    global new_mode
-    new_mode = mode25
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/26')
-def set_mode26():
-    global new_mode
-    new_mode = mode26
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/27')
-def set_mode27():
-    global new_mode
-    new_mode = mode27
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/28')
-def set_mode28():
-    global new_mode
-    new_mode = mode28
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/30')
-def set_mode30():
-    global new_mode
-    new_mode = mode30
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/31')
-def set_mode31():
-    global new_mode
-    new_mode = mode31
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/32')
-def set_mode32():
-    global new_mode
-    new_mode = mode32
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/33')
-def set_mode33():
-    global new_mode
-    new_mode = mode33
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/34')
-def set_mode34():
-    global new_mode
-    new_mode = mode34
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/35')
-def set_mode35():
-    global new_mode
-    new_mode = mode35
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/36')
-def set_mode36():
-    global new_mode
-    new_mode = mode36
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/38')
-def set_mode38():
-    global new_mode
-    new_mode = mode38
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/39')
-def set_mode39():
-    global new_mode
-    new_mode = mode39
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/37')
-def set_mode37():
-    global new_mode
-    new_mode = mode37
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/40')
-def set_mode40():
-    global new_mode
-    new_mode = mode40
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/41')
-def set_mode41():
-    global new_mode
-    new_mode = mode41
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/42')
-def set_mode42():
-    global new_mode
-    new_mode = mode42
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/43')
-def set_mode43():
-    global new_mode
-    new_mode = mode43
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/44')
-def set_mode44():
-    global new_mode
-    new_mode = mode44
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/45')
-def set_mode45():
-    global new_mode
-    new_mode = mode45
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/46')
-def set_mode46():
-    global new_mode
-    new_mode = mode46
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/47')
-def set_mode47():
-    global new_mode
-    new_mode = mode47
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/48')
-def set_mode48():
-    global new_mode
-    new_mode = mode48
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/49')
-def set_mode49():
-    global new_mode
-    new_mode = mode49
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/50')
-def set_mode50():
-    global new_mode
-    new_mode = mode50
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/51')
-def set_mode51():
-    global new_mode
-    new_mode = mode51
-    return flask.redirect("/", code=302)
-
-
-@app.route('/mode/52')
-def set_mode52():
-    global new_mode
-    new_mode = mode52
-    return flask.redirect("/", code=302)
+def declare_mode(name, func):
+    p = partial(set_mode, func)
+    p.__name__ = "set_" + (func.__name__)
+    app.route('/mode/' + name)(p)
+
+declare_mode("1", mode1)
+declare_mode("2", mode2)
+declare_mode("3", mode3)
+declare_mode("4", mode4)
+declare_mode("5", mode5)
+declare_mode("6", mode6)
+declare_mode("7", mode7)
+declare_mode("8", mode8)
+declare_mode("10", mode10)
+declare_mode("11", mode11)
+declare_mode("12", mode12)
+declare_mode("13", mode13)
+declare_mode("14", mode14)
+declare_mode("15", mode15)
+declare_mode("16", mode16)
+declare_mode("17", mode17)
+declare_mode("18", mode18)
+declare_mode("19", mode19)
+declare_mode("20", mode20)
+declare_mode("21", mode21)
+declare_mode("22", mode22)
+declare_mode("23", mode23)
+declare_mode("24", mode24)
+declare_mode("25", mode25)
+declare_mode("26", mode26)
+declare_mode("27", mode27)
+declare_mode("28", mode28)
+# nb mode 29 unused
+declare_mode("30", mode30)
+declare_mode("31", mode31)
+declare_mode("32", mode32)
+declare_mode("33", mode33)
+declare_mode("34", mode34)
+declare_mode("35", mode35)
+declare_mode("36", mode36)
+declare_mode("37", mode37)
+declare_mode("38", mode38)
+declare_mode("39", mode39)
+declare_mode("40", mode40)
+declare_mode("41", mode41)
+declare_mode("42", mode42)
+declare_mode("43", mode43)
+declare_mode("44", mode44)
+declare_mode("45", mode45)
+declare_mode("46", mode46)
+declare_mode("47", mode47)
+declare_mode("48", mode48)
+declare_mode("49", mode49)
+declare_mode("50", mode50)
+declare_mode("51", mode51)
+declare_mode("52", mode52)
 
 
 @app.route('/disco/on')
