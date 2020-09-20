@@ -166,6 +166,33 @@ def mode31():
         time.sleep(0.5)
 
 
+def mode56():
+  global new_mode
+  pixels.auto_write = False
+
+  while not new_mode:
+    hue = random.random()
+
+    brightness = []
+
+    b = random.random()
+
+    for p in range(0,50):
+        brightness.append(b)
+        # slight bias dimmer - the visual effect is pretty
+        # sensitive to the bias amount
+        bias = -0.03
+        b = max(0.1, min(1.0, b + random.random() * 0.4 - 0.2 + bias))
+
+    for p in range(0,50):
+        pixels[p] = hsv_to_neo_rgb(hue, s=0.75, v=brightness[p]) 
+    pixels.show()
+
+        # rotate through all hues every 3 hours
+        # hue = (hue + 1.0 / (3.0 * 60.0 * 60.0) ) % 1.0
+    time.sleep(0.3)
+
+
 def mode4():
     global new_mode
     pixels.auto_write = False
@@ -1435,7 +1462,8 @@ def disco_manager():
                    mode51,
                    mode52,
                    mode53,
-                   mode54]
+                   mode54,
+                   mode56]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2543,6 +2571,7 @@ declare_mode("52", mode52)
 declare_mode("53", mode53)
 declare_mode("54", mode54)
 declare_mode("55", mode55)
+declare_mode("56", mode56)
 
 
 @app.route('/disco/on')
