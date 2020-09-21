@@ -464,7 +464,13 @@ def mode13():
     time.sleep(0.3)
 
 
-def mode14(display_seconds = False):
+def mode14():
+    mode_dotclock(display_seconds = False)
+
+def mode57():
+    mode_dotclock(display_seconds = True)
+
+def mode_dotclock(*, display_seconds):
   global new_mode
   pixels.auto_write = False
 
@@ -472,7 +478,9 @@ def mode14(display_seconds = False):
     pixels.fill( (0,0,0) )
     
 
-    now = time.localtime()
+    t = time.time()
+    frac_sec = t % 1.0
+    now = time.localtime(t)
     hour = now.tm_hour % 12
     minute = now.tm_min
     second = now.tm_sec
@@ -503,7 +511,7 @@ def mode14(display_seconds = False):
         (distance, pixel) = dot
         second_pixels = [(d,p) for (d,p) in second_pixels if p != pixel]
 
-    second_pixels = second_pixels[0:1]
+    second_pixels = second_pixels[0:10]
 
     hour_count = 0
     for dot in hour_pixels:
@@ -524,10 +532,14 @@ def mode14(display_seconds = False):
     if display_seconds:
         for dot in second_pixels:
             (distance, pixel) = dot
-            if now.tm_sec % 2 == 0:
-                pixels[pixel] = (0,32,0)
+
+            # turn frac_sec into a sawtooth wave
+            if frac_sec < 0.5:
+                intensity = frac_sec
             else:
-                pixels[pixel] = (0,1,0)
+                intensity = 1.0 - frac_sec
+
+            pixels[pixel] = (0,scale(gamma(0.3 * intensity)),0)
 
     pixels.show()
     time.sleep(0.05)
@@ -2577,6 +2589,7 @@ declare_mode("53", mode53)
 declare_mode("54", mode54)
 declare_mode("55", mode55)
 declare_mode("56", mode56)
+declare_mode("57", mode57)
 
 
 @app.route('/disco/on')
