@@ -504,10 +504,13 @@ def mode14(display_seconds = False):
         second_pixels = [(d,p) for (d,p) in second_pixels if p != pixel]
 
     second_pixels = second_pixels[0:1]
-    
+
+    hour_count = 0
     for dot in hour_pixels:
         (distance, pixel) = dot
-        pixels[pixel] = (255,0,0)
+        factor = hour_count / float(len(hour_pixels))
+        pixels[pixel] = (scale(gamma(1.0 - 0.6 * factor)), scale(gamma(0.2 * factor)), scale(gamma(0.2 * factor)))
+        hour_count = hour_count + 1.0
 
 
     for dot in minute_pixels:
