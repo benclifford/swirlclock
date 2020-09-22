@@ -2388,6 +2388,57 @@ def mode51():
       time.sleep(0.05)
 
 
+def mode59():
+    global new_mode
+    pixels.auto_write = False
+
+    display_pixels = [None for pixel in range(0,50)]
+
+    pixel_pos = generate_pixel_pos()
+    ang = tau / 8.0
+
+    while not new_mode:
+
+      hue = random.random()
+ 
+      for p in range(0,50):
+
+        # red bit
+        (x1, y1) = pixel_pos[p]
+
+        (b, frac) = pixel_to_layer(p)
+        r = abs(math.cos(frac * tau + ang) * 5.0)
+        if math.sqrt(x1 ** 2 + y1 ** 2) < r:
+            nx = (0, 1)
+        else:
+            nx = None
+ 
+        # green bit
+        green_width = 2.0
+        d = abs(x1-y1)
+        if d < green_width and y1 < 0 and nx is None and random.random() > 0.9:
+            nx = (0.3333, 1.0 - d/green_width)
+
+
+        if nx is not None:
+            (hue, v) = nx
+            opix = display_pixels[p]
+            if opix is None: 
+                display_pixels[p] = (hue, v)
+            else:
+                (oh, ov) = display_pixels[p]
+                if v > ov:
+                    display_pixels[p] = (hue, v)
+
+      
+
+      render_hv_fadepixel(pixels, display_pixels)
+      fade_hv_fadepixel(display_pixels, 0.05)
+
+      time.sleep(0.05)
+      ang = ang + 0.005
+
+
 def random_in_radius(r):
     """Pick a random point inside the radius r circle"""
     while True:
@@ -2641,6 +2692,7 @@ declare_mode("55", mode55)
 declare_mode("56", mode56)
 declare_mode("57", mode57)
 declare_mode("58", mode58)
+declare_mode("59", mode59)
 
 
 @app.route('/disco/on')
