@@ -2232,6 +2232,57 @@ def mode_vertical_prism(*, k_step):
         time.sleep(delay)
 
 
+def mode58():
+    global new_mode
+    pixels.auto_write = False
+
+    k = float(random.randint(0,100)) # 100 is just some arbitrary max... would be better to work out where the three phase contacts co-incide again and use that range (and mod it there for better precision in the loop too)
+    k_step = 0.02
+    delay = 0.02
+
+    pixel_pos = generate_pixel_pos()
+
+    def f(x):
+      x = x / 5.0
+      x = x % 1.5
+
+      if x>1.0:
+          return 0
+      elif x>0.5:  # x = 0.5 .. 1.0
+          return (0.5 - (x - 0.5)) * 2
+      else: # x = 0 .. 0.5
+          return x*2
+
+    ang1 = random.random() * tau
+    ang2 = (ang1 + tau / 3.0) % tau
+    ang3 = (ang2 + tau / 3.0) % tau
+
+    while not new_mode:
+
+        for p in range(0,50):
+
+            (b, frac) = pixel_to_layer(p)
+            (x, y) = pixel_pos[p]
+
+            red = (( f(k * 0.6123 + x * math.sin(ang1) + y*math.cos(ang1) )))
+            green = (( f(k * 1.07 + x * math.sin(ang2) + y * math.cos(ang2))))
+            blue = math.sin(k * 1.54 + p/50.0 * tau) * 0.5 + 0.5
+
+            level = ((red + green + blue) / 3)
+            if level < 0.25:
+              v = 1.0 - (0.25 - level) * 3
+              s = 1.0
+            else:
+              v = 1.0
+              s = 1.0 - (level - 0.25) / 0.75
+
+            pixels[p] = hsv_to_neo_rgb(0.66, s=s, v=v)
+
+        k = k + k_step
+        pixels.show()
+        time.sleep(delay)
+
+
 def mode48():
     global new_mode
     pixels.auto_write = False
@@ -2590,6 +2641,7 @@ declare_mode("54", mode54)
 declare_mode("55", mode55)
 declare_mode("56", mode56)
 declare_mode("57", mode57)
+declare_mode("58", mode58)
 
 
 @app.route('/disco/on')
