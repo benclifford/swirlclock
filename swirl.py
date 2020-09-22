@@ -2255,7 +2255,6 @@ def mode58():
 
     ang1 = random.random() * tau
     ang2 = (ang1 + tau / 3.0) % tau
-    ang3 = (ang2 + tau / 3.0) % tau
 
     while not new_mode:
 
@@ -2265,7 +2264,7 @@ def mode58():
             (x, y) = pixel_pos[p]
 
             red = (( f(k * 0.6123 + x * math.sin(ang1) + y*math.cos(ang1) )))
-            green = (( f(k * 1.07 + x * math.sin(ang2) + y * math.cos(ang2))))
+            green = math.cos(k * 1.1 + tau * math.sqrt( x**2 + (y - 5.0) ** 2) / 25.0) * 0.5 + 0.5
             blue = math.sin(k * 1.54 + p/50.0 * tau) * 0.5 + 0.5
 
             level = ((red + green + blue) / 3)
