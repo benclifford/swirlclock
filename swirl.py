@@ -943,6 +943,71 @@ def mode20():
     time.sleep(0.02)
 
 
+def mode60():
+  """This is a variant of mode20 so TODO refactor?"""
+  global new_mode
+  pixels.auto_write = False
+  display_pixels = [None for n in range(0,50)]
+
+  start_particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
+  particle = start_particle
+  hue = random.random()
+
+  first = True
+  boom = False
+
+  tc = 0.001
+  hc = 0.004
+
+  while not new_mode:
+
+    # move particle
+    (b, frac) = pixel_to_layer(particle)
+
+    choice = random.randint(0,2)
+
+    old_first = first
+    first = False
+
+    if choice == 0:
+      new_particle = particle + 1
+      if new_particle >= bottoms[b]:
+        new_particle = bottoms[b+1]
+
+    elif choice == 1:
+      new_particle = particle - 1  # TODO: mod
+      if new_particle < bottoms[b+1]:
+        new_particle = bottoms[b]-1
+    elif choice == 2:
+      # move inwards
+      # determine angle now
+      if b == 0:
+        # if we reach the centre, solidify
+        new_particle = start_particle
+        boom = old_first
+        first = True
+        pixels.show()
+        pixels.fill( (0,0,0) )
+      else:
+        b = b - 1
+        new_particle = int(bottoms[b] + (bottoms[b+1] - bottoms[b])*frac)
+
+    particle = new_particle
+
+    # display state
+
+    display_pixels[particle] = (hue, 1)
+    fade_hv_fadepixel(display_pixels, 0.01)
+    render_hv_fadepixel(pixels, display_pixels)
+
+    time.sleep(tc)
+
+    hue = (hue + hc) % 1.0
+
+    boom = False
+
+
+
 def mode21():
     global new_mode
     pixels.auto_write = False
@@ -1478,7 +1543,8 @@ def disco_manager():
                    mode52,
                    mode53,
                    mode54,
-                   mode56]
+                   mode56,
+                   mode60]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2693,6 +2759,7 @@ declare_mode("56", mode56)
 declare_mode("57", mode57)
 declare_mode("58", mode58)
 declare_mode("59", mode59)
+declare_mode("60", mode60)
 
 
 @app.route('/disco/on')
