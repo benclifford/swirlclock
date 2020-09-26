@@ -2408,8 +2408,8 @@ def mode59():
 
         (b, frac) = pixel_to_layer(p)
         r = abs(math.cos(frac * tau + ang) * 5.0)
-        if math.sqrt(x1 ** 2 + y1 ** 2) < r:
-            nx = (0, 1)
+        if math.sqrt(x1 ** 2 + y1 ** 2) < r and b >= 2:
+            nx = (0, 1 - abs(b - 3.0)/ 3.0)
         else:
             nx = None
  
