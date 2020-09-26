@@ -153,7 +153,7 @@ def mode31():
 
     brightness = []
 
-    b = 0.5
+    b = random.random() * 0.9 + 0.1
     for p in range(0,50):
         brightness.append(b)
         b = max(0.1, min(1.0, b + random.random() * 0.4 - 0.2))
