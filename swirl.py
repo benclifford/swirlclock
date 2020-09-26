@@ -132,6 +132,8 @@ def mode3():
 def mode6():
     mode_solid( (0, 0, 0) )
 
+def mode62():
+    mode_solid( hsv_to_neo_rgb(random.random()) )
 
 def mode_solid(rgb):
 
@@ -2819,6 +2821,7 @@ declare_mode("58", mode58)
 declare_mode("59", mode59)
 declare_mode("60", mode60)
 declare_mode("61", mode61)
+declare_mode("62", mode62)
 
 
 @app.route('/disco/on')
