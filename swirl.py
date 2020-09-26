@@ -142,7 +142,7 @@ def mode_solid(rgb):
     
     while not new_mode:
         pixels.fill( rgb )
-        time.sleep(1)
+        time.sleep(0.2)
 
 
 def mode31():
