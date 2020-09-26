@@ -1006,6 +1006,63 @@ def mode60():
 
     boom = False
 
+def mode61():
+  """another reparameterisation of mode20 - TODO factor?"""
+  global new_mode
+  pixels.auto_write = False
+
+  particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
+  hue = random.random()
+
+  first = True
+  boom = False
+
+  while not new_mode:
+
+    # move particle
+    (b, frac) = pixel_to_layer(particle)
+
+    choice = random.randint(0,2)
+
+    old_first = first
+    first = False
+
+    if choice == 0:
+      new_particle = particle + 1
+      if new_particle >= bottoms[b]:
+        new_particle = bottoms[b+1]
+
+    elif choice == 1:
+      new_particle = particle - 1  # TODO: mod
+      if new_particle < bottoms[b+1]:
+        new_particle = bottoms[b]-1
+    elif choice == 2:
+      # move inwards
+      # determine angle now
+      if b == 0:
+        # if we reach the centre, solidify
+        new_particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
+        boom = old_first
+        first = True
+        pixels.show()
+        time.sleep(0.03)
+        pixels.fill( (0,0,0) )
+        hue = random.random()
+      else:
+        b = b - 1
+        new_particle = int(bottoms[b] + (bottoms[b+1] - bottoms[b])*frac)
+
+    particle = new_particle
+
+    # display state
+
+    pixels[particle] = hsv_to_neo_rgb(hue)
+
+
+    boom = False
+
+
+
 
 
 def mode21():
@@ -1544,7 +1601,8 @@ def disco_manager():
                    mode53,
                    mode54,
                    mode56,
-                   mode60]
+                   mode60,
+                   mode61]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2760,6 +2818,7 @@ declare_mode("57", mode57)
 declare_mode("58", mode58)
 declare_mode("59", mode59)
 declare_mode("60", mode60)
+declare_mode("61", mode61)
 
 
 @app.route('/disco/on')
