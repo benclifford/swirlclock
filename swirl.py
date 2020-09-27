@@ -2117,12 +2117,11 @@ def mode43():
 
     display_pixels = [None for n in range(0,50)]
 
-    rot = 0
-    rot_speed = 0
-
     hue0 = random.random()
     hue1 = (hue0 + 0.333) % 1.0
     hue2 = (hue1 + 0.333) % 1.0
+
+    pixel_pos = generate_pixel_pos()
 
     while not new_mode:
         skip = False
@@ -2140,7 +2139,6 @@ def mode43():
           skip = True
 
         if not skip:
-          pixel_pos = generate_pixel_pos(rot=rot)
 
           for p in range(0,50):
               (x, y) = pixel_pos[p]
@@ -2154,7 +2152,6 @@ def mode43():
         render_hv_fadepixel(pixels, display_pixels)
         fade_hv_fadepixel(display_pixels, 0.05)
 
-        rot = (rot + rot_speed) % 1.0
         time.sleep(0.05)
 
 
