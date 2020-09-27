@@ -78,6 +78,12 @@ def pixel_to_layer(pixel):
     return (b, frac)
 
 
+def different_hue(hue):
+    """Returns a hue that is noticeably different than the
+    input hue."""
+    return (hue + 0.15 + random.random()*0.7) % 1.0
+
+
 def mode1():
     global new_mode
     pixels.auto_write = True
@@ -1762,9 +1768,7 @@ def mode30():
     pixels.show()
 
     hue1 = random.random()
-
-    # make the 2nd hue is at least 0.15 away in both directions
-    hue2 = (hue1 + 0.15 + random.random()*0.7) % 1.0
+    hue2 = different_hue(hue1)
 
     rw = randomwalk.randomwalk(low = -4, high = 4, spread = 0.5)
 
@@ -1789,9 +1793,9 @@ def mode30():
         pixels.show()
 
         if h == 4:  # hue1 is invisible, pick new
-            hue1 = (hue2 + 0.15 + random.random()*0.7) % 1.0
+            hue1 = different_hue(hue2)
         if h == -4: # hue2 is invisible, pick new
-            hue2 = (hue1 + 0.15 + random.random()*0.7) % 1.0
+            hue2 = different_hue(hue1)
 
 
 def mode32():
