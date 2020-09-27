@@ -134,16 +134,16 @@ def mode2():
 
 
 def mode3():
-    mode_solid( (255, 0, 32) )
+    pmode_solid( (255, 0, 32) )
 
 
 def mode6():
-    mode_solid( (0, 0, 0) )
+    pmode_solid( (0, 0, 0) )
 
 def mode62():
-    mode_solid( hsv_to_neo_rgb(random.random()) )
+    pmode_solid( hsv_to_neo_rgb(random.random()) )
 
-def mode_solid(rgb):
+def pmode_solid(rgb):
 
     global new_mode
     pixels.auto_write = True
@@ -337,12 +337,12 @@ def mode9():
 
 
 def mode10():
-    mode_rotator()
+    pmode_rotator()
 
 def mode12():
-    mode_rotator(spin_speed = 1.0 / 60.0)
+    pmode_rotator(spin_speed = 1.0 / 60.0)
 
-def mode_rotator(spin_speed = 1.0/600.0):
+def pmode_rotator(spin_speed = 1.0/600.0):
 
     global new_mode
     pixels.auto_write = False
@@ -473,12 +473,12 @@ def mode13():
 
 
 def mode14():
-    mode_dotclock(display_seconds = False)
+    pmode_dotclock(display_seconds = False)
 
 def mode57():
-    mode_dotclock(display_seconds = True)
+    pmode_dotclock(display_seconds = True)
 
-def mode_dotclock(*, display_seconds):
+def pmode_dotclock(*, display_seconds):
   global new_mode
   pixels.auto_write = False
 
@@ -671,7 +671,7 @@ def mode15():
 
 
 def mode16():
-    iterator_spiral(iterator=generate_mode16(), delay=0.05)
+    pmode_iterator_spiral(iterator=generate_mode16(), delay=0.05)
 
 
 def generate_mode16():
@@ -682,7 +682,7 @@ def generate_mode16():
         yield hsv_to_neo_rgb(hue)
 
 
-def iterator_spiral(*, iterator, delay):
+def pmode_iterator_spiral(*, iterator, delay):
   global new_mode
   pixels.auto_write = False
 
@@ -702,7 +702,7 @@ def iterator_spiral(*, iterator, delay):
 
 
 def mode35():
-    iterator_spiral(iterator=generate_mode35(), delay=0.01)
+    pmode_iterator_spiral(iterator=generate_mode35(), delay=0.01)
 
 
 def generate_mode35():
@@ -2226,12 +2226,12 @@ def mode49():
 
 
 def mode45():
-    parameterised_rgb_swirl(delay=0.02, k_step=0.002, active_blue=True)
+    pmode_rgb_swirl(delay=0.02, k_step=0.002, active_blue=True)
 
 def mode46():
-    parameterised_rgb_swirl(delay=0, k_step=0.02, active_blue=False)
+    pmode_rgb_swirl(delay=0, k_step=0.02, active_blue=False)
 
-def parameterised_rgb_swirl(*, delay, k_step, active_blue):
+def pmode_rgb_swirl(*, delay, k_step, active_blue):
     global new_mode
     pixels.auto_write = False
 
@@ -2268,14 +2268,14 @@ def parameterised_rgb_swirl(*, delay, k_step, active_blue):
 
 
 def mode47():
-    mode_vertical_prism(k_step = 0.1)
+    pmode_vertical_prism(k_step = 0.1)
 
 
 def mode55():
-    mode_vertical_prism(k_step = 0.003)
+    pmode_vertical_prism(k_step = 0.003)
 
 
-def mode_vertical_prism(*, k_step):
+def pmode_vertical_prism(*, k_step):
     global new_mode
     pixels.auto_write = False
 
