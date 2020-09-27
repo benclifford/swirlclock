@@ -701,11 +701,13 @@ def mode35():
 
 def generate_mode35():
     hue = random.random()
-    v = 0.1
+
+    rw = randomwalk.randomwalk(low = 0, high = 1.0)
 
     while True:
-        # deliberately biased downwards so we hit 0 more
-        v = min(1.0, max(0, v + random.random() * 0.4 - 0.2))
+
+        v = next(rw)
+
         if v == 0:
             hue = random.random()
 
