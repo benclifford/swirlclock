@@ -17,6 +17,8 @@ import time
 
 import flask
 
+import randomwalk
+
 from functools import partial
 from math import tau
 
@@ -153,10 +155,10 @@ def mode31():
 
     brightness = []
 
-    b = random.random() * 0.9 + 0.1
+    rw = randomwalk.randomwalk(low = 0.1, high = 1.0)
+
     for p in range(0,50):
-        brightness.append(b)
-        b = max(0.1, min(1.0, b + random.random() * 0.4 - 0.2))
+        brightness.append(next(rw))
 
     while not new_mode:
         for p in range(0,50):
@@ -177,14 +179,12 @@ def mode56():
 
     brightness = []
 
-    b = random.random()
+    # slight bias dimmer - the visual effect is pretty
+    # sensitive to the bias amount
+    rw = randomwalk.randomwalk(low = 0.1, high = 1.0, bias = -0.03)
 
     for p in range(0,50):
-        brightness.append(b)
-        # slight bias dimmer - the visual effect is pretty
-        # sensitive to the bias amount
-        bias = -0.03
-        b = max(0.1, min(1.0, b + random.random() * 0.4 - 0.2 + bias))
+        brightness.append(next(rw))
 
     for p in range(0,50):
         pixels[p] = hsv_to_neo_rgb(hue, s=0.75, v=brightness[p]) 
