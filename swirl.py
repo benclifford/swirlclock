@@ -1392,25 +1392,6 @@ def mode25():
     iterations_since_last_change = 0
 
     while not new_mode:
-        """
-        # print("====")
-        global_hues_live = [state[p1].hue for p1 in range(0,50) if state[p1] is not None]
-
-        if global_hues_live != []:
-            global_hues_sorted = sorted(global_hues_live)
-            global_hues_grouped = [list(it) for (h, it) in itertools.groupby(global_hues_sorted)]
-            global_hues_counted = [(len(l), l[0]) for l in global_hues_grouped]
-            global_hues_counted_sorted = sorted(global_hues_counted)
-            # print("global_hues_counted_sorted = {}".format(global_hues_counted_sorted))
-            (top_count, _) = global_hues_counted_sorted[0]
-            if top_count > 10:
-                global_maximal_hues = [hue for (count, hue) in global_hues_counted_sorted if count == top_count]
-            else:
-                global_maximal_hues = []
-        else:
-            global_maximal_hues = []
-        """
-
         active_pixel = random.randint(0,49)
 
         # highlight the chosen pixel
@@ -1421,23 +1402,10 @@ def mode25():
 
         s = distances_from_point(x, y, pixel_pos=pixel_pos)
 
-        # print("---")
         ball = [(d, n) for (d,n) in s if d < 1.5]
 
         # remove self from ball
-        # print("len ball first: {}".format(len(ball)))
         ball = [(d, n) for (d,n) in ball if n != active_pixel]
-        # print("len ball after removing self: {}".format(len(ball)))
-
-        # print("ball size: {}".format(len(ball)))
-
-        # for (d, p) in ball:
-        #    pixels[p] = (0,255,0)
-        # pixels.show()
-        # time.sleep(0.5)
-
-        # main rule:
-        # aim to have 50% of pixels on
 
         count_on = 0
         for (d,p) in ball:
@@ -1451,7 +1419,6 @@ def mode25():
             iterations_since_last_change += 1
             pass  # leave on, but do not do colour selection
         elif count_on >= len(ball) * target_frac:
-            # print("turning pixel off")
             if state[active_pixel] is None:
                 iterations_since_last_change += 1
             else:
@@ -1459,9 +1426,7 @@ def mode25():
             state[active_pixel] = None
         elif state[active_pixel] is None:
             # turn on
-            #print("turning pixel on")
             ball_live = [(d, p) for (d, p) in ball if state[p] is not None]
-            # print("len live_ball = {}".format(len(ball_live)))
             if ball_live == []:
                 state[active_pixel] = M25_state(random.random())
                 iterations_since_last_change = 0
@@ -1471,17 +1436,10 @@ def mode25():
                 hues_grouped = [list(it) for (h, it) in itertools.groupby(hues_sorted)]
                 hues_counted = [(len(l), l[0]) for l in hues_grouped]
                 hues_counted_sorted = sorted(hues_counted)
-                # print("hues_grouped = {}".format(hues_grouped))
-                # print("hues_counted_sorted = {}".format(hues_counted_sorted))
                 (last_count, _) = hues_counted_sorted[0]
-                # print("last_count = {}".format(last_count))
                 minimal_hues = [hue for (count, hue) in hues_counted_sorted if count == last_count]
-                # print("suppressing global_maximal_hues {}".format(global_maximal_hues))
-                # minimal_hues = [h for h in minimal_hues if h not in global_maximal_hues]
-                # print("remaining minimal hues: {}".format(minimal_hues))
 
                 if minimal_hues != []:
-                # print("minimal_hues = {}".format(minimal_hues))
                     new_hue = minimal_hues[random.randint(0, len(minimal_hues)-1)]
                     iterations_since_last_change = 0
                     state[active_pixel] = M25_state(new_hue)
@@ -2173,7 +2131,6 @@ def mode44():
         used_pixels = []
 
         for (x,y,hue,count,xv,yv) in state:
-       
 
           s = distances_from_point(x, y, pixel_pos = pixel_pos)
 
@@ -2183,14 +2140,11 @@ def mode44():
 
           s = [e for e in s if snd(e) not in used_pixels]
 
-          # print("count = {}".format(count))
           for p in range(0, count):
             (d, pix) = s[p]
-            # print("pixel = {}".format(pix))
             pixels[pix] = hsv_to_neo_rgb(hue)
             used_pixels.append(pix)
 
-        # print("used_pixels = {}".format(used_pixels))
         pixels.show()
 
 
