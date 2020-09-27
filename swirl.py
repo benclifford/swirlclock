@@ -1731,13 +1731,13 @@ def mode28():
 
     hue = random.random()
 
-    h = 0
+    rw = randomwalk.randomwalk(low=-4, high=4, spread = 0.5)
 
     rot = random.random()
     rot_speed = 0.001 * random.random()
 
     while not new_mode:
-
+        h = next(rw)
         pixel_pos = generate_pixel_pos(rot=rot)
 
         for p in range(0,50):
@@ -1749,8 +1749,6 @@ def mode28():
 
    
         pixels.show()
-
-        h = min(4, max(-4, h + random.random() - 0.5))
 
         rot = (rot + rot_speed) % 1.0
 
@@ -1768,11 +1766,12 @@ def mode30():
     # make the 2nd hue is at least 0.15 away in both directions
     hue2 = (hue1 + 0.15 + random.random()*0.7) % 1.0
 
-    h = 0
+    rw = randomwalk.randomwalk(low = -4, high = 4, spread = 0.5)
 
     pixel_pos = generate_pixel_pos()
 
     while not new_mode:
+        h = next(rw)
 
         for p in range(0,50):
             (x, y) = pixel_pos[p]
@@ -1789,7 +1788,6 @@ def mode30():
    
         pixels.show()
 
-        h = min(4, max(-4, h + random.random() - 0.5))
         if h == 4:  # hue1 is invisible, pick new
             hue1 = (hue2 + 0.15 + random.random()*0.7) % 1.0
         if h == -4: # hue2 is invisible, pick new
