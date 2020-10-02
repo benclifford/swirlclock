@@ -1571,7 +1571,8 @@ def disco_manager():
                    mode56,
                    mode60,
                    mode61.
-                   mode63]
+                   mode63,
+                   mode64]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2689,6 +2690,12 @@ def mode54():
 
 
 def mode63():
+    pmode_firefront(hue_step = 0.01)
+
+def mode64():
+    pmode_firefront(hue_step = 0)
+
+def pmode_firefront(*, hue_step):
     global new_mode
     pixels.auto_write = False
     
@@ -2735,7 +2742,7 @@ def mode63():
 
                 candidates = [(d, n) for (d, n) in candidates if d <= least_d]
 
-                hue = (hue + 0.01) % 1.0
+                hue = (hue + hue_step) % 1.0
                 for (d,n) in candidates:
                     if random.random() > 0.5:
                         display_pixels[n] = (hue, 1)
@@ -2829,6 +2836,7 @@ declare_mode("60", mode60)
 declare_mode("61", mode61)
 declare_mode("62", mode62)
 declare_mode("63", mode63)
+declare_mode("64", mode64)
 
 
 @app.route('/disco/on')
