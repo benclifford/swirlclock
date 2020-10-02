@@ -1570,7 +1570,8 @@ def disco_manager():
                    mode54,
                    mode56,
                    mode60,
-                   mode61]
+                   mode61.
+                   mode63]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2687,6 +2688,61 @@ def mode54():
             pixel = n
 
 
+def mode63():
+    global new_mode
+    pixels.auto_write = False
+    
+    pixel_pos = generate_pixel_pos()
+
+    hue = random.random()
+
+    display_pixels = [None for pixel in range(0,50)]
+
+    while not new_mode:
+
+        blank = True
+        for n in range(0,49):
+            if display_pixels[n] is not None:
+                blank = False
+
+        if blank: 
+            hue = different_hue(hue)
+            start_pixel = random.randint(0, 49)
+            fire_pixels = [start_pixel]
+            display_pixels[start_pixel] = (hue, 1)
+  
+
+        for n in range(0, 6):
+          render_hv_fadepixel(pixels, display_pixels)
+          fade_hv_fadepixel(display_pixels, 0.03)
+          time.sleep(0.01)
+
+        new_fire_pixels = []
+
+        for pixel in fire_pixels:
+          if display_pixels[pixel] is not None:
+            (h, v) = display_pixels[pixel]
+
+            (x, y) = pixel_pos[pixel]
+
+            candidates = distances_from_point(x, y, pixel_pos = pixel_pos)
+
+            candidates = [(d, n) for (d, n) in candidates if display_pixels[n] is None]
+
+            if candidates != []:
+                least_d = 1.5
+
+                candidates = [(d, n) for (d, n) in candidates if d <= least_d]
+
+                hue = (hue + 0.01) % 1.0
+                for (d,n) in candidates:
+                    if random.random() > 0.5:
+                        display_pixels[n] = (hue, 1)
+                        new_fire_pixels.append(n)
+
+        fire_pixels = new_fire_pixels
+
+
 new_mode = mode32
 
 
@@ -2771,6 +2827,7 @@ declare_mode("59", mode59)
 declare_mode("60", mode60)
 declare_mode("61", mode61)
 declare_mode("62", mode62)
+declare_mode("63", mode63)
 
 
 @app.route('/disco/on')
