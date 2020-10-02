@@ -2700,12 +2700,13 @@ def mode63():
 
     while not new_mode:
 
-        blank = True
+        max_v = 0
         for n in range(0,49):
             if display_pixels[n] is not None:
-                blank = False
+                (h,v) = display_pixels[n]
+                max_v = max(v, max_v)
 
-        if blank: 
+        if max_v < 0.75: 
             hue = different_hue(hue)
             start_pixel = random.randint(0, 49)
             fire_pixels = [start_pixel]
