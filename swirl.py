@@ -1572,7 +1572,10 @@ def disco_manager():
                    mode60,
                    mode61.
                    mode63,
-                   mode64]
+                   mode64,
+                   mode65,
+                   mode66,
+                   mode67]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2695,7 +2698,49 @@ def mode63():
 def mode64():
     pmode_firefront(hue_step = 0)
 
-def pmode_firefront(*, hue_step):
+def mode65():
+    hue = random.random()
+    pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode65_fire_scheme, hue))
+
+def mode65_fire_scheme(hue, x):
+    other_hue = (hue + 0.5) % 1.0
+    if x is None:
+        return (hue, 1)
+    else:
+        return (other_hue, 1)
+
+def mode66():
+    hue = random.random()
+    pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode66_fire_scheme, hue))
+
+def mode66_fire_scheme(hue, x):
+    other_hue = (hue + 0.5) % 1.0
+    if x is None:
+        return (other_hue, 1)
+    else:
+        (h, v) = x
+
+        return (h, v)
+
+
+def mode67():
+    hue = random.random()
+    pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode67_fire_scheme, hue))
+
+def mode67_fire_scheme(hue, x):
+    other_hue = (hue + 0.5) % 1.0
+    if x is None:
+        return (other_hue, 0.2)
+    else:
+        (h, v) = x
+
+        if v > 0.1:
+            return (hue, (v-0.1)*(1.0 / 0.9))
+        else:
+            return (other_hue, 0.2) 
+
+
+def pmode_firefront(*, hue_step, colour_scheme = None):
     global new_mode
     pixels.auto_write = False
     
@@ -2721,7 +2766,13 @@ def pmode_firefront(*, hue_step):
   
 
         for n in range(0, 6):
-          render_hv_fadepixel(pixels, display_pixels)
+
+          if colour_scheme is None:
+              schemed_display_pixels = display_pixels
+          else:
+              schemed_display_pixels = [colour_scheme(hv) for hv in display_pixels]
+
+          render_hv_fadepixel(pixels, schemed_display_pixels)
           fade_hv_fadepixel(display_pixels, 0.03)
           time.sleep(0.01)
 
@@ -2837,6 +2888,9 @@ declare_mode("61", mode61)
 declare_mode("62", mode62)
 declare_mode("63", mode63)
 declare_mode("64", mode64)
+declare_mode("65", mode65)
+declare_mode("66", mode66)
+declare_mode("67", mode67)
 
 
 @app.route('/disco/on')
