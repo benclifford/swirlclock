@@ -2820,6 +2820,10 @@ def mode69():
     rw = randomwalk.randomwalk(low = 2, high = 8)
 
     red1_mod = random.randint(2,5)
+    red1_speed = 2 + random.random() * 4
+
+    orange1_speed = 0.5 + random.random()
+
     while not new_mode:
 
         gf = next(rw)
@@ -2832,7 +2836,7 @@ def mode69():
 
         red1 = []
         for pixel in range(0,50):
-            if pixel % red1_mod == int(time.time() * 3) % red1_mod:
+            if pixel % red1_mod == int(time.time() * red1_speed) % red1_mod:
                 red1.append( (128,0,0) )
             else:
                 red1.append( (0,0,0) )
@@ -2848,7 +2852,7 @@ def mode69():
         orange1 = []
         for pixel in range(0,50):
             phase = float(pixel) / 50.0 * tau
-            phase += time.time() % tau
+            phase += (time.time() * orange1_speed) % tau
             v = 0.5 + 0.5 * math.sin(-phase)
             orange1.append( ( int(v * 128), int(v * 48), 0 ) )
                     
