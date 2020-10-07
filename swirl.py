@@ -1576,7 +1576,8 @@ def disco_manager():
                    mode65,
                    mode66,
                    mode67,
-                   mode68]
+                   mode68,
+                   mode69]
 
     remaining_disco_modes = disco_modes.copy()
 
