@@ -2813,6 +2813,58 @@ def pmode_firefront(*, hue_step, colour_scheme = None):
 
         fire_pixels = new_fire_pixels
 
+def mode69():
+    global new_mode
+    pixels.auto_write = False
+
+    rw = randomwalk.randomwalk(low = 2, high = 8)
+
+    red1_mod = random.randint(2,5)
+    while not new_mode:
+
+        gf = next(rw)
+        white_centre = []
+        for pixel in range(0,50):
+            intensity = pixel / 50.0
+            v = scale(gamma(intensity, gamma_factor=gf))
+            white_centre.append( (v,v,v) )
+
+
+        red1 = []
+        for pixel in range(0,50):
+            if pixel % red1_mod == int(time.time() * 3) % red1_mod:
+                red1.append( (128,0,0) )
+            else:
+                red1.append( (0,0,0) )
+ 
+        yellow1 = []
+        for pixel in range(0,50):
+            if random.random() > 0.90:
+                v = int(random.random() * 64)
+                yellow1.append( (v,v,0) )
+            else:
+                yellow1.append( (0,0,0) )
+  
+        orange1 = []
+        for pixel in range(0,50):
+            phase = float(pixel) / 50.0 * tau
+            phase += time.time() % tau
+            v = 0.5 + 0.5 * math.sin(-phase)
+            orange1.append( ( int(v * 128), int(v * 48), 0 ) )
+                    
+        for pixel in range(0,50):
+            # pixels[pixel] = orange1[pixel]
+            pixels[pixel] = max_pixel(max_pixel(max_pixel(white_centre[pixel], red1[pixel]), yellow1[pixel]), orange1[pixel])
+
+        pixels.show()
+        time.sleep(0.02)
+
+def max_pixel( p1, p2 ):
+    (r1, g1, b1) = p1
+    (r2, g2, b2) = p2
+    return (  max(r1, r2),   max(g1, g2),  max(b1, b2) )
+
+
 
 new_mode = mode32
 
@@ -2904,6 +2956,7 @@ declare_mode("65", mode65)
 declare_mode("66", mode66)
 declare_mode("67", mode67)
 declare_mode("68", mode68)
+declare_mode("69", mode69)
 
 
 @app.route('/disco/on')
