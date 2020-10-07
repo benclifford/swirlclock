@@ -2840,7 +2840,7 @@ def mode69():
         yellow1 = []
         for pixel in range(0,50):
             if random.random() > 0.90:
-                v = int(random.random() * 64)
+                v = int(random.random() * 128)
                 yellow1.append( (v,v,0) )
             else:
                 yellow1.append( (0,0,0) )
