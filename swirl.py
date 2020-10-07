@@ -1570,7 +1570,7 @@ def disco_manager():
                    mode54,
                    mode56,
                    mode60,
-                   mode61.
+                   mode61,
                    mode63,
                    mode64,
                    mode65,
