@@ -2912,7 +2912,7 @@ def mode70():
             frac = 1.0 - frac
             for pixel in range(0,50):
                 (x, y) = pixel_pos[pixel]
-                y_frac = (5 * frac + y + 5.0) / 10.0
+                y_frac = (5 * (frac * 2.0 - 1.0) + y + 5.0) / 10.0
                 y_frac = min(y_frac, 1)
                 y_frac = max(y_frac, 0)
                 p_frac = frac * y_frac
