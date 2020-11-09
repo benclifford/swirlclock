@@ -2864,6 +2864,77 @@ def mode69():
         pixels.show()
         time.sleep(0.02)
 
+
+def mode70():
+    global new_mode
+    pixels.auto_write = False
+
+    pixel_pos = generate_pixel_pos()
+
+    # approx times for sunrise/sunset in early May
+    sunrise = 5.5
+    sunset = 20.43
+
+    while not new_mode:
+
+        t = time.time()
+        now = time.localtime(t)
+        hour = now.tm_hour
+        minute = now.tm_min
+        second = now.tm_sec
+
+        h_m = hour + (minute / 60.0) + (second / 60.0 / 60.0)
+        print("now h_m = {}".format(h_m))
+
+        if h_m < sunrise:
+            print("pre-dawn")
+            rgb = (0,0,0)
+            for pixel in range(0,50):
+                pixels[pixel]=rgb
+
+        elif h_m < (sunrise + 1.0): # rising
+            print("sun rising")
+            frac = h_m - sunrise
+            v = int(255 * frac)
+            rgb = (v, v, v)
+            for pixel in range(0,50):
+                pixels[pixel]=rgb
+
+        elif h_m < sunset:
+            print("daytime")
+            rgb = (255, 255, 255)
+            for pixel in range(0,50):
+                pixels[pixel]=rgb
+
+        elif h_m < (sunset + 1.0): # setting
+            print("sun setting")
+            frac = h_m - sunset
+            frac = 1.0 - frac
+            for pixel in range(0,50):
+                (x, y) = pixel_pos[pixel]
+                y_frac = (5 * frac + y + 5.0) / 10.0
+                y_frac = min(y_frac, 1)
+                y_frac = max(y_frac, 0)
+                p_frac = frac * y_frac
+                g_boost = frac
+                b_boost = frac * frac
+                r = int(255.0 * p_frac)
+                g = int(255.0 * p_frac * g_boost)
+                b = int(255.0 * p_frac * b_boost)
+                rgb = (r, g, b)
+                print("rgb = {}".format(rgb)) 
+                pixels[pixel]=rgb
+
+        else: # post sunset
+            print("night-time")
+            rgb = (0,0,0)
+            for pixel in range(0,50):
+                pixels[pixel]=rgb
+
+        pixels.show()
+        time.sleep(1) 
+
+
 def max_pixel( p1, p2 ):
     (r1, g1, b1) = p1
     (r2, g2, b2) = p2
@@ -2962,6 +3033,7 @@ declare_mode("66", mode66)
 declare_mode("67", mode67)
 declare_mode("68", mode68)
 declare_mode("69", mode69)
+declare_mode("70", mode70)
 
 
 @app.route('/disco/on')
