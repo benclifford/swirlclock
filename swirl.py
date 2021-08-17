@@ -376,9 +376,9 @@ def pmode_rotator(spin_speed = 1.0/600.0):
 
       pixels.show()
 
-      offset = (offset + spin_speed) % 1.0
+      offset = (offset + spin_speed / 5.0) % 1.0
 
-      time.sleep(0.1)
+      time.sleep(0.02)
 
 
 def mode11():
