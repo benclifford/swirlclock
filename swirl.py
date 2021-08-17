@@ -380,6 +380,63 @@ def pmode_rotator(spin_speed = 1.0/600.0):
 
       time.sleep(0.02)
 
+def mode72():
+
+    global new_mode
+
+    spin_speed = 1.0 / 6.0
+
+    pixels.auto_write = False
+
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    offset = 0
+    colour_segs = 1
+    colour_shift_rw = randomwalk.randomwalk(low = 0, high = 1.0)
+
+    next_reconfig_time = 0
+
+    while not new_mode:
+
+      if next_reconfig_time < time.time():
+        next_reconfig_time = time.time() + 1.0
+
+        old_segs = colour_segs
+        while colour_segs == old_segs:
+          colour_segs = float(random.randint(2,6))
+
+        colour_shift = next(colour_shift_rw)
+
+      for pixel in range(0,50):
+        (b, proportion_around_loop) = pixel_to_layer(pixel)
+        frac = (proportion_around_loop + offset) % 1.0
+
+        frac = int(frac * colour_segs) / colour_segs
+
+        frac = (frac + colour_shift) % 1.0
+
+        # simple radial proportion that assumes that each LED between bottom points
+        # is at a constant distance, with an immediate jump at each bottom point to
+        # be one unit further in.
+        # That leads to some abrupt changes in LED brightness, especially near the end
+        # of the strand
+
+        # this should make b into a number that decreases more smoothly than b,
+        # taking into account how far round the loop we are (which is stored
+        # in frac)
+        b_pro_rated = b + proportion_around_loop
+        radial_proportion = b_pro_rated / (len(bottoms)-1)
+
+        pixels[pixel] = hsv_to_neo_rgb(frac, s=1.0, v=radial_proportion)
+
+      pixels.show()
+
+      offset = (offset + spin_speed / 5.0) % 1.0
+
+      time.sleep(0.02)
+
+
 
 def mode11():
 
@@ -1581,7 +1638,8 @@ def disco_manager():
                    mode67,
                    mode68,
                    mode69,
-                   mode71]
+                   mode71,
+                   mode72]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3039,6 +3097,7 @@ declare_mode("68", mode68)
 declare_mode("69", mode69)
 declare_mode("70", mode70)
 declare_mode("71", mode71)
+declare_mode("72", mode72)
 
 
 @app.route('/disco/on')
