@@ -408,6 +408,8 @@ def mode72():
 
         colour_shift = next(colour_shift_rw)
 
+        activation_list = [random.random() < 0.8 for n in range(0,50)]
+
       for pixel in range(0,50):
         (b, proportion_around_loop) = pixel_to_layer(pixel)
         frac = (proportion_around_loop + offset) % 1.0
@@ -428,6 +430,11 @@ def mode72():
         b_pro_rated = b + proportion_around_loop
         radial_proportion = b_pro_rated / (len(bottoms)-1)
 
+        if activation_list[pixel] and b > 2:
+          radial_proportion = 1.0
+        else:
+          radial_proportion = 0.0
+        
         pixels[pixel] = hsv_to_neo_rgb(frac, s=1.0, v=radial_proportion)
 
       pixels.show()
