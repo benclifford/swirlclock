@@ -380,6 +380,101 @@ def pmode_rotator(spin_speed = 1.0/600.0):
 
       time.sleep(0.02)
 
+def mode75():
+    global new_mode
+    pixels.auto_write = False
+
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    # spin_speed = 1.0/60.0
+    offset = 0
+    target_offset = offset
+
+    window = 0.33
+    target_window = window
+
+    window_dir = 0
+    target_window_dir = window_dir
+
+    while not new_mode:
+      for pixel in range(0,50):
+        (b, proportion_around_loop) = pixel_to_layer(pixel)
+        frac = (proportion_around_loop + offset) % 1.0
+
+        # simple radial proportion that assumes that each LED between bottom points
+        # is at a constant distance, with an immediate jump at each bottom point to
+        # be one unit further in.
+        # That leads to some abrupt changes in LED brightness, especially near the end
+        # of the strand
+
+        # this should make b into a number that decreases more smoothly than b,
+        # taking into account how far round the loop we are (which is stored
+        # in frac)
+        b_pro_rated = b + proportion_around_loop
+        radial_proportion = b_pro_rated / (len(bottoms)-1)
+
+        if (proportion_around_loop + window_dir) % 1.0 > window:
+          radial_proportion = 0.0
+
+        pixels[pixel] = hsv_to_neo_rgb(frac, s=radial_proportion, v=radial_proportion)
+
+      pixels.show()
+
+      # offset = (offset + spin_speed / 5.0) % 1.0
+
+      active = False
+
+      if target_offset > offset:
+          offset += 0.02
+          if target_offset < offset:
+            target_offset = offset
+          active = True
+
+      if target_offset < offset:
+          offset -= 0.02
+          if target_offset > offset:
+            target_offset = offset
+          active = True
+
+      if target_window > window:
+          window += 0.02
+          if target_window < window:
+            target_window = window
+          active = True
+
+      if target_window < window:
+          window -= 0.02
+          if target_window > window:
+            target_window = window
+          active = True
+
+      if target_window_dir > window_dir:
+          window_dir += 0.02
+          if target_window_dir < window_dir:
+            target_window_dir = window_dir
+          active = True
+
+      if target_window_dir < window_dir:
+          window_dir -= 0.02
+          if target_window_dir > window_dir:
+            target_window_dir = window_dir
+          active = True
+
+
+      if not active:
+          choice = random.randint(1,3)
+          if choice == 1:
+            target_offset = offset + random.random() - 0.5
+          elif choice == 2:
+            target_window = 0.2 + random.random() * 0.4
+          elif choice == 3:
+            target_window_dir = random.random()
+          
+
+      time.sleep(0.02)
+
+
 def mode72():
 
     global new_mode
@@ -1715,7 +1810,8 @@ def disco_manager():
                    mode71,
                    mode72,
                    mode73,
-                   mode74]
+                   mode74,
+                   mode75]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3176,6 +3272,7 @@ declare_mode("71", mode71)
 declare_mode("72", mode72)
 declare_mode("73", mode73)
 declare_mode("74", mode74)
+declare_mode("75", mode75)
 
 
 @app.route('/disco/on')
