@@ -342,6 +342,9 @@ def mode10():
 def mode12():
     pmode_rotator(spin_speed = 1.0 / 60.0)
 
+def mode71():
+    pmode_rotator(spin_speed = 1.0 / 6.0)
+
 def pmode_rotator(spin_speed = 1.0/600.0):
 
     global new_mode
@@ -1577,7 +1580,8 @@ def disco_manager():
                    mode66,
                    mode67,
                    mode68,
-                   mode69]
+                   mode69,
+                   mode71]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3034,6 +3038,7 @@ declare_mode("67", mode67)
 declare_mode("68", mode68)
 declare_mode("69", mode69)
 declare_mode("70", mode70)
+declare_mode("71", mode71)
 
 
 @app.route('/disco/on')
