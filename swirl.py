@@ -444,6 +444,35 @@ def mode72():
       time.sleep(0.02)
 
 
+def mode73():
+
+    global new_mode
+
+
+    pixels.auto_write = False
+
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    phases = [0.0 for n in range(0,50)]
+
+    while not new_mode:
+
+      for pixel in range(0,50):
+
+        x = math.sin(phases[pixel])
+
+        x = (x / 2.0) + 0.5
+
+        phases[pixel] += 0.04 + (float(pixel) / 50.0 * 0.02)
+        
+        pixels[pixel] = hsv_to_neo_rgb(0, s=0, v=x)
+
+      pixels.show()
+
+      time.sleep(0.01)
+
+
 
 def mode11():
 
@@ -1646,7 +1675,8 @@ def disco_manager():
                    mode68,
                    mode69,
                    mode71,
-                   mode72]
+                   mode72,
+                   mode73]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3105,6 +3135,7 @@ declare_mode("69", mode69)
 declare_mode("70", mode70)
 declare_mode("71", mode71)
 declare_mode("72", mode72)
+declare_mode("73", mode73)
 
 
 @app.route('/disco/on')
