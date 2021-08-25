@@ -176,6 +176,55 @@ def mode31():
         time.sleep(0.5)
 
 
+def mode76():
+  global new_mode
+  pixels.auto_write = False
+  angle = random.random()
+  radius = 0
+
+  while not new_mode:
+    pixels.fill( (0,0,0) )
+    print(f"radius {radius}")
+    b1 = bottoms[radius] - 1
+    b2 = bottoms[radius + 1]
+    pix = int(b1 + (b2-b1)*angle)
+    print(f"pixel {pix}")
+    pixels[pix] = (255,255,255) 
+
+    radius += 1
+    if radius >= 5: # TODO wrt len of bottoms
+      radius = 0
+      angle = random.random()
+
+    pixels.show()
+    time.sleep(0.03)
+
+
+def mode77():
+  global new_mode
+  pixels.auto_write = False
+  angle = random.random()
+  radius = 0
+
+  while not new_mode:
+    pixels.fill( (0,0,0) )
+    print(f"radius {radius}")
+    b1 = bottoms[radius] - 1
+    b2 = bottoms[radius + 1]
+    pix = int(b1 + (b2-b1)*angle)
+    print(f"pixel {pix}")
+    pixels[pix] = (255,255,255) 
+
+    radius += 1
+    if radius >= 5: # TODO wrt len of bottoms
+      radius = 0
+      angle += 0.03
+      angle %= 1.0
+
+    pixels.show()
+    time.sleep(0.03)
+
+
 def mode56():
   global new_mode
   pixels.auto_write = False
@@ -1811,7 +1860,8 @@ def disco_manager():
                    mode72,
                    mode73,
                    mode74,
-                   mode75]
+                   mode75,
+                   mode76]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3273,6 +3323,8 @@ declare_mode("72", mode72)
 declare_mode("73", mode73)
 declare_mode("74", mode74)
 declare_mode("75", mode75)
+declare_mode("76", mode76)
+declare_mode("77", mode77)
 
 
 @app.route('/disco/on')
