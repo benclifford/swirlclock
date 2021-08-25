@@ -225,6 +225,31 @@ def mode77():
     time.sleep(0.03)
 
 
+def mode78():
+  global new_mode
+  pixels.auto_write = False
+  angle = random.random()
+  radius = 0
+
+  while not new_mode:
+    pixels.fill( (0,0,0) )
+    print(f"radius {radius}")
+    b1 = bottoms[radius] - 1
+    b2 = bottoms[radius + 1]
+    pix = int(b1 + (b2-b1)*angle)
+    print(f"pixel {pix}")
+    hue = (angle + radius / 5.0 / 3.0) % 1.0
+    pixels[pix] = hsv_to_neo_rgb(hue) 
+
+    radius += 1
+    if radius >= 5: # TODO wrt len of bottoms
+      radius = 0
+      angle = random.random()
+
+    pixels.show()
+    time.sleep(0.03)
+
+
 def mode56():
   global new_mode
   pixels.auto_write = False
@@ -1861,7 +1886,9 @@ def disco_manager():
                    mode73,
                    mode74,
                    mode75,
-                   mode76]
+                   mode76,
+                   mode77,
+                   mode78]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3325,6 +3352,7 @@ declare_mode("74", mode74)
 declare_mode("75", mode75)
 declare_mode("76", mode76)
 declare_mode("77", mode77)
+declare_mode("78", mode78)
 
 
 @app.route('/disco/on')
