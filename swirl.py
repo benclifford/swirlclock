@@ -1544,12 +1544,16 @@ def mode82():
            if display_pixels[p_left] is not None:
              c += 1
              hue = display_pixels[p_left]
+             if p == 0:  # inject colour change on loop
+               hue = (hue + 0.1) % 1.0
            if display_pixels[p] is not None:
              c += 1
              hue = display_pixels[p]
            if display_pixels[p_right] is not None:
              c += 1
              hue = display_pixels[p_right]
+             if p == 49:  # inject colour change on loop
+               hue = (hue + 0.1) % 1.0
 
            if c == 1:
                new_pixels.append(hue) 
