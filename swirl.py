@@ -1656,6 +1656,57 @@ def mode84():
       time.sleep(0.05)
 
 
+def mode85():
+    global new_mode
+    pixels.auto_write = False
+
+    hue = random.random()
+
+    while not new_mode:
+
+      error_r = 0
+      error_g = 0
+      error_b = 0
+
+      pixels.fill( (0,0,0) )
+
+
+      (r, g, b) = hsv_to_neo_rgb(hue, v=0.5)
+
+      for p in range(0, 50):
+
+          adjusted_r = r + error_r
+          adjusted_g = g + error_g
+          adjusted_b = b + error_b
+ 
+          if adjusted_r <= 0 and adjusted_g <= 0 and adjusted_b <= 0:
+              pixels[p] = (int(r/6), int(g/6), int(b/6))
+              error_r += r
+              error_g += g
+              error_b += b
+          elif adjusted_r >= adjusted_g and adjusted_r >= adjusted_b:
+              pixels[p] = (255, 0, 0)
+              error_r -= 255
+              error_g += g
+              error_b += b
+          elif adjusted_g >= adjusted_r and adjusted_g >= adjusted_b:
+              pixels[p] = (0, 255, 0)
+              error_g -= 255
+              error_r += r
+              error_b += b
+          elif adjusted_b >= adjusted_r and adjusted_b >= adjusted_g:
+              pixels[p] = (0, 0, 255)
+              error_b -= 255
+              error_r += r
+              error_g += g
+          else:
+              raise RuntimeError("Failed to pick a maximum primary colour")
+
+      pixels.show()
+      hue = (hue + 0.001)
+      time.sleep(0.01)
+
+
 def mode23():
     global new_mode
     pixels.auto_write = False
@@ -2097,7 +2148,8 @@ def disco_manager():
                    mode81,
                    mode82,
                    mode83,
-                   mode84]
+                   mode84,
+                   mode85]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3567,6 +3619,7 @@ declare_mode("81", mode81)
 declare_mode("82", mode82)
 declare_mode("83", mode83)
 declare_mode("84", mode84)
+declare_mode("85", mode85)
 
 
 @app.route('/disco/on')
