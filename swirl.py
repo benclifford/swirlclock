@@ -1487,6 +1487,39 @@ def mode22():
 
         time.sleep(0.1)
 
+def mode81():
+    global new_mode
+    pixels.auto_write = False
+
+    display_pixels = [random.random() > 0.5 for n in range(0,50)]
+
+    while not new_mode:
+        new_pixels = []
+        for p in range(0,50):
+           p_left = (p-1)%50
+           p_right = (p+1)%50
+
+           c = 0
+           if display_pixels[p_left]:
+             c += 1
+           if display_pixels[p]:
+             c += 1
+           if display_pixels[p_right]:
+             c += 1
+
+           new_pixels.append(c == 1) 
+
+        display_pixels = new_pixels
+
+        for p in range(0,50):
+            if display_pixels[p]:
+                pixels[p] = (128, 128, 128) 
+            else:
+                pixels[p] = (2,2,2) 
+
+
+        pixels.show()
+        time.sleep(0.1)
 
 def mode23():
     global new_mode
@@ -1925,7 +1958,8 @@ def disco_manager():
                    mode77,
                    mode78,
                    mode79,
-                   mode80]
+                   mode80,
+                   mode81]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3391,6 +3425,7 @@ declare_mode("76", mode76)
 declare_mode("77", mode77)
 declare_mode("79", mode79)
 declare_mode("80", mode80)
+declare_mode("81", mode81)
 
 
 @app.route('/disco/on')
