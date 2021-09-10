@@ -1573,6 +1573,58 @@ def mode82():
         time.sleep(0.1)
 
 
+def mode83():
+    global new_mode
+    pixels.auto_write = False
+
+    display_pixels = []
+
+    start_hue = random.random()
+
+    for p in range(0,50):
+      if random.random() > 0.5:
+        display_pixels.append(start_hue)
+      else:
+        display_pixels.append(None)
+
+    while not new_mode:
+        new_pixels = []
+        for p in range(0,50):
+           p_left = (p-1)%50
+           p_right = (p+1)%50
+
+           hue = None
+           c = 0
+           if display_pixels[p_left] is not None:
+             c += 1
+             hue = display_pixels[p_left]
+           if display_pixels[p] is not None:
+             c += 1
+             hue = display_pixels[p]
+           if display_pixels[p_right] is not None:
+             c += 1
+             hue = display_pixels[p_right]
+
+           if c == 1:
+               # cause a little bit of colour drift on each generation
+               # with different drift in different parts of the board
+               new_pixels.append(hue + float(p) / 50.0 / 100.0) 
+           else:
+               new_pixels.append(None) 
+
+        display_pixels = new_pixels
+
+        for p in range(0,50):
+            if display_pixels[p] is not None:
+                pixels[p] = hsv_to_neo_rgb(display_pixels[p])
+            else:
+                pixels[p] = (2,2,2) 
+
+
+        pixels.show()
+        time.sleep(0.1)
+
+
 def mode23():
     global new_mode
     pixels.auto_write = False
@@ -2012,7 +2064,8 @@ def disco_manager():
                    mode79,
                    mode80,
                    mode81,
-                   mode82]
+                   mode82,
+                   mode83]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3480,6 +3533,7 @@ declare_mode("79", mode79)
 declare_mode("80", mode80)
 declare_mode("81", mode81)
 declare_mode("82", mode82)
+declare_mode("83", mode83)
 
 
 @app.route('/disco/on')
