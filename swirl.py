@@ -265,6 +265,24 @@ def mode79():
     time.sleep(0.03)
 
 
+def mode80():
+  global new_mode
+  pixels.auto_write = False
+  hue = random.random()
+  rgb = hsv_to_neo_rgb(hue) 
+  contr_rgb = hsv_to_neo_rgb((hue + 0.5)%1.0) 
+
+  while not new_mode:
+    pixels.fill( (0,0,0) )
+    for p in range(0,50):
+      r = random.random()
+      if r > 0.95:
+          pixels[p] = contr_rgb
+      elif r > 0.5: 
+          pixels[p] = rgb
+    pixels.show()
+    time.sleep(0.03)
+
 
 
 def mode56():
@@ -1906,7 +1924,8 @@ def disco_manager():
                    mode76,
                    mode77,
                    mode78,
-                   mode79]
+                   mode79,
+                   mode80]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3371,6 +3390,7 @@ declare_mode("75", mode75)
 declare_mode("76", mode76)
 declare_mode("77", mode77)
 declare_mode("79", mode79)
+declare_mode("80", mode80)
 
 
 @app.route('/disco/on')
