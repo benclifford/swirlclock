@@ -2159,7 +2159,8 @@ def disco_manager():
                    mode83,
                    mode84,
                    mode85,
-                   mode86]
+                   mode86,
+                   mode87]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3569,6 +3570,60 @@ def mode86():
       time.sleep(0.05)
 
 
+def mode87():
+    global new_mode
+    pixels.auto_write = False
+
+    display_pixels = [random.random() > 0.5 for p in range(0,50)]
+    orig_pixels = display_pixels
+
+    ball_size = 5
+
+    distances = {}
+    for p in range(0,50):
+      distances[p] = closest_pixels(p)[0:ball_size]
+
+    while not new_mode:
+      display_pixels = orig_pixels
+
+      pchange = random.randint(0,49)
+      orig_pixels[pchange] = not orig_pixels[pchange]
+
+      active = True
+      iters = 0
+      while active and iters < 10:
+        active = False
+        iters += 1
+        new_pixels = []
+
+        for p in range(0,50):
+          cps = distances[p]
+          s = 0
+          for (_, cp) in cps:
+            if display_pixels[cp]: 
+              s += 1
+          new_pixels.append( s >= (ball_size / 2.0) )
+          if new_pixels[p] != display_pixels[p]:
+            active = True
+
+        display_pixels = new_pixels
+
+      for p in range(0,50):
+        if display_pixels[p] and orig_pixels[p]:
+          pixels[p] = (0, 0, 255)
+        elif display_pixels[p]:
+          pixels[p] = (0, 0, 16)
+        elif orig_pixels[p]:
+          pixels[p] = (16,0,0)
+        else:
+          pixels[p] = (255,0,0)
+
+      pixels[pchange] = (0,255,0)
+
+      pixels.show()
+      time.sleep(0.05)
+
+
 
 def max_pixel( p1, p2 ):
     (r1, g1, b1) = p1
@@ -3685,6 +3740,7 @@ declare_mode("83", mode83)
 declare_mode("84", mode84)
 declare_mode("85", mode85)
 declare_mode("86", mode86)
+declare_mode("87", mode87)
 
 
 @app.route('/disco/on')
