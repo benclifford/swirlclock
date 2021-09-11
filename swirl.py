@@ -3656,6 +3656,9 @@ def mode87():
 def mode89():
     pmode_cli("./swc-bash")
 
+def mode90():
+    pmode_cli(["./hs/dist/build/swc-hs/swc-hs", "90"])
+
 def pmode_cli(command):
     import subprocess
 
@@ -3809,6 +3812,7 @@ declare_mode("86", mode86)
 declare_mode("87", mode87)
 declare_mode("88", mode88)
 declare_mode("89", mode89)
+declare_mode("90", mode90)
 
 
 @app.route('/disco/on')
