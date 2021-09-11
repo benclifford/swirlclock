@@ -1,0 +1,8 @@
+#!/bin/bash
+
+while true; do
+echo 000000FFFFFF
+sleep 0.05
+echo FF000000FF00
+sleep 0.2
+done

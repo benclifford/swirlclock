@@ -3653,6 +3653,43 @@ def mode87():
       time.sleep(0.05)
 
 
+def mode89():
+    pmode_cli("./swc-bash")
+
+def pmode_cli(command):
+    import subprocess
+
+    global new_mode
+    pixels.auto_write = False
+
+    # launch process
+    process = subprocess.Popen(command, stdout=subprocess.PIPE)
+
+    while not new_mode:
+      pixels.fill( (0,0,0) ) 
+      # read a line and display it
+      l = process.stdout.readline()
+      for p in range(0,50):
+        cs = l[0:2]
+        l = l[2:]
+        if len(cs) == 2:
+          r = int(cs, 16)
+        cs = l[0:2]
+        l = l[2:]
+        if len(cs) == 2:
+          g = int(cs, 16)
+        cs = l[0:2]
+        l = l[2:]
+        if len(cs) == 2:
+          b = int(cs, 16)
+          pixels[p] = (r, g, b)
+          # only write out the pixel if we've read all three
+          
+      pixels.show()
+
+    # kill process
+    process.terminate()
+    process.wait()
 
 def max_pixel( p1, p2 ):
     (r1, g1, b1) = p1
@@ -3771,6 +3808,7 @@ declare_mode("85", mode85)
 declare_mode("86", mode86)
 declare_mode("87", mode87)
 declare_mode("88", mode88)
+declare_mode("89", mode89)
 
 
 @app.route('/disco/on')
