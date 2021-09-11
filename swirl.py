@@ -891,6 +891,15 @@ def pmode_dotclock(*, display_seconds):
     time.sleep(0.05)
 
 
+def closest_pixels(pixelish):
+
+    pixel_pos = generate_pixel_pos(extra_pixels=[pixelish])
+
+    (x, y) = pixel_pos[pixelish]
+
+    return distances_from_point(x, y, pixel_pos=pixel_pos)
+
+
 def pixels_for_angle(angle, loop_in):
 
     # loop_in = 
@@ -2149,7 +2158,8 @@ def disco_manager():
                    mode82,
                    mode83,
                    mode84,
-                   mode85]
+                   mode85,
+                   mode86]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3507,6 +3517,59 @@ def mode70():
         time.sleep(1) 
 
 
+def mode86():
+    global new_mode
+    pixels.auto_write = False
+
+    display_pixels = [random.random() > 0.5 for p in range(0,50)]
+    orig_pixels = display_pixels
+
+    ball_size = 5
+
+    distances = {}
+    for p in range(0,50):
+      distances[p] = closest_pixels(p)[0:ball_size]
+
+    while not new_mode:
+      display_pixels = orig_pixels
+
+      p = random.randint(0,49)
+      orig_pixels[p] = not orig_pixels[p]
+
+      active = True
+      iters = 0
+      while active and iters < 10:
+        active = False
+        iters += 1
+        new_pixels = []
+
+        for p in range(0,50):
+          cps = distances[p]
+          s = 0
+          for (_, cp) in cps:
+            if display_pixels[cp]: 
+              s += 1
+          new_pixels.append( s >= (ball_size / 2.0) )
+          if new_pixels[p] != display_pixels[p]:
+            active = True
+
+        display_pixels = new_pixels
+
+      for p in range(0,50):
+        if display_pixels[p] and orig_pixels[p]:
+          pixels[p] = (255, 255, 255)
+        elif display_pixels[p]:
+          pixels[p] = (16, 16, 255)
+        elif orig_pixels[p]:
+          pixels[p] = (16,0,0)
+        else:
+          pixels[p] = (0,0,0)
+
+      pixels.show()
+      time.sleep(0.05)
+
+
+
 def max_pixel( p1, p2 ):
     (r1, g1, b1) = p1
     (r2, g2, b2) = p2
@@ -3621,6 +3684,7 @@ declare_mode("82", mode82)
 declare_mode("83", mode83)
 declare_mode("84", mode84)
 declare_mode("85", mode85)
+declare_mode("86", mode86)
 
 
 @app.route('/disco/on')
