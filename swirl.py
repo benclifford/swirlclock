@@ -2160,7 +2160,8 @@ def disco_manager():
                    mode84,
                    mode85,
                    mode86,
-                   mode87]
+                   mode87,
+                   mode88]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3016,6 +3017,34 @@ def mode50():
       time.sleep(0.3)
 
 
+def mode88():
+    # like mode50, but changes hue rather than brightness
+    global new_mode
+    pixels.auto_write = False
+
+    pixel_pos = generate_pixel_pos()
+
+    while not new_mode:
+
+      hue_offset = random.random()
+
+      x = random.random() * 6 - 3
+      y = random.random() * 6 - 3
+
+      for p in range(0,50):
+
+        (x1, y1) = pixel_pos[p]
+
+        d = math.sqrt( (x1 - x) ** 2 + (y1 - y) ** 2)
+
+        v = (d/10.0 + hue_offset) % 1.0
+
+        pixels[p] = hsv_to_neo_rgb(v)
+
+      pixels.show()
+      time.sleep(0.3)
+
+
 def mode51():
     global new_mode
     pixels.auto_write = False
@@ -3741,6 +3770,7 @@ declare_mode("84", mode84)
 declare_mode("85", mode85)
 declare_mode("86", mode86)
 declare_mode("87", mode87)
+declare_mode("88", mode88)
 
 
 @app.route('/disco/on')
