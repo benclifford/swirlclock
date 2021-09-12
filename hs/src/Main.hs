@@ -56,7 +56,9 @@ toggleToLeds = map f toggleSeq
 angleSpin p = [0, p..6.28319] ++ angleSpin p
 
 -- TODO: gamma correction
-sinSpiral p = map (all50 . brightnessToRGB . fracToBrightness . normaliseSin . sin) (angleSpin p)
+sinSpiral p = map sinSpiralFrame (angleSpin p)
+sinSpiralFrame th = map (brightnessToRGB . fracToBrightness . normaliseSin . sin. adjAngle) (all50 th `zip` [0..49])
+adjAngle (a,b) = a + (b/50.0)
 
 normaliseSin x = x / 2.0 + 0.5
 
