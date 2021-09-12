@@ -2,9 +2,10 @@ module Main where
 
 import Control.Concurrent (threadDelay)
 import Control.Monad (forever, join)
+import Data.Time.Clock.POSIX (getPOSIXTime)
 import Data.Word (Word8)
 import System.Environment (getArgs)
-import System.IO (hFlush, stdout)
+import System.IO (hFlush, hPutStrLn, stderr, stdout)
 import Text.Printf (printf)
 
 
@@ -25,10 +26,22 @@ updateLeds leds = do
   putStrLn $ render leds
   hFlush stdout
 
-runLeds (h:t) = do
+runLeds period (h:t) = do
+  now <- getPOSIXTime
+  runLedsInner (now + period) period (h:t)
+
+runLedsInner nextTime period (h:t) = do
   updateLeds h
-  threadDelay 100000
-  runLeds t
+  -- wait until nextTime
+  -- rather than a specific delay
+  -- to accomodate the varying, significant
+  -- time taken in updateLeds
+  now <- getPOSIXTime
+  let remaining = nextTime - now
+  if remaining > 0 then do -- hPutStrLn stderr $ "extra time: " ++ show remaining
+                           threadDelay (floor (remaining * 1000000))
+                   else hPutStrLn stderr $ "WARNING: time overrun: " ++ show remaining
+  runLedsInner (nextTime + period) period t
 
 toggleSeq = [True, False] ++ toggleSeq
 
@@ -38,12 +51,28 @@ toggleToLeds = map f toggleSeq
         redled = RGB 255 0 0
         blueled = RGB 0 0 255
 
+
+-- spin round forever
+angleSpin p = [0, p..6.28319] ++ angleSpin p
+
+-- TODO: gamma correction
+sinSpiral p = map (all50 . brightnessToRGB . fracToBrightness . normaliseSin . sin) (angleSpin p)
+
+normaliseSin x = x / 2.0 + 0.5
+
+fracToBrightness x = floor (x * 255)
+
+brightnessToRGB x = RGB x x x
+
+all50 v = take 50 $ repeat v
+
 main :: IO ()
 main = do
   args <- getArgs
   -- switch on the mode number supplied on the CLI
 
   case (read $ head args) of
-    90 -> runLeds toggleToLeds
+    90 -> runLeds 0.1 toggleToLeds
+    91 -> runLeds 0.08 (sinSpiral 0.08)
 
 
