@@ -78,6 +78,6 @@ main = do
 
   case (read $ head args) of
     90 -> runLeds 0.1 toggleToLeds
-    91 -> runLeds 0.08 (sinSpiral 0.08)
+    91 -> runLeds 0.05 (sinSpiral 0.05)
 
 
