@@ -4,6 +4,7 @@ import Control.Concurrent (threadDelay)
 import Control.Monad (forever, join)
 import Data.Time.Clock.POSIX (getPOSIXTime)
 import Data.Word (Word8)
+import Numeric (showHex)
 import System.Environment (getArgs)
 import System.IO (hFlush, hPutStrLn, stderr, stdout)
 import Text.Printf (printf)
@@ -19,7 +20,9 @@ data RGB t = RGB {
 render :: [RGB Word8] -> String
 render leds = join $ map f leds
   where f l = (hex . _red) l ++ (hex . _green) l ++ (hex . _blue) l
-        hex v = printf "%2.2x" v
+        hex v = if v < 16 then "0" ++ onehex v
+                          else (onehex (v `quot` 16)) ++ (onehex (v `rem` 16))
+        onehex v = ["0123456789ABCDEF" !! (fromIntegral v)]
 
 updateLeds :: [RGB Word8] -> IO ()
 updateLeds leds = do
