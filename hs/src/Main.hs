@@ -21,8 +21,27 @@ render :: [RGB Word8] -> String
 render leds = join $ map f leds
   where f l = (hex . _red) l ++ (hex . _green) l ++ (hex . _blue) l
         hex v = if v < 16 then ['0', onehex v]
-                          else [(onehex (v `quot` 16)), (onehex (v `rem` 16))]
-        onehex v = "0123456789ABCDEF" !! (fromIntegral v)
+                          else [onehex (v `quot` 16), onehex (v `rem` 16)]
+
+
+-- onehex v = "0123456789ABCDEF" !! (fromIntegral v)
+onehex 0 = '0'
+onehex 1 = '1'
+onehex 2 = '2'
+onehex 3 = '3'
+onehex 4 = '4'
+onehex 5 = '5'
+onehex 6 = '6'
+onehex 7 = '7'
+onehex 8 = '8'
+onehex 9 = '9'
+onehex 10 = 'A'
+onehex 11 = 'B'
+onehex 12 = 'C'
+onehex 13 = 'D'
+onehex 14 = 'E'
+onehex 15 = 'F'
+
 
 updateLeds :: [RGB Word8] -> IO ()
 updateLeds leds = do
