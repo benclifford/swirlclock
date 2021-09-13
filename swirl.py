@@ -3657,10 +3657,10 @@ def mode89():
     pmode_cli("./swc-bash")
 
 def mode90():
-    pmode_cli(["./hs/dist/build/swc-hs/swc-hs", "90"])
+    pmode_cli(["./hs/.cabal-sandbox/bin/swc-hs", "90"])
 
 def mode91():
-    pmode_cli(["./hs/dist/build/swc-hs/swc-hs", "91"])
+    pmode_cli(["./hs/.cabal-sandbox/bin/swc-hs", "91"])
 
 def pmode_cli(command):
     import subprocess
