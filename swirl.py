@@ -184,11 +184,9 @@ def mode76():
 
   while not new_mode:
     pixels.fill( (0,0,0) )
-    print(f"radius {radius}")
     b1 = bottoms[radius] - 1
     b2 = bottoms[radius + 1]
     pix = int(b1 + (b2-b1)*angle)
-    print(f"pixel {pix}")
     pixels[pix] = (255,255,255) 
 
     radius += 1
@@ -208,11 +206,9 @@ def mode77():
 
   while not new_mode:
     pixels.fill( (0,0,0) )
-    print(f"radius {radius}")
     b1 = bottoms[radius] - 1
     b2 = bottoms[radius + 1]
     pix = int(b1 + (b2-b1)*angle)
-    print(f"pixel {pix}")
     pixels[pix] = (255,255,255) 
 
     radius += 1
@@ -233,11 +229,9 @@ def mode78():
 
   while not new_mode:
     pixels.fill( (0,0,0) )
-    print(f"radius {radius}")
     b1 = bottoms[radius] - 1
     b2 = bottoms[radius + 1]
     pix = int(b1 + (b2-b1)*angle)
-    print(f"pixel {pix}")
     hue = (angle + radius / 5.0 / 3.0) % 1.0
     pixels[pix] = hsv_to_neo_rgb(hue) 
 
