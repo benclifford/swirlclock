@@ -1640,6 +1640,16 @@ def mode92():
     display_pixels = [random.random() > 0.5 for n in range(0,50)]
     last_pixels = display_pixels
 
+    prime_hue = random.random()
+
+    if random.random() > 0.5:
+      second_hue = (prime_hue + (1.0/6.0)) % 1.0
+    else:
+      second_hue = (prime_hue - (1.0/6.0)) % 1.0
+
+    prime_rgb = hsv_to_neo_rgb(prime_hue)
+    second_rgb = hsv_to_neo_rgb(second_hue)
+
     while not new_mode:
         new_pixels = []
         for p in range(0,50):
@@ -1661,11 +1671,11 @@ def mode92():
 
         for p in range(0,50):
             if display_pixels[p]:
-                pixels[p] = (128, 128, 0) 
+                pixels[p] =  prime_rgb
             elif last_pixels[p]:
-                pixels[p] = (128, 0, 0) 
+                pixels[p] = second_rgb
             else:
-                pixels[p] = (2,0,0) 
+                pixels[p] = (0,0,0) 
 
 
         pixels.show()
