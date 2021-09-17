@@ -274,6 +274,32 @@ def mode80():
           pixels[p] = contr_rgb
       elif r > 0.5: 
           pixels[p] = rgb
+
+    pixels.show()
+    time.sleep(0.03)
+
+
+def mode93():
+  global new_mode
+  pixels.auto_write = False
+  hue = random.random()
+  rgb = hsv_to_neo_rgb(hue) 
+  contr_rgb = hsv_to_neo_rgb((hue + 0.5)%1.0) 
+
+  primary_rw = randomwalk.randomwalk(low = 0.25, high = 0.75)
+  contr_rw = randomwalk.randomwalk(low = 0.75, high = 1.0)
+
+  while not new_mode:
+    pixels.fill( (0,0,0) )
+    primary_thresh = next(primary_rw)
+    contr_thresh = next(contr_rw)
+    for p in range(0,50):
+      r = random.random()
+      if r > contr_thresh:
+          pixels[p] = contr_rgb
+      elif r > primary_thresh:
+          pixels[p] = rgb
+
     pixels.show()
     time.sleep(0.03)
 
@@ -2205,7 +2231,8 @@ def disco_manager():
                    mode86,
                    mode87,
                    mode88,
-                   mode92]
+                   mode92,
+                   mode93]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3862,6 +3889,7 @@ declare_mode("89", mode89)
 declare_mode("90", mode90)
 declare_mode("91", mode91)
 declare_mode("92", mode92)
+declare_mode("93", mode93)
 
 
 @app.route('/disco/on')
