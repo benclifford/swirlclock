@@ -3391,7 +3391,7 @@ def mode52():
         hue = random.random()
         centre_info.append( (x, y, hue, 1.0) )
 
-      time.sleep(0.05)
+      time.sleep(0.01)
 
 
 def mode53():
