@@ -668,6 +668,80 @@ def mode72():
       time.sleep(0.02)
 
 
+def mode94():
+
+    global new_mode
+
+    spin_speed = 1.0 / 6.0
+
+    pixels.auto_write = False
+
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    offset = 0
+    colour_segs = 1
+
+    next_reconfig_time = 0
+
+    while not new_mode:
+
+      if next_reconfig_time < time.time():
+        next_reconfig_time = time.time() + 1.0
+
+        old_segs = colour_segs
+        while colour_segs == old_segs:
+          colour_segs = float(random.randint(2,6))
+
+        colour_shift = random.random()
+
+        activation_list = [True for n in range(0,50)]
+
+      t = next_reconfig_time - time.time()  # will go from 1.0 to 0.0, approx
+
+      if t > 0.9:  # first bit, fade up
+        v_t = 1.0 - t  # 0 .. 0.1
+        v_t = v_t * 10.0  # 0 .. 1.0
+        v_t = min(1.0, max(v_t, 0.0))
+      else:
+        v_t = t / 0.9
+        v_t = v_t ** 0.5
+        v_t = min(1.0, max(v_t, 0.0))
+
+      for pixel in range(0,50):
+        (b, proportion_around_loop) = pixel_to_layer(pixel)
+        frac = (proportion_around_loop + offset) % 1.0
+
+        frac = int(frac * colour_segs) / colour_segs
+
+        frac = (frac + colour_shift) % 1.0
+
+        # simple radial proportion that assumes that each LED between bottom points
+        # is at a constant distance, with an immediate jump at each bottom point to
+        # be one unit further in.
+        # That leads to some abrupt changes in LED brightness, especially near the end
+        # of the strand
+
+        # this should make b into a number that decreases more smoothly than b,
+        # taking into account how far round the loop we are (which is stored
+        # in frac)
+        b_pro_rated = b + proportion_around_loop
+        radial_proportion = b_pro_rated / (len(bottoms)-1)
+
+        if activation_list[pixel] and b > 2:
+          radial_proportion = v_t
+        else:
+          radial_proportion = 0.0
+        
+        pixels[pixel] = hsv_to_neo_rgb(frac, s=1.0, v=radial_proportion)
+
+      pixels.show()
+
+      # offset = (offset + spin_speed / 5.0) % 1.0
+
+      time.sleep(0.02)
+
+
 def mode73():
 
     global new_mode
@@ -2232,7 +2306,8 @@ def disco_manager():
                    mode87,
                    mode88,
                    mode92,
-                   mode93]
+                   mode93,
+                   mode94]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -3890,6 +3965,7 @@ declare_mode("90", mode90)
 declare_mode("91", mode91)
 declare_mode("92", mode92)
 declare_mode("93", mode93)
+declare_mode("94", mode94)
 
 
 @app.route('/disco/on')
