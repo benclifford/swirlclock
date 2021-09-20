@@ -2311,7 +2311,9 @@ def disco_manager():
                    mode92,
                    mode93,
                    mode94,
-                   mode96]
+                   mode96,
+                   mode97,
+                   mode98]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2514,11 +2516,80 @@ def mode96():
             g = int(128 + 127 * math.sin(bo + theta))
             b = int(128 + 127 * math.sin(go + theta * -1.0))
             pixels[p] = (r, g, b) 
-            ro = (ro + 0.0047) % tau
-            go = (go + 0.0043) % tau
-            bo = (bo + 0.004) % tau
+        ro = (ro + 0.23) % tau
+        go = (go + 0.215) % tau
+        bo = (bo + 0.2) % tau
         pixels.show()
         time.sleep(0.02)
+
+
+def mode97():
+    global new_mode
+    pixels.auto_write = False
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    ro = random.random()
+    bo = random.random()
+    go = random.random()
+
+    active = [True, False, True, True, True, False, False,False, False, False, False, True, True, False, False, False]
+    active_count = 0
+
+
+    while not new_mode:
+        for p in range(0,50):
+            theta = p/50.0 * tau
+            r = int(128 + 127 * math.sin(ro + theta * 2.0))
+            g = int(128 + 127 * math.sin(bo + theta))
+            b = int(128 + 127 * math.sin(go + theta * -1.0))
+            if active[p % len(active)]:
+                pixels[p] = (r, g, b) 
+            else:
+                pixels[p] = (0, 0, 0)
+        ro = (ro + 0.23) % tau
+        go = (go + 0.215) % tau
+        bo = (bo + 0.2) % tau
+
+        if active_count > 2:
+          active_pop = active.pop()
+          active = [active_pop] + active
+          active_count = 0
+
+        active_count += 1 
+
+        pixels.show()
+        
+        time.sleep(0.02)
+
+def mode98():
+    global new_mode
+    pixels.auto_write = False
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    ro = random.random()
+    bo = random.random()
+    go = random.random()
+    vo = random.random()
+
+    while not new_mode:
+        for p in range(0,50):
+            theta = p/50.0 * tau
+            v = math.sin(vo + theta * -2.7) * 0.5 + 0.5
+            r = int(v * (128 + 127 * math.sin(ro + theta * 2.0)))
+            g = int(v * (128 + 127 * math.sin(bo + theta)))
+            b = int(v * (128 + 127 * math.sin(go + theta * -1.0)))
+            pixels[p] = (r, g, b) 
+        vo = (vo + 0.03) % tau
+        ro = (ro + 0.23) % tau
+        go = (go + 0.215) % tau
+        bo = (bo + 0.2) % tau
+
+        pixels.show()
+        
+        time.sleep(0.02)
+
 
 
 def mode32():
@@ -3996,6 +4067,8 @@ declare_mode("93", mode93)
 declare_mode("94", mode94)
 declare_mode("95", mode95)
 declare_mode("96", mode96)
+declare_mode("97", mode97)
+declare_mode("98", mode98)
 
 
 @app.route('/disco/on')
