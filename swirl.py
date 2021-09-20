@@ -140,6 +140,9 @@ def mode3():
 def mode6():
     pmode_solid( (0, 0, 0) )
 
+def mode95():
+    pmode_solid( (1, 0, 0) )
+
 def mode62():
     pmode_solid( hsv_to_neo_rgb(random.random()) )
 
@@ -2307,7 +2310,8 @@ def disco_manager():
                    mode88,
                    mode92,
                    mode93,
-                   mode94]
+                   mode94,
+                   mode96]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -2491,6 +2495,30 @@ def mode30():
             hue1 = different_hue(hue2)
         if h == -4: # hue2 is invisible, pick new
             hue2 = different_hue(hue1)
+
+
+def mode96():
+    global new_mode
+    pixels.auto_write = False
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    ro = random.random()
+    bo = random.random()
+    go = random.random()
+
+    while not new_mode:
+        for p in range(0,50):
+            theta = p/50.0 * tau
+            r = int(128 + 127 * math.sin(ro + theta * 3.0))
+            g = int(128 + 127 * math.sin(bo + theta))
+            b = int(128 + 127 * math.sin(go + theta * 2.0))
+            pixels[p] = (r, g, b) 
+            ro = (ro + 0.0047) % tau
+            go = (go + 0.0043) % tau
+            bo = (bo + 0.004) % tau
+        pixels.show()
+        time.sleep(0.02)
 
 
 def mode32():
@@ -3966,6 +3994,8 @@ declare_mode("91", mode91)
 declare_mode("92", mode92)
 declare_mode("93", mode93)
 declare_mode("94", mode94)
+declare_mode("95", mode95)
+declare_mode("96", mode96)
 
 
 @app.route('/disco/on')
