@@ -2510,9 +2510,9 @@ def mode96():
     while not new_mode:
         for p in range(0,50):
             theta = p/50.0 * tau
-            r = int(128 + 127 * math.sin(ro + theta * 3.0))
+            r = int(128 + 127 * math.sin(ro + theta * 2.0))
             g = int(128 + 127 * math.sin(bo + theta))
-            b = int(128 + 127 * math.sin(go + theta * 2.0))
+            b = int(128 + 127 * math.sin(go + theta * -1.0))
             pixels[p] = (r, g, b) 
             ro = (ro + 0.0047) % tau
             go = (go + 0.0043) % tau
