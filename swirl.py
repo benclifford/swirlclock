@@ -1460,6 +1460,75 @@ def mode60():
 
     boom = False
 
+
+def mode99():
+  """This is a variant of mode20 and mode60 so TODO refactor?"""
+  global new_mode
+  pixels.auto_write = False
+  display_pixels = [None for n in range(0,50)]
+
+
+  hue = random.random()
+  start_particle = bottoms[len(bottoms)-1] + int(hue * (bottoms[len(bottoms)-2] - bottoms[len(bottoms)-2]))
+
+  particle = start_particle
+
+  first = True
+  boom = False
+
+  tc = 0.001
+  hc = 0.004
+
+  while not new_mode:
+
+    # display state
+
+    display_pixels[particle] = (hue, 1)
+    fade_hv_fadepixel(display_pixels, 0.02)
+    render_hv_fadepixel(pixels, display_pixels)
+    # move particle
+    (b, frac) = pixel_to_layer(particle)
+
+    choice = random.randint(0,2)
+
+    old_first = first
+    first = False
+
+    if choice == 0:
+      new_particle = particle + 1
+      if new_particle >= bottoms[b]:
+        new_particle = bottoms[b+1]
+
+    elif choice == 1:
+      new_particle = particle - 1  # TODO: mod
+      if new_particle < bottoms[b+1]:
+        new_particle = bottoms[b]-1
+    elif choice == 2:
+      # move inwards
+      # determine angle now
+      if b == 0:
+        # if we reach the centre, solidify
+        boom = old_first
+        first = True
+        pixels.show()
+        pixels.fill( (0,0,0) )
+      else:
+        b = b - 1
+        new_particle = int(bottoms[b] + (bottoms[b+1] - bottoms[b])*frac)
+
+    particle = new_particle
+
+
+    time.sleep(tc)
+
+    if boom:
+      hue = random.random()
+      start_particle = bottoms[len(bottoms)-1] + int(hue * (bottoms[len(bottoms)-2] - bottoms[len(bottoms)-1]))
+      particle = start_particle
+
+    boom = False
+
+
 def mode61():
   """another reparameterisation of mode20 - TODO factor?"""
   global new_mode
@@ -2313,7 +2382,8 @@ def disco_manager():
                    mode94,
                    mode96,
                    mode97,
-                   mode98]
+                   mode98,
+                   mode99]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -4069,6 +4139,7 @@ declare_mode("95", mode95)
 declare_mode("96", mode96)
 declare_mode("97", mode97)
 declare_mode("98", mode98)
+declare_mode("99", mode99)
 
 
 @app.route('/disco/on')
