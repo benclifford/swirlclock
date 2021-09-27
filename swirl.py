@@ -1662,6 +1662,7 @@ def mode22():
 
         time.sleep(0.1)
 
+
 def mode101():
     global new_mode
     pixels.auto_write = False
@@ -1711,6 +1712,69 @@ def mode101():
 
           pixels.show()
           time.sleep(0.05)
+
+        last_pixels = display_pixels
+        time.sleep(0.2)
+
+
+def mode102():
+    global new_mode
+    pixels.auto_write = False
+
+    last_pixels = [False for n in range(0,50)]
+
+    display_pixels = [random.random() > 0.5 for n in range(0,50)]
+
+    while not new_mode:
+        new_pixels = []
+        for p in range(0,50):
+           p_left = (p-1)%50
+           p_right = (p+1)%50
+
+           c = 0
+           if display_pixels[p_left]:
+             c += 1
+           if display_pixels[p]:
+             c += 1
+           if display_pixels[p_right]:
+             c += 1
+
+           new_pixels.append(c == 1) 
+
+        display_pixels = new_pixels
+
+        for frac in range(0,3*8):
+
+          for p in range(0,50):
+            if display_pixels[p] and not last_pixels[p]:
+                # desired sequence: red, yellow, white
+                if frac < 8:
+                  v = 2 ** frac
+                  pixels[p] = (v, 0, 0) 
+                elif frac < 16:
+                  v = 2 ** (frac - 8)
+                  pixels[p] = (127, v, 0) 
+                else:
+                  v = 2 ** (frac - 16)
+                  pixels[p] = (127, 127, v) 
+            elif not display_pixels[p] and last_pixels[p]:
+                if frac < 8:
+                  v = 2 ** (7-frac)
+                  pixels[p] = (v, 127, 127) 
+                elif frac < 16:
+                  v = 2 ** (7 - (frac - 8))
+                  pixels[p] = (0, v, 127) 
+                else:
+                  v = 2 ** (7 - (frac - 16))
+                  pixels[p] = (0, 0, v) 
+            elif display_pixels[p] and last_pixels[p]:
+                pixels[p] = (128, 128, 128) 
+            else:
+                pixels[p] = (0, 0, 0) 
+
+
+          pixels.show()
+          time.sleep(0.01)
 
         last_pixels = display_pixels
         time.sleep(0.2)
@@ -2437,7 +2501,8 @@ def disco_manager():
                    mode97,
                    mode98,
                    mode99,
-                   mode101]
+                   mode101,
+                   mode102]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -4199,6 +4264,7 @@ declare_mode("98", mode98)
 declare_mode("99", mode99)
 declare_mode("100", mode100)
 declare_mode("101", mode101)
+declare_mode("102", mode102)
 
 
 @app.route('/disco/on')
