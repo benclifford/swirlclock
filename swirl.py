@@ -1662,6 +1662,59 @@ def mode22():
 
         time.sleep(0.1)
 
+def mode101():
+    global new_mode
+    pixels.auto_write = False
+
+    last_pixels = [False for n in range(0,50)]
+
+    display_pixels = [random.random() > 0.5 for n in range(0,50)]
+
+    while not new_mode:
+        new_pixels = []
+        for p in range(0,50):
+           p_left = (p-1)%50
+           p_right = (p+1)%50
+
+           c = 0
+           if display_pixels[p_left]:
+             c += 1
+           if display_pixels[p]:
+             c += 1
+           if display_pixels[p_right]:
+             c += 1
+
+           new_pixels.append(c == 1) 
+
+        display_pixels = new_pixels
+
+        for frac in range(0,8):
+
+          for p in range(0,50):
+            if display_pixels[p] and not last_pixels[p]:
+                v = 2 ** frac
+                pixels[p] = (v, v, v) 
+            elif not display_pixels[p] and last_pixels[p]:
+                v = 2 ** (7-frac)
+                pixels[p] = (v, v, v) 
+                # this only fades down to 2, not 0, which gives a
+                # slight extra twinkle effect when the 2 goes down
+                # to zero a step later. initially a bug but I like
+                # it.
+
+
+            elif display_pixels[p] and last_pixels[p]:
+                pixels[p] = (128, 128, 128) 
+            else:
+                pixels[p] = (0, 0, 0) 
+
+
+          pixels.show()
+          time.sleep(0.05)
+
+        last_pixels = display_pixels
+        time.sleep(0.2)
+
 def mode81():
     global new_mode
     pixels.auto_write = False
@@ -2383,7 +2436,8 @@ def disco_manager():
                    mode96,
                    mode97,
                    mode98,
-                   mode99]
+                   mode99,
+                   mode101]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -4144,6 +4198,7 @@ declare_mode("97", mode97)
 declare_mode("98", mode98)
 declare_mode("99", mode99)
 declare_mode("100", mode100)
+declare_mode("101", mode101)
 
 
 @app.route('/disco/on')
