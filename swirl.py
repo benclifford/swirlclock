@@ -3977,6 +3977,9 @@ def mode90():
 def mode91():
     pmode_cli(["./hs/.cabal-sandbox/bin/swc-hs", "91"])
 
+def mode100():
+    pmode_cli("./swc-tcp")
+
 def pmode_cli(command):
     import subprocess
 
@@ -4140,6 +4143,7 @@ declare_mode("96", mode96)
 declare_mode("97", mode97)
 declare_mode("98", mode98)
 declare_mode("99", mode99)
+declare_mode("100", mode100)
 
 
 @app.route('/disco/on')
