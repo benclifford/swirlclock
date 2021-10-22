@@ -4154,14 +4154,14 @@ def mode103():
         p = ps[ix]
         for pix in range(p*10, (p+1)*10):
           pixels[pix] = (0,0,0)
-        if q:
+        if q is not None:
           for pix in range(q*10, (q+1)*10):
             pixels[pix] = new_col
         pixels.show()
         ps = [x for x in ps if x != p]
         q = p
         time.sleep(0.5 / 6.0) 
-      if q:
+      if q is not None:
         for pix in range(q*10, (q+1)*10):
           pixels[pix] = new_col
       pixels.show()
