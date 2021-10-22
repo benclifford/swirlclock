@@ -4102,7 +4102,7 @@ def mode103():
     new_hue = different_hue(last_hue)
     new_col = hsv_to_neo_rgb(new_hue)
 
-    r = random.randint(0,9)
+    r = random.randint(0,10)
 
     if r == 0:
       pixels.fill(new_col)
@@ -4204,6 +4204,33 @@ def mode103():
         pixels[p]= new_col
         pixels.show()
         time.sleep(0.5 / 2.0 / 50.0)
+    elif r == 10:
+      pixels.fill(new_col)
+      pixels.show()
+      time.sleep(0.05)
+      pixels.fill(last_col)
+      pixels.show()
+      time.sleep(0.1)
+      pixels.fill(new_col)
+      pixels.show()
+      time.sleep(0.05)
+      pixels.fill(last_col)
+      pixels.show()
+      time.sleep(0.1)
+      pixels.fill(new_col)
+      pixels.show()
+      time.sleep(0.1)
+      pixels.fill(last_col)
+      pixels.show()
+      time.sleep(0.05)
+      pixels.fill(new_col)
+      pixels.show()
+      time.sleep(0.025)
+      pixels.fill(last_col)
+      pixels.show()
+      time.sleep(0.025)
+      pixels.fill(new_col)
+      pixels.show()
  
     last_col = new_col
     last_hue = new_hue
