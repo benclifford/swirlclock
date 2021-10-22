@@ -4102,7 +4102,7 @@ def mode103():
     new_hue = different_hue(last_hue)
     new_col = hsv_to_neo_rgb(new_hue)
 
-    r = random.randint(0,10)
+    r = random.randint(0,11)
 
     if r == 0:
       pixels.fill(new_col)
@@ -4231,6 +4231,23 @@ def mode103():
       time.sleep(0.025)
       pixels.fill(new_col)
       pixels.show()
+    elif r == 11:
+      actions = [ (n, "off") for n in range(0,50) ]
+
+      while actions != []:
+        ix = random.randint(0, len(actions) - 1)
+        (n, act) = actions[ix]
+        del actions[ix] 
+
+        if act == "off":
+          pixels[n] = (0,0,0)
+          actions.append( (n, "on") )
+        elif act == "on":
+          pixels[n] = new_col
+
+        pixels.show()
+        time.sleep(0.5 / 50 / 2)
+
  
     last_col = new_col
     last_hue = new_hue
