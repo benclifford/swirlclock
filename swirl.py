@@ -2502,7 +2502,8 @@ def disco_manager():
                    mode98,
                    mode99,
                    mode101,
-                   mode102]
+                   mode102,
+                   mode103]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -4087,6 +4088,89 @@ def mode87():
       time.sleep(0.05)
 
 
+def mode103():
+  """Solid fills, with random transitions between. Each transition should 1 second."""
+
+  global new_mode
+  pixels.auto_write = False
+
+  last_col = (0,0,0)
+  last_hue = 0
+  pixels.fill(last_col)
+
+  while not new_mode:
+    new_hue = different_hue(last_hue)
+    new_col = hsv_to_neo_rgb(new_hue)
+
+    r = random.randint(0,6)
+
+    if r == 0:
+      pixels.fill(new_col)
+      pixels.show()
+      time.sleep(0.5)
+    elif r == 1:
+      for p in range(0,50):
+        pixels[p]= (0,0,0)
+        pixels.show()
+        time.sleep(0.5 / 2.0 / 50.0)
+      for p in range(0,50):
+        pixels[p]= new_col
+        pixels.show()
+        time.sleep(0.5 / 2.0 / 50.0)
+    elif r == 2:
+      for p in range(0,50):
+        pixels[p]= new_col
+        pixels.show()
+        time.sleep(0.5 / 50.0)
+    elif r == 3:
+      for p in range(49,-1,-1):
+        pixels[p]= new_col
+        pixels.show()
+        time.sleep(0.5 / 50.0)
+    elif r == 4:
+      ps = list(range(0,50))
+      while len(ps) > 0:
+        ix = random.randint(0, len(ps) - 1)
+        p = ps[ix]
+        pixels[p] = new_col
+        pixels.show()
+        ps = [x for x in ps if x != p]
+        time.sleep(0.5 / 50.0) 
+    elif r == 5:
+      ps = list(range(0,5))
+      while len(ps) > 0:
+        ix = random.randint(0, len(ps) - 1)
+        p = ps[ix]
+        for pix in range(p*10, (p+1)*10):
+          pixels[pix] = new_col
+        pixels.show()
+        ps = [x for x in ps if x != p]
+        time.sleep(0.5 / 5.0) 
+    elif r == 6:
+      ps = list(range(0,5))
+      q = None
+      while len(ps) > 0:
+        ix = random.randint(0, len(ps) - 1)
+        p = ps[ix]
+        for pix in range(p*10, (p+1)*10):
+          pixels[pix] = (0,0,0)
+        if q:
+          for pix in range(q*10, (q+1)*10):
+            pixels[pix] = new_col
+        pixels.show()
+        ps = [x for x in ps if x != p]
+        q = p
+        time.sleep(0.5 / 6.0) 
+      if q:
+        for pix in range(q*10, (q+1)*10):
+          pixels[pix] = new_col
+      pixels.show()
+      time.sleep(0.5 / 6.0) 
+
+    last_col = new_col
+    last_hue = new_hue
+
+
 def mode89():
     pmode_cli("./swc-bash")
 
@@ -4265,6 +4349,7 @@ declare_mode("99", mode99)
 declare_mode("100", mode100)
 declare_mode("101", mode101)
 declare_mode("102", mode102)
+declare_mode("103", mode103)
 
 
 @app.route('/disco/on')
