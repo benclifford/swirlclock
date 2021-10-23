@@ -17,7 +17,7 @@ import time
 
 import flask
 
-import randomwalk
+import swirl.randomwalk as randomwalk
 
 from functools import partial
 from math import tau
