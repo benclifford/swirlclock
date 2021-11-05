@@ -669,6 +669,121 @@ def mode104():
       time.sleep(0.01)
 
 
+def mode105():
+    """randomisation is the same as mode75 so factor that. and mode105"""
+    global new_mode
+    pixels.auto_write = False
+
+    pixels.fill( (0,0,0) )
+    pixels.show()
+
+    t_swap = time.time()
+
+    offset = 0
+    target_offset = offset
+
+    window = 0.33
+    target_window = window
+
+    window_dir = 0
+    target_window_dir = window_dir
+
+    cols = {}
+    cols[0] = (0,0,0)
+    cols[1] = (0,0,0)
+    cols[2] = (255,0,0)
+    cols[3] = (0,255,0)
+    cols[4] = (0,0,255)
+
+    while not new_mode:
+
+      if t_swap + 0.5 < time.time():
+        t_swap = time.time()
+        swaps = [ (2,3),
+                  (2,4),
+                  (3,4)
+                ]
+
+        (a,b) = swaps[random.randint(0,2)]
+        t = cols[a]
+        cols[a] = cols[b]
+        cols[b] = t
+
+      pixels.fill( (0,0,0) )
+      for pixel in range(0,50):
+        (b, proportion_around_loop) = pixel_to_layer(pixel)
+
+        o = 0
+        if b == 4:
+           o = offset
+        elif b == 3:
+           o = window
+        elif b == 2:
+           o = window_dir
+        else:
+           o = 0
+
+        frac = (proportion_around_loop + o) % 1.0
+
+        if (frac>0.5 or frac<0):
+          pixels[pixel] = cols[b]
+        else:
+          pixels[pixel] = (0,0,0)
+
+      pixels.show()
+
+      active = False
+
+      if target_offset > offset:
+          offset += 0.02
+          if target_offset < offset:
+            target_offset = offset
+          active = True
+
+      if target_offset < offset:
+          offset -= 0.02
+          if target_offset > offset:
+            target_offset = offset
+          active = True
+
+      if target_window > window:
+          window += 0.02
+          if target_window < window:
+            target_window = window
+          active = True
+
+      if target_window < window:
+          window -= 0.02
+          if target_window > window:
+            target_window = window
+          active = True
+
+      if target_window_dir > window_dir:
+          window_dir += 0.02
+          if target_window_dir < window_dir:
+            target_window_dir = window_dir
+          active = True
+
+      if target_window_dir < window_dir:
+          window_dir -= 0.02
+          if target_window_dir > window_dir:
+            target_window_dir = window_dir
+          active = True
+
+
+      if not active:
+          choice = random.randint(1,3)
+          if choice == 1:
+            target_offset = random.random()
+          elif choice == 2:
+            target_window = random.random()
+          elif choice == 3:
+            target_window_dir = random.random()
+          
+
+      time.sleep(0.01)
+
+
 def mode72():
 
     global new_mode
@@ -2566,7 +2681,8 @@ def disco_manager():
                    mode101,
                    mode102,
                    mode103,
-                   mode104]
+                   mode104,
+                   mode105]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -4497,6 +4613,7 @@ declare_mode("101", mode101)
 declare_mode("102", mode102)
 declare_mode("103", mode103)
 declare_mode("104", mode104)
+declare_mode("105", mode105)
 
 
 @app.route('/disco/on')
