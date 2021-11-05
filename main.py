@@ -666,7 +666,7 @@ def mode104():
             target_window_dir = random.random()
           
 
-      time.sleep(0.02)
+      time.sleep(0.01)
 
 
 def mode72():
