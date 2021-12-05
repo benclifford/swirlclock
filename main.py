@@ -1936,6 +1936,76 @@ def mode107():
     boom = False
 
 
+def mode108():
+  """another reparameterisation of mode20, based on mode61, mode107 - TODO factor?"""
+  global new_mode
+  pixels.auto_write = False
+
+  particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
+  hue = random.random()
+
+  first = True
+  boom = False
+
+  blanking_buffer = []
+
+  while not new_mode:
+
+    # move particle
+    (b, frac) = pixel_to_layer(particle)
+
+    choice = random.randint(0,2)
+
+    old_first = first
+    first = False
+
+    if choice == 0:
+      new_particle = particle + 1
+      if new_particle >= bottoms[b]:
+        new_particle = bottoms[b+1]
+
+    elif choice == 1:
+      new_particle = particle - 1  # TODO: mod
+      if new_particle < bottoms[b+1]:
+        new_particle = bottoms[b]-1
+    elif choice == 2:
+      # move inwards
+      # determine angle now
+      if b == 0:
+        # if we reach the centre, solidify
+        new_particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
+        boom = old_first
+        first = True
+        pixels.show()
+        time.sleep(0.03)
+        pixels.fill( (0,0,0) )
+        blanking_buffer = []
+        hue = random.random()
+      else:
+        b = b - 1
+        new_particle = int(bottoms[b] + (bottoms[b+1] - bottoms[b])*frac)
+
+    particle = new_particle
+
+    # display state
+
+    pixels[particle] = hsv_to_neo_rgb(hue)
+
+    blanking_buffer.append(particle)
+
+    # this will likely fire only once, or 0 times near the start...
+    # but while vs if will make it converge if end up setting pixels
+    # differently another time
+    while len(blanking_buffer) > 3:
+      p = blanking_buffer[0]
+      pixels[p] = (0,0,0)
+      del blanking_buffer[0]
+
+    pixels.show()
+    time.sleep(0.01)
+    boom = False
+
+
 
 
 
@@ -2858,7 +2928,8 @@ def disco_manager():
                    mode104,
                    mode105,
                    mode106,
-                   mode107]
+                   mode107,
+                   mode108]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -4792,6 +4863,7 @@ declare_mode("104", mode104)
 declare_mode("105", mode105)
 declare_mode("106", mode106)
 declare_mode("107", mode107)
+declare_mode("108", mode108)
 
 
 @app.route('/disco/on')
