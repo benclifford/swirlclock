@@ -36,7 +36,7 @@ centre of the spiral.
 
 The driver code needs to know how many LEDs are in each loop of the
 spiral, and that is configured in the 'bottoms' variable
-defined in swirl.py
+defined in main.py
 
 Installing the code
 ===================
@@ -54,7 +54,7 @@ Running the code
 Run:
 
 ```
-sudo FLASK_APP=swirl.py flask run -h 0 -p 80
+sudo FLASK_APP=main.py flask run -h 0 -p 80
 
 ```
 
