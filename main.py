@@ -2931,7 +2931,8 @@ def disco_manager():
                    mode107,
                    mode108,
                    mode109,
-                   mode110]
+                   mode110,
+                   mode111]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -4257,6 +4258,23 @@ def mode110_fire_scheme(hue_base, x):
         else:
             return (0, 0)
 
+def mode111():
+    hue = random.random()
+    pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode111_fire_scheme, hue))
+
+def mode111_fire_scheme(hue_base, x):
+    if x is None:
+        return (0, 0)
+    else:
+        (h, v) = x
+        if v > 0.80:
+            return (hue_base, 1.0)
+        elif v > 0 and v < 0.2:
+            return ((hue_base + 0.5) % 1.0, 1.0)
+        else:
+            return (0, 0)
+
+
 
 
 
@@ -4900,6 +4918,7 @@ declare_mode("107", mode107)
 declare_mode("108", mode108)
 declare_mode("109", mode109)
 declare_mode("110", mode110)
+declare_mode("111", mode111)
 
 
 @app.route('/disco/on')
