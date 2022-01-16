@@ -346,14 +346,15 @@ def mode7():
     global new_mode
     pixels.auto_write = False
 
+    angle = random.random()
+
     for pixel in range(0,50):
       (b, frac) = pixel_to_layer(pixel)
-      pixels[pixel] = hsv_to_neo_rgb(frac)
+      pixels[pixel] = hsv_to_neo_rgb((frac + angle) % 1.0)
       
-    pixels.show()
-
     while not new_mode:
-        time.sleep(1)
+      pixels.show()
+      time.sleep(1)
 
 
 def mode8():
