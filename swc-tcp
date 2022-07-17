@@ -1,0 +1,6 @@
+#!/bin/bash
+
+while true; do
+  nc -6 -l -p 4399
+done
+
