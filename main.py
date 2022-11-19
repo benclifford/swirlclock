@@ -208,7 +208,7 @@ def mode113():
     b1 = bottoms[radius]
     b2 = bottoms[radius + 1]
     pix = int(b1 + (b2-b1)*angle)
-    pixels[pix] = (255,255,255)
+    pixels[pix] = (255,128,0)
     history.append(pix)
 
     radius += 1
