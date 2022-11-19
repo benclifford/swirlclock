@@ -190,6 +190,38 @@ def mode112():
     time.sleep(0.03)
 
 
+# based on mode76 but leaving a trail, different from mode112
+def mode113():
+  global new_mode
+  pixels.auto_write = False
+  pixels.fill( (0,0,0) )
+  angle = random.random()
+  radius = 0
+  history = []
+
+  while not new_mode:
+    for p in range(0, len(history) - 1):
+      pixels[history[p]] = (64,0,0)
+    if len(history) > 10:
+      pixels[history[0]] = (0,0,0)
+      del history[0]
+    b1 = bottoms[radius]
+    b2 = bottoms[radius + 1]
+    pix = int(b1 + (b2-b1)*angle)
+    pixels[pix] = (255,255,255)
+    history.append(pix)
+
+    radius += 1
+    if radius >= 5: # TODO wrt len of bottoms
+      radius = 0
+      angle = random.random()
+      clear = True
+
+    pixels.show()
+    time.sleep(0.03)
+
+
+
 def mode77():
   global new_mode
   pixels.auto_write = False
@@ -2961,6 +2993,7 @@ def disco_manager():
                    mode109,
                    mode110,
                    mode111,
+                   mode113,
                    mode112]
 
     remaining_disco_modes = disco_modes.copy()
@@ -4949,6 +4982,7 @@ declare_mode("109", mode109)
 declare_mode("110", mode110)
 declare_mode("111", mode111)
 declare_mode("112", mode112)
+declare_mode("113", mode113)
 
 
 @app.route('/disco/on')
