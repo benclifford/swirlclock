@@ -230,7 +230,7 @@ def mode77():
 
   while not new_mode:
     pixels.fill( (0,0,0) )
-    b1 = bottoms[radius] - 1
+    b1 = bottoms[radius]
     b2 = bottoms[radius + 1]
     pix = int(b1 + (b2-b1)*angle)
     pixels[pix] = (255,255,255) 
@@ -253,7 +253,7 @@ def mode78():
 
   while not new_mode:
     pixels.fill( (0,0,0) )
-    b1 = bottoms[radius] - 1
+    b1 = bottoms[radius]
     b2 = bottoms[radius + 1]
     pix = int(b1 + (b2-b1)*angle)
     hue = (angle + radius / 5.0 / 3.0) % 1.0
