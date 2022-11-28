@@ -18,7 +18,7 @@ import time
 import flask
 
 import swirl.randomwalk as randomwalk
-from swirl.colour import different_hue, gamma, hsv_to_neo_rgb, scale
+from swirl.colour import different_hue, gamma, hsv_to_neo_rgb, max_pixel, scale
 from swirl.topologies import closest_pixels, distances_from_point, generate_pixel_pos, pixel_to_layer, pixels_for_angle, bottoms
 
 from functools import partial
@@ -4764,12 +4764,6 @@ def pmode_cli(command):
     # kill process
     process.terminate()
     process.wait()
-
-def max_pixel( p1, p2 ):
-    (r1, g1, b1) = p1
-    (r2, g2, b2) = p2
-    return (  max(r1, r2),   max(g1, g2),  max(b1, b2) )
-
 
 
 new_mode = mode32

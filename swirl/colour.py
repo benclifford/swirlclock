@@ -39,4 +39,7 @@ def different_hue(hue):
     return (hue + 0.15 + random.random()*0.7) % 1.0
 
 
-
+def max_pixel( p1, p2 ):
+    (r1, g1, b1) = p1
+    (r2, g2, b2) = p2
+    return (  max(r1, r2),   max(g1, g2),  max(b1, b2) )
