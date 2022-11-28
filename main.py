@@ -19,7 +19,7 @@ import flask
 
 import swirl.randomwalk as randomwalk
 from swirl.colour import different_hue, gamma, hsv_to_neo_rgb, scale
-from swirl.topologies import closest_pixels, distances_from_point, generate_pixel_pos, pixel_to_layer, bottoms
+from swirl.topologies import closest_pixels, distances_from_point, generate_pixel_pos, pixel_to_layer, pixels_for_angle, bottoms
 
 from functools import partial
 from math import tau
@@ -1316,23 +1316,6 @@ def pmode_dotclock(*, display_seconds):
 
     pixels.show()
     time.sleep(0.05)
-
-
-def pixels_for_angle(angle, loop_in):
-
-    # loop_in = 
-    # which loop in we're going to pick the base pixel
-    # to be. 0 is the outermost loop of the spiral.
-
-    start = bottoms[len(bottoms) - 1 - loop_in]
-    end = bottoms[len(bottoms) - 2 - loop_in]
-    base_pixelish = start + (end-start) * angle  # almost a pixel, but not rounded
-
-    pixel_pos = generate_pixel_pos(extra_pixels=[base_pixelish])
-
-    (x, y) = pixel_pos[base_pixelish]
-
-    return distances_from_point(x, y, pixel_pos=pixel_pos)
 
 
 def mode15():

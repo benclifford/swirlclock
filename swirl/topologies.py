@@ -60,3 +60,20 @@ def closest_pixels(pixelish):
     (x, y) = pixel_pos[pixelish]
 
     return distances_from_point(x, y, pixel_pos=pixel_pos)
+
+
+def pixels_for_angle(angle, loop_in):
+
+    # loop_in = 
+    # which loop in we're going to pick the base pixel
+    # to be. 0 is the outermost loop of the spiral.
+
+    start = bottoms[len(bottoms) - 1 - loop_in]
+    end = bottoms[len(bottoms) - 2 - loop_in]
+    base_pixelish = start + (end-start) * angle  # almost a pixel, but not rounded
+
+    pixel_pos = generate_pixel_pos(extra_pixels=[base_pixelish])
+
+    (x, y) = pixel_pos[base_pixelish]
+
+    return distances_from_point(x, y, pixel_pos=pixel_pos)
