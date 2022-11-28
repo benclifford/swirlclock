@@ -19,7 +19,7 @@ import flask
 
 import swirl.randomwalk as randomwalk
 from swirl.colour import different_hue, gamma, hsv_to_neo_rgb, scale
-from swirl.topologies import distances_from_point, generate_pixel_pos, pixel_to_layer, bottoms
+from swirl.topologies import closest_pixels, distances_from_point, generate_pixel_pos, pixel_to_layer, bottoms
 
 from functools import partial
 from math import tau
@@ -1316,15 +1316,6 @@ def pmode_dotclock(*, display_seconds):
 
     pixels.show()
     time.sleep(0.05)
-
-
-def closest_pixels(pixelish):
-
-    pixel_pos = generate_pixel_pos(extra_pixels=[pixelish])
-
-    (x, y) = pixel_pos[pixelish]
-
-    return distances_from_point(x, y, pixel_pos=pixel_pos)
 
 
 def pixels_for_angle(angle, loop_in):

@@ -51,3 +51,12 @@ def distances_from_point(x, y, *, pixel_pos):
 
     s = sorted(distances)
     return s
+
+
+def closest_pixels(pixelish):
+
+    pixel_pos = generate_pixel_pos(extra_pixels=[pixelish])
+
+    (x, y) = pixel_pos[pixelish]
+
+    return distances_from_point(x, y, pixel_pos=pixel_pos)
