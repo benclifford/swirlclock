@@ -36,3 +36,18 @@ def generate_pixel_pos(*, extra_pixels=[], rot = 0):
       pixel_pos[pixel] = (x, y)
 
     return pixel_pos
+
+def distances_from_point(x, y, *, pixel_pos):
+    """Return a sorted list of pixels by distance from the specified
+    point, the list being tuples (distance, pixel number).
+
+    pixel_pos should come from generate_pixel_pos.
+    """
+
+    distances = []
+    for pixel in range(0,50):
+      (x1, y1) = pixel_pos[pixel]
+      distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
+
+    s = sorted(distances)
+    return s

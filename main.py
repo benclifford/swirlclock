@@ -19,7 +19,7 @@ import flask
 
 import swirl.randomwalk as randomwalk
 from swirl.colour import different_hue, gamma, hsv_to_neo_rgb, scale
-from swirl.topologies import generate_pixel_pos, pixel_to_layer, bottoms
+from swirl.topologies import distances_from_point, generate_pixel_pos, pixel_to_layer, bottoms
 
 from functools import partial
 from math import tau
@@ -1342,22 +1342,6 @@ def pixels_for_angle(angle, loop_in):
     (x, y) = pixel_pos[base_pixelish]
 
     return distances_from_point(x, y, pixel_pos=pixel_pos)
-
-
-def distances_from_point(x, y, *, pixel_pos):
-    """Return a sorted list of pixels by distance from the specified
-    point, the list being tuples (distance, pixel number).
-
-    pixel_pos should come from generate_pixel_pos.
-    """
-
-    distances = []
-    for pixel in range(0,50):
-      (x1, y1) = pixel_pos[pixel]
-      distances.append( (math.sqrt( (x-x1) ** 2 + (y-y1) ** 2) , pixel))
-
-    s = sorted(distances)
-    return s
 
 
 def mode15():
