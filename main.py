@@ -19,31 +19,16 @@ import flask
 
 import swirl.randomwalk as randomwalk
 from swirl.colour import different_hue, gamma, hsv_to_neo_rgb, scale
+from swirl.topologies import pixel_to_layer, bottoms
 
 from functools import partial
 from math import tau
 
 pixels = neopixel.NeoPixel(board.D18, 50)
 
-bottoms = [50, 49, 46, 37, 22, 0]
-
 new_mode = None
 
 disco_thread = None
-
-def pixel_to_layer(pixel):
-    """Given a pixel, return the loop number and fraction around the
-    loop for this pixel.
-    """
-    for b in range(0,len(bottoms)-1):
-      if pixel < bottoms[b] and pixel >= bottoms[b+1]:
-        start = bottoms[b]
-        end = bottoms[b+1]
-        frac = (pixel - start) / (end - start)
-        break
-    else:
-      raise RuntimeError("could not find range for pixel {}".format(pixel))
-    return (b, frac)
 
 
 def mode1():
