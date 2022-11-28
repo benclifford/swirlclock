@@ -19,7 +19,7 @@ import flask
 
 import swirl.randomwalk as randomwalk
 from swirl.colour import different_hue, gamma, hsv_to_neo_rgb, scale
-from swirl.topologies import pixel_to_layer, bottoms
+from swirl.topologies import generate_pixel_pos, pixel_to_layer, bottoms
 
 from functools import partial
 from math import tau
@@ -4052,25 +4052,6 @@ def random_in_radius(r):
 
       if math.sqrt(x ** 2 + y **2) <= r **2:
         return (x,y)
-
-
-def generate_pixel_pos(*, extra_pixels=[], rot = 0):
-    """Generate a list of each pixel's x,y position
-    based on bottoms info.
-
-    A better implementation might take into account the
-    decreasing radius around the spiral (and perhaps
-    I've done that somewhere already?)"""
-
-    pixel_pos = {}
-    for pixel in list(range(0,50)) + extra_pixels:
-      (b, frac) = pixel_to_layer(pixel)
-      p_angle = (frac + rot) % 1.0
-      x = math.sin(p_angle * tau) * b
-      y = math.cos(p_angle * tau) * b
-      pixel_pos[pixel] = (x, y)
-
-    return pixel_pos
 
 
 def render_hv_fadepixel(pixels, display_pixels):

@@ -1,5 +1,8 @@
+import math
+from math import tau
 
 bottoms = [50, 49, 46, 37, 22, 0]
+
 
 def pixel_to_layer(pixel):
     """Given a pixel, return the loop number and fraction around the
@@ -15,3 +18,21 @@ def pixel_to_layer(pixel):
       raise RuntimeError("could not find range for pixel {}".format(pixel))
     return (b, frac)
 
+
+def generate_pixel_pos(*, extra_pixels=[], rot = 0):
+    """Generate a list of each pixel's x,y position
+    based on bottoms info.
+
+    A better implementation might take into account the
+    decreasing radius around the spiral (and perhaps
+    I've done that somewhere already?)"""
+
+    pixel_pos = {}
+    for pixel in list(range(0,50)) + extra_pixels:
+      (b, frac) = pixel_to_layer(pixel)
+      p_angle = (frac + rot) % 1.0
+      x = math.sin(p_angle * tau) * b
+      y = math.cos(p_angle * tau) * b
+      pixel_pos[pixel] = (x, y)
+
+    return pixel_pos
