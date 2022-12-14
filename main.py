@@ -338,6 +338,34 @@ def mode56():
         # hue = (hue + 1.0 / (3.0 * 60.0 * 60.0) ) % 1.0
     time.sleep(0.3)
 
+# based on mode56
+def mode114():
+  global new_mode
+  pixels.auto_write = False
+
+  while not new_mode:
+    hue = random.random()
+
+    brightness = []
+
+    rw = randomwalk.randomwalk(low = 0.0, high = 1.0, bias=-0.03)
+
+    for p in range(0,50):
+        brightness.append(next(rw))
+
+    for p in range(0,50):
+        if brightness[p] > 0.5:
+            c = (255,255,255)
+        else:
+            c = (0,0,0)
+        pixels[p] = c
+    pixels.show()
+
+        # rotate through all hues every 3 hours
+        # hue = (hue + 1.0 / (3.0 * 60.0 * 60.0) ) % 1.0
+    time.sleep(0.1)
+
+
 
 def mode4():
     global new_mode
@@ -2937,7 +2965,8 @@ def disco_manager():
                    mode110,
                    mode111,
                    mode113,
-                   mode112]
+                   mode112,
+                   mode114]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -4901,6 +4930,7 @@ declare_mode("110", mode110)
 declare_mode("111", mode111)
 declare_mode("112", mode112)
 declare_mode("113", mode113)
+declare_mode("114", mode114)
 
 
 @app.route('/disco/on')
