@@ -313,12 +313,12 @@ def mode93():
     time.sleep(0.03)
 
 
-def mode56():
+def pmode_randomwalk_on_spiral(*, delay=0.3, get_new_frame_state, pixel_colour):
   global new_mode
   pixels.auto_write = False
 
   while not new_mode:
-    hue = random.random()
+    frame_state = get_new_frame_state()
 
     brightness = []
 
@@ -330,69 +330,56 @@ def mode56():
         brightness.append(next(rw))
 
     for p in range(0,50):
-        pixels[p] = hsv_to_neo_rgb(hue, s=0.75, v=brightness[p]) 
+        pixels[p] = pixel_colour(brightness[p], frame_state)
     pixels.show()
 
-    time.sleep(0.3)
+    time.sleep(delay)
 
 
-# based on mode56
+def mode56():
+  def f(brightness, framestate):
+      return hsv_to_neo_rgb(framestate, s=0.75, v=brightness) 
+  pmode_randomwalk_on_spiral(get_new_frame_state = random.random,
+                             pixel_colour=f)
+
+
 def mode114():
-  global new_mode
-  pixels.auto_write = False
+  def const_None():
+      return None
 
-  while not new_mode:
-    hue = random.random()
+  def f(brightness, framestate):
+      if brightness > 0.5:
+          return (255,255,255)
+      else:
+          return (0,0,0)
 
-    brightness = []
-
-    rw = randomwalk.randomwalk(low = 0.0, high = 1.0, bias=-0.03)
-
-    for p in range(0,50):
-        brightness.append(next(rw))
-
-    for p in range(0,50):
-        if brightness[p] > 0.5:
-            c = (255,255,255)
-        else:
-            c = (0,0,0)
-        pixels[p] = c
-    pixels.show()
-
-    time.sleep(0.1)
+  pmode_randomwalk_on_spiral(get_new_frame_state = const_None,
+                             pixel_colour=f,
+                             delay=0.1)
 
 
-# based on mode56
 def mode115():
-  global new_mode
-  pixels.auto_write = False
-
-  while not new_mode:
+  def two_rgbs():
     hue = random.random()
     rgb = hsv_to_neo_rgb(hue, v=1.0)
 
     hue2 = (hue+0.5)%1.0
     rgb2 = hsv_to_neo_rgb(hue2, v=1.0)
 
-    brightness = []
+    return (rgb, rgb2)
 
-    rw = randomwalk.randomwalk(low = 0.0, high = 1.0, bias=-0.03)
+  def f(brightness, framestate):
+      (rgb, rgb2) = framestate
+      if brightness > 0.75:
+          return rgb2
+      elif brightness > 0.5:
+          return rgb
+      else:
+          return (0,0,0)
 
-    for p in range(0,50):
-        brightness.append(next(rw))
-
-    for p in range(0,50):
-        if brightness[p] > 0.75:
-            c = rgb2
-        elif brightness[p] > 0.5:
-            c = rgb
-        else:
-            c = (0,0,0)
-        pixels[p] = c
-    pixels.show()
-
-    time.sleep(0.2)
-
+  pmode_randomwalk_on_spiral(get_new_frame_state = two_rgbs,
+                             pixel_colour=f,
+                             delay=0.2)
 
 
 def mode4():
