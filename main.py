@@ -313,7 +313,6 @@ def mode93():
     time.sleep(0.03)
 
 
-
 def mode56():
   global new_mode
   pixels.auto_write = False
@@ -334,9 +333,8 @@ def mode56():
         pixels[p] = hsv_to_neo_rgb(hue, s=0.75, v=brightness[p]) 
     pixels.show()
 
-        # rotate through all hues every 3 hours
-        # hue = (hue + 1.0 / (3.0 * 60.0 * 60.0) ) % 1.0
     time.sleep(0.3)
+
 
 # based on mode56
 def mode114():
@@ -361,8 +359,6 @@ def mode114():
         pixels[p] = c
     pixels.show()
 
-        # rotate through all hues every 3 hours
-        # hue = (hue + 1.0 / (3.0 * 60.0 * 60.0) ) % 1.0
     time.sleep(0.1)
 
 
@@ -395,8 +391,6 @@ def mode115():
         pixels[p] = c
     pixels.show()
 
-        # rotate through all hues every 3 hours
-        # hue = (hue + 1.0 / (3.0 * 60.0 * 60.0) ) % 1.0
     time.sleep(0.2)
 
 
