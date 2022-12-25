@@ -1062,8 +1062,10 @@ def mode94():
 
     while not new_mode:
 
-      if next_reconfig_time < time.time():
-        next_reconfig_time = time.time() + 1.0
+      now = time.time()
+
+      if next_reconfig_time < now:
+        next_reconfig_time = now + 1.0
 
         old_segs = colour_segs
         while colour_segs == old_segs:
@@ -1073,7 +1075,7 @@ def mode94():
 
         activation_list = [True for n in range(0,50)]
 
-      t = next_reconfig_time - time.time()  # will go from 1.0 to 0.0, approx
+      t = next_reconfig_time - now  # will go from 1.0 to 0.0, approx
 
       if t > 0.9:  # first bit, fade up
         v_t = 1.0 - t  # 0 .. 0.1
