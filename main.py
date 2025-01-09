@@ -2984,7 +2984,13 @@ def disco_manager():
                    mode113,
                    mode112,
                    mode114,
-                   mode115]
+                   mode115,
+                   mode116,
+                   mode117,
+                   mode118,
+                   mode119,
+                   mode120,
+                   mode121]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -4813,7 +4819,232 @@ def pmode_cli(command):
     process.wait()
 
 
-new_mode = mode32
+def mode116():
+ pixels.auto_write = False
+ black = (0,0,0)
+ red = (255,0,0)
+ pixels.fill(black)
+
+ pixel_ring = range(bottoms[-1],bottoms[-2])
+
+ while True:
+  for p in pixel_ring:
+    pixels[p] = black
+  pixels.show()
+  time.sleep(0.05)
+  for p in pixel_ring:
+    pixels[p] = red
+  pixels.show()
+  time.sleep(0.05)
+
+def randintnot(x,y,n):
+  """randint, but not n - to ensure a change"""
+  gen = True
+
+  while gen:
+    nx = random.randint(x,y)
+    if nx != n:
+      gen = False
+
+  return nx
+
+def mode117():
+ pixels.auto_write = False
+ black = (0,0,0)
+ pixels.fill(black)
+
+ pixel_ring = range(bottoms[-1],bottoms[-2])
+ f1 = 4
+ p1 = 0
+ hue = random.random()
+
+ while True:
+  for p in pixel_ring:
+
+    v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
+    c = hsv_to_neo_rgb(hue, v=v)
+
+    pixels[p] = c
+  pixels.show()
+
+  p1 = (p1 + 0.2) % tau
+
+  ch = random.randint(0,10)
+  if ch == 0:
+    f1 = randintnot(1,4, f1)
+  else:
+    pass # nothing
+
+  time.sleep(0.05)
+
+def mode118():
+ pixels.auto_write = False
+ black = (0,0,0)
+ pixels.fill(black)
+
+ pixel_ring = range(bottoms[-1],bottoms[-2])
+ f1 = 4
+ p1 = 0
+ hue = random.random()
+
+ while True:
+  for p in pixel_ring:
+
+    v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
+    c = hsv_to_neo_rgb(hue, v=v)
+
+    pixels[p] = c
+  pixels.show()
+
+
+  ch = random.randint(0,2)
+  if ch == 0:
+    f1 = randintnot(1,5, f1)
+  elif ch == 1:
+    p1 = random.random() * math.tau
+  elif ch == 2:
+    hue = random.random()
+  else:
+    pass # nothing
+
+  time.sleep(0.05)
+
+def mode119():
+ pixels.auto_write = False
+ black = (0,0,0)
+ pixels.fill(black)
+
+ pixel_ring = range(bottoms[-1],bottoms[-2])
+ pixel_ring2 = range(bottoms[-3],bottoms[-4])
+ f1 = 4
+ p1 = 0
+ hue = random.random()
+
+ while True:
+  for p in pixel_ring:
+
+    v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
+    c = hsv_to_neo_rgb(hue, v=v)
+
+    pixels[p] = c
+
+  for p in pixel_ring2:
+
+    offset = p - bottoms[-3]
+    v = 0.5 + 0.5 * math.sin(p1 + f1 * offset/(len(pixel_ring2)) * 3.1415 * 2)
+    c = hsv_to_neo_rgb(hue, v=v)
+
+    pixels[p] = c
+ 
+  pixels.show()
+
+
+  ch = random.randint(0,2)
+  if ch == 0:
+    f1 = randintnot(1,5, f1)
+  elif ch == 1:
+    p1 = random.random() * math.tau
+  elif ch == 2:
+    hue = random.random()
+  else:
+    pass # nothing
+
+  time.sleep(0.05)
+
+
+def mode120():
+ pixels.auto_write = False
+ black = (0,0,0)
+ pixels.fill(black)
+
+ pixel_ring = range(bottoms[-1],bottoms[-2])
+ pixel_ring2 = range(bottoms[-4],bottoms[-5])
+ f1 = 4
+ p1 = 0
+ f2 = 3
+ p2 = 0
+ hue = random.random()
+ hue2 = random.random()
+
+ while True:
+  for p in pixel_ring:
+
+    v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
+    c = hsv_to_neo_rgb(hue, v=v)
+
+    pixels[p] = c
+
+  for p in pixel_ring2:
+
+    c = hsv_to_neo_rgb((hue + 0.5)%1.0)
+
+    pixels[p] = c
+
+  pixels.show()
+
+  p2 = (p2 + 0.1) % tau
+
+  ch = random.randint(0,2)
+  if ch == 0:
+    f1 = randintnot(1,5, f1)
+  elif ch == 1:
+    p1 = random.random() * math.tau
+  elif ch == 2:
+    hue = random.random()
+  else:
+    pass # nothing
+
+  time.sleep(0.05)
+
+def mode121():
+ pixels.auto_write = False
+ black = (0,0,0)
+ pixels.fill(black)
+
+ pixel_ring = range(bottoms[-1],bottoms[-2])
+ pixel_ring2 = range(bottoms[-2],bottoms[-3])
+ f1 = random.randint(1,5)
+ p1 = 0
+ f2 = randintnot(1,3,f1)
+ p2 = 0
+ hue = random.random()
+ hue2 = random.random()
+
+ while True:
+  for p in pixel_ring:
+
+    v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
+    c = hsv_to_neo_rgb(hue, v=v)
+
+    pixels[p] = c
+
+  for p in pixel_ring2:
+
+    offset = p - bottoms[-2]
+    v = 0.5 + 0.5 * math.sin(p2 + f2 * offset/len(pixel_ring2) * 3.1415 * 2)
+    c = hsv_to_neo_rgb(hue, v=v)
+
+    pixels[p] = c
+
+  pixels.show()
+
+  p1 = (p1 - 0.1) % tau
+  p2 = (p2 + 0.1) % tau
+  v = (v + 0.1) % 1.0
+
+  # ch = random.randint(0,2)
+  # if ch == 0:
+  #  f1 = randintnot(1,5, f1)
+  #elif ch == 1:
+  #  f2 = randintnot(1,3, f2)
+  # elif ch == 2:
+  #  hue = random.random()
+  #else:
+  #  pass # nothing
+
+  time.sleep(0.05)
+
+
 
 
 app = flask.Flask(__name__)
@@ -4950,6 +5181,12 @@ declare_mode("112", mode112)
 declare_mode("113", mode113)
 declare_mode("114", mode114)
 declare_mode("115", mode115)
+declare_mode("116", mode116)
+declare_mode("117", mode117)
+declare_mode("118", mode118)
+declare_mode("119", mode119)
+declare_mode("120", mode120)
+declare_mode("121", mode121)
 
 
 @app.route('/disco/on')
@@ -4967,6 +5204,8 @@ def disco_off():
     disco_thread = None
     return flask.redirect("/", code=302)
 
+# set initial mode
+new_mode = mode32
 
 def go():
     global new_mode
@@ -4976,5 +5215,6 @@ def go():
             m = new_mode
             new_mode = None
             m()
+
 
 threading.Thread(target=go).start()
