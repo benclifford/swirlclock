@@ -2987,7 +2987,9 @@ def disco_manager():
                    mode115,
                    mode116,
                    mode117,
-                   mode118]
+                   mode118,
+                   mode119,
+                   mode120]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -4906,6 +4908,94 @@ def mode118():
 
   time.sleep(0.05)
 
+def mode119():
+ pixels.auto_write = False
+ black = (0,0,0)
+ pixels.fill(black)
+
+ pixel_ring = range(bottoms[-1],bottoms[-2])
+ pixel_ring2 = range(bottoms[-3],bottoms[-4])
+ f1 = 4
+ p1 = 0
+ hue = random.random()
+
+ while True:
+  for p in pixel_ring:
+
+    v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
+    c = hsv_to_neo_rgb(hue, v=v)
+
+    pixels[p] = c
+
+  for p in pixel_ring2:
+
+    offset = p - bottoms[-3]
+    v = 0.5 + 0.5 * math.sin(p1 + f1 * offset/(len(pixel_ring2)) * 3.1415 * 2)
+    c = hsv_to_neo_rgb(hue, v=v)
+
+    pixels[p] = c
+ 
+  pixels.show()
+
+
+  ch = random.randint(0,2)
+  if ch == 0:
+    f1 = randintnot(1,5, f1)
+  elif ch == 1:
+    p1 = random.random() * math.tau
+  elif ch == 2:
+    hue = random.random()
+  else:
+    pass # nothing
+
+  time.sleep(0.05)
+
+
+def mode120():
+ pixels.auto_write = False
+ black = (0,0,0)
+ pixels.fill(black)
+
+ pixel_ring = range(bottoms[-1],bottoms[-2])
+ pixel_ring2 = range(bottoms[-4],bottoms[-5])
+ f1 = 4
+ p1 = 0
+ f2 = 3
+ p2 = 0
+ hue = random.random()
+ hue2 = random.random()
+
+ while True:
+  for p in pixel_ring:
+
+    v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
+    c = hsv_to_neo_rgb(hue, v=v)
+
+    pixels[p] = c
+
+  for p in pixel_ring2:
+
+    c = hsv_to_neo_rgb((hue + 0.5)%1.0)
+
+    pixels[p] = c
+
+  pixels.show()
+
+  p2 = (p2 + 0.1) % tau
+
+  ch = random.randint(0,2)
+  if ch == 0:
+    f1 = randintnot(1,5, f1)
+  elif ch == 1:
+    p1 = random.random() * math.tau
+  elif ch == 2:
+    hue = random.random()
+  else:
+    pass # nothing
+
+  time.sleep(0.05)
+
+
 
 app = flask.Flask(__name__)
 
@@ -5044,6 +5134,8 @@ declare_mode("115", mode115)
 declare_mode("116", mode116)
 declare_mode("117", mode117)
 declare_mode("118", mode118)
+declare_mode("119", mode119)
+declare_mode("120", mode120)
 
 
 @app.route('/disco/on')
