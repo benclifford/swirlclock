@@ -2985,7 +2985,9 @@ def disco_manager():
                    mode112,
                    mode114,
                    mode115,
-                   mode116]
+                   mode116,
+                   mode117,
+                   mode118]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -4832,6 +4834,79 @@ def mode116():
   pixels.show()
   time.sleep(0.05)
 
+def randintnot(x,y,n):
+  """randint, but not n - to ensure a change"""
+  gen = True
+
+  while gen:
+    nx = random.randint(x,y)
+    if nx != n:
+      gen = False
+
+  return nx
+
+def mode117():
+ pixels.auto_write = False
+ black = (0,0,0)
+ pixels.fill(black)
+
+ pixel_ring = range(bottoms[-1],bottoms[-2])
+ f1 = 4
+ p1 = 0
+ hue = random.random()
+
+ while True:
+  for p in pixel_ring:
+
+    v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
+    c = hsv_to_neo_rgb(hue, v=v)
+
+    pixels[p] = c
+  pixels.show()
+
+  p1 = (p1 + 0.2) % tau
+
+  ch = random.randint(0,10)
+  if ch == 0:
+    f1 = randintnot(1,4, f1)
+  else:
+    pass # nothing
+
+  time.sleep(0.05)
+
+def mode118():
+ pixels.auto_write = False
+ black = (0,0,0)
+ pixels.fill(black)
+
+ pixel_ring = range(bottoms[-1],bottoms[-2])
+ f1 = 4
+ p1 = 0
+ hue = random.random()
+
+ while True:
+  for p in pixel_ring:
+
+    v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
+    c = hsv_to_neo_rgb(hue, v=v)
+
+    pixels[p] = c
+  pixels.show()
+
+
+  ch = random.randint(0,2)
+  if ch == 0:
+    f1 = randintnot(1,5, f1)
+  elif ch == 1:
+    p1 = random.random() * math.tau
+  elif ch == 2:
+    hue = random.random()
+  else:
+    pass # nothing
+
+  time.sleep(0.05)
+
+
 app = flask.Flask(__name__)
 
 @app.route('/')
@@ -4967,6 +5042,8 @@ declare_mode("113", mode113)
 declare_mode("114", mode114)
 declare_mode("115", mode115)
 declare_mode("116", mode116)
+declare_mode("117", mode117)
+declare_mode("118", mode118)
 
 
 @app.route('/disco/on')
@@ -4984,6 +5061,8 @@ def disco_off():
     disco_thread = None
     return flask.redirect("/", code=302)
 
+# set initial mode
+new_mode = mode32
 
 def go():
     global new_mode
@@ -4994,7 +5073,5 @@ def go():
             new_mode = None
             m()
 
-# set initial mode
-new_mode = mode32
 
 threading.Thread(target=go).start()
