@@ -4813,7 +4813,6 @@ def pmode_cli(command):
     process.wait()
 
 
-new_mode = mode32
 
 
 app = flask.Flask(__name__)
@@ -4976,5 +4975,8 @@ def go():
             m = new_mode
             new_mode = None
             m()
+
+# set initial mode
+new_mode = mode32
 
 threading.Thread(target=go).start()
