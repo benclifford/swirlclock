@@ -2984,7 +2984,8 @@ def disco_manager():
                    mode113,
                    mode112,
                    mode114,
-                   mode115]
+                   mode115,
+                   mode116]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -4813,7 +4814,23 @@ def pmode_cli(command):
     process.wait()
 
 
+def mode116():
+ pixels.auto_write = False
+ black = (0,0,0)
+ red = (255,0,0)
+ pixels.fill(black)
 
+ pixel_ring = range(bottoms[-1],bottoms[-2])
+
+ while True:
+  for p in pixel_ring:
+    pixels[p] = black
+  pixels.show()
+  time.sleep(0.05)
+  for p in pixel_ring:
+    pixels[p] = red
+  pixels.show()
+  time.sleep(0.05)
 
 app = flask.Flask(__name__)
 
@@ -4949,6 +4966,7 @@ declare_mode("112", mode112)
 declare_mode("113", mode113)
 declare_mode("114", mode114)
 declare_mode("115", mode115)
+declare_mode("116", mode116)
 
 
 @app.route('/disco/on')
