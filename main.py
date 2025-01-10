@@ -4820,6 +4820,7 @@ def pmode_cli(command):
 
 
 def mode116():
+ global new_mode
  pixels.auto_write = False
  black = (0,0,0)
  red = (255,0,0)
@@ -4827,7 +4828,7 @@ def mode116():
 
  pixel_ring = range(bottoms[-1],bottoms[-2])
 
- while True:
+ while not new_mode:
   for p in pixel_ring:
     pixels[p] = black
   pixels.show()
@@ -4849,6 +4850,7 @@ def randintnot(x,y,n):
   return nx
 
 def mode117():
+ global new_mode
  pixels.auto_write = False
  black = (0,0,0)
  pixels.fill(black)
@@ -4858,7 +4860,7 @@ def mode117():
  p1 = 0
  hue = random.random()
 
- while True:
+ while not new_mode:
   for p in pixel_ring:
 
     v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
@@ -4878,6 +4880,7 @@ def mode117():
   time.sleep(0.05)
 
 def mode118():
+ global new_mode
  pixels.auto_write = False
  black = (0,0,0)
  pixels.fill(black)
@@ -4887,7 +4890,7 @@ def mode118():
  p1 = 0
  hue = random.random()
 
- while True:
+ while not new_mode:
   for p in pixel_ring:
 
     v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
@@ -4910,6 +4913,7 @@ def mode118():
   time.sleep(0.05)
 
 def mode119():
+ global new_mode
  pixels.auto_write = False
  black = (0,0,0)
  pixels.fill(black)
@@ -4920,7 +4924,7 @@ def mode119():
  p1 = 0
  hue = random.random()
 
- while True:
+ while not new_mode: 
   for p in pixel_ring:
 
     v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
@@ -4953,6 +4957,7 @@ def mode119():
 
 
 def mode120():
+ global new_mode
  pixels.auto_write = False
  black = (0,0,0)
  pixels.fill(black)
@@ -4966,7 +4971,7 @@ def mode120():
  hue = random.random()
  hue2 = random.random()
 
- while True:
+ while not new_mode:
   for p in pixel_ring:
 
     v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
@@ -4997,6 +5002,7 @@ def mode120():
   time.sleep(0.05)
 
 def mode121():
+ global new_mode
  pixels.auto_write = False
  black = (0,0,0)
  pixels.fill(black)
@@ -5010,7 +5016,7 @@ def mode121():
  hue = random.random()
  hue2 = random.random()
 
- while True:
+ while not new_mode:
   for p in pixel_ring:
 
     v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
