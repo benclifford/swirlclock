@@ -5007,11 +5007,20 @@ def pmode_tworings(hue, hue2):
  pixel_ring = range(bottoms[-1],bottoms[-2])
  pixel_ring2 = range(bottoms[-2],bottoms[-3])
  f1 = random.randint(1,5)
- p1 = 0
  f2 = randintnot(1,3,f1)
- p2 = 0
+
+ start_t = time.time()
 
  while not new_mode:
+
+  now_t = time.time()
+  delta_t = now_t - start_t
+
+  # the two phases move at 2 radians per second
+  # in opposite directions
+  p1 = (delta_t * 2) % tau
+  p2 = (-delta_t * 2) % tau
+
   for p in pixel_ring:
 
     v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
@@ -5028,10 +5037,6 @@ def pmode_tworings(hue, hue2):
     pixels[p] = c
 
   pixels.show()
-
-  p1 = (p1 - 0.1) % tau
-  p2 = (p2 + 0.1) % tau
-  v = (v + 0.1) % 1.0
 
   time.sleep(0.05)
 
