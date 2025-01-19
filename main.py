@@ -5034,16 +5034,6 @@ def mode121():
   p2 = (p2 + 0.1) % tau
   v = (v + 0.1) % 1.0
 
-  # ch = random.randint(0,2)
-  # if ch == 0:
-  #  f1 = randintnot(1,5, f1)
-  #elif ch == 1:
-  #  f2 = randintnot(1,3, f2)
-  # elif ch == 2:
-  #  hue = random.random()
-  #else:
-  #  pass # nothing
-
   time.sleep(0.05)
 
 
