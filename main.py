@@ -5000,11 +5000,11 @@ def mode120():
 
   time.sleep(0.05)
 
-def pmode_tworings(hue, hue2):
+def pmode_tworings(hue1, hue2):
  global new_mode
  init_auto_and_blank()
 
- pixel_ring = range(bottoms[-1],bottoms[-2])
+ pixel_ring1 = range(bottoms[-1],bottoms[-2])
  f1 = random.randint(1,5)
 
  pixel_ring2 = range(bottoms[-2],bottoms[-3])
@@ -5019,23 +5019,20 @@ def pmode_tworings(hue, hue2):
 
   # the two phases move at 2 radians per second
   # in opposite directions
-  phase = (delta_t * 2) % tau
-  for p in pixel_ring:
-    offset = p - pixel_ring[-1]
 
-    v = 0.5 + 0.5 * math.sin(phase + f1 * offset/len(pixel_ring) * tau)
-    c = hsv_to_neo_rgb(hue, v=v)
+  def render_ring(direction, pixel_ring, hue, freq):
 
-    pixels[p] = c
+    phase = (direction * delta_t * 2) % tau
+    for p in pixel_ring:
+      offset = p - pixel_ring[-1]
 
-  phase = (-delta_t * 2) % tau
-  for p in pixel_ring2:
+      v = 0.5 + 0.5 * math.sin(phase + freq * offset/len(pixel_ring) * tau)
+      c = hsv_to_neo_rgb(hue, v=v)
 
-    offset = p - pixel_ring2[-1]
-    v = 0.5 + 0.5 * math.sin(phase + f2 * offset/len(pixel_ring2) * tau)
-    c = hsv_to_neo_rgb(hue2, v=v)
+      pixels[p] = c
 
-    pixels[p] = c
+  render_ring(1, pixel_ring1, hue1, f1)
+  render_ring(-1, pixel_ring2, hue2, f2)
 
   pixels.show()
 
