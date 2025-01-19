@@ -4606,21 +4606,8 @@ def mode87():
       time.sleep(0.05)
 
 
-def mode103():
-  """Solid fills, with random transitions between. Each transition should 1 second."""
-
-  global new_mode
-  pixels.auto_write = False
-
-  last_col = (0,0,0)
-  last_hue = 0
-  pixels.fill(last_col)
-
-  while not new_mode:
-    new_hue = different_hue(last_hue)
-    new_col = hsv_to_neo_rgb(new_hue)
-
-    r = random.randint(0,11)
+def numbered_transition(r, last_col, new_col):
+    print(f"in numbered transition {r}")
 
     if r == 0:
       pixels.fill(new_col)
@@ -4766,6 +4753,38 @@ def mode103():
         pixels.show()
         time.sleep(0.5 / 50 / 2)
 
+
+def mode103():
+  """Solid fills, with random transitions between. Each transition should last 1 second."""
+
+  global new_mode
+  pixels.auto_write = False
+
+  last_col = (0,0,0)
+  last_hue = 0
+  pixels.fill(last_col)
+
+
+  while not new_mode:
+    print("mode103 loop")
+    new_hue = different_hue(last_hue)
+    new_col = hsv_to_neo_rgb(new_hue)
+
+    transition = random.choice([partial(numbered_transition, 0),
+                                partial(numbered_transition, 1),
+                                partial(numbered_transition, 2),
+                                partial(numbered_transition, 3),
+                                partial(numbered_transition, 4),
+                                partial(numbered_transition, 5),
+                                partial(numbered_transition, 6),
+                                partial(numbered_transition, 7),
+                                partial(numbered_transition, 8),
+                                partial(numbered_transition, 9),
+                                partial(numbered_transition,10),
+                                partial(numbered_transition,11)
+                               ])
+
+    transition(last_col, new_col)
  
     last_col = new_col
     last_hue = new_hue
