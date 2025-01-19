@@ -4821,10 +4821,11 @@ def pmode_cli(command):
 
 def mode116():
  global new_mode
- pixels.auto_write = False
+
+ init_auto_and_blank()
+
  black = (0,0,0)
  red = (255,0,0)
- pixels.fill(black)
 
  pixel_ring = range(bottoms[-1],bottoms[-2])
 
@@ -4849,11 +4850,14 @@ def randintnot(x,y,n):
 
   return nx
 
+
+def init_auto_and_blank() -> None:
+  pixels.auto_write = False
+  pixels.fill( (0,0,0) )
+
 def mode117():
  global new_mode
- pixels.auto_write = False
- black = (0,0,0)
- pixels.fill(black)
+ init_auto_and_blank()
 
  pixel_ring = range(bottoms[-1],bottoms[-2])
  f1 = 4
@@ -4881,9 +4885,7 @@ def mode117():
 
 def mode118():
  global new_mode
- pixels.auto_write = False
- black = (0,0,0)
- pixels.fill(black)
+ init_auto_and_blank()
 
  pixel_ring = range(bottoms[-1],bottoms[-2])
  f1 = 4
@@ -4914,9 +4916,7 @@ def mode118():
 
 def mode119():
  global new_mode
- pixels.auto_write = False
- black = (0,0,0)
- pixels.fill(black)
+ init_auto_and_blank()
 
  pixel_ring = range(bottoms[-1],bottoms[-2])
  pixel_ring2 = range(bottoms[-3],bottoms[-4])
@@ -4958,9 +4958,7 @@ def mode119():
 
 def mode120():
  global new_mode
- pixels.auto_write = False
- black = (0,0,0)
- pixels.fill(black)
+ init_auto_and_blank()
 
  pixel_ring = range(bottoms[-1],bottoms[-2])
  pixel_ring2 = range(bottoms[-4],bottoms[-5])
@@ -5003,9 +5001,7 @@ def mode120():
 
 def mode121():
  global new_mode
- pixels.auto_write = False
- black = (0,0,0)
- pixels.fill(black)
+ init_auto_and_blank()
 
  pixel_ring = range(bottoms[-1],bottoms[-2])
  pixel_ring2 = range(bottoms[-2],bottoms[-3])
