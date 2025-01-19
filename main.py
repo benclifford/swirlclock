@@ -5000,7 +5000,7 @@ def mode120():
 
   time.sleep(0.05)
 
-def mode121():
+def pmode_tworings(hue, hue2):
  global new_mode
  init_auto_and_blank()
 
@@ -5010,52 +5010,6 @@ def mode121():
  p1 = 0
  f2 = randintnot(1,3,f1)
  p2 = 0
- hue = random.random()
- hue2 = random.random()
-
- while not new_mode:
-  for p in pixel_ring:
-
-    v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
-    c = hsv_to_neo_rgb(hue, v=v)
-
-    pixels[p] = c
-
-  for p in pixel_ring2:
-
-    offset = p - bottoms[-2]
-    v = 0.5 + 0.5 * math.sin(p2 + f2 * offset/len(pixel_ring2) * 3.1415 * 2)
-    c = hsv_to_neo_rgb(hue, v=v)
-
-    pixels[p] = c
-
-  pixels.show()
-
-  p1 = (p1 - 0.1) % tau
-  p2 = (p2 + 0.1) % tau
-  v = (v + 0.1) % 1.0
-
-  time.sleep(0.05)
-
-def mode122():
- global new_mode
- init_auto_and_blank()
-
- pixel_ring = range(bottoms[-1],bottoms[-2])
- pixel_ring2 = range(bottoms[-2],bottoms[-3])
-
- # frequency and phase for outer ring:
- #   frequency in cycles per ring
- #   phase from 0 .. 1
- f1 = random.randint(1,5)
- p1 = 0
-
- # frequency and phase for inner ring
- f2 = randintnot(1,3,f1)
- p2 = 0
-
- hue = random.random()
- hue2 = (hue + 0.5) % 1.0
 
  while not new_mode:
   for p in pixel_ring:
@@ -5080,6 +5034,16 @@ def mode122():
   v = (v + 0.1) % 1.0
 
   time.sleep(0.05)
+
+
+def mode121():
+ hue = random.random()
+ pmode_tworings(hue, hue)
+
+def mode122():
+ hue = random.random()
+ hue2 = (hue + 0.5) % 1.0
+ pmode_tworings(hue, hue2)
 
 
 app = flask.Flask(__name__)
