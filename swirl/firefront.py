@@ -38,7 +38,7 @@ def pmode_firefront(*, hue_step, colour_scheme = None):
           if colour_scheme is None:
               schemed_display_pixels = display_pixels
           else:
-              schemed_display_pixels = [colour_scheme(hv) for hv in display_pixels]
+              schemed_display_pixels = [colour_scheme(hv, n) for (hv, n) in zip(display_pixels, range(0,50))]
 
           render_hv_fadepixel(pixels, schemed_display_pixels)
           fade_hv_fadepixel(display_pixels, 0.03)
@@ -79,7 +79,7 @@ def mode65():
     hue = random.random()
     pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode65_fire_scheme, hue))
 
-def mode65_fire_scheme(hue, x):
+def mode65_fire_scheme(hue, x, n):
     other_hue = (hue + 0.5) % 1.0
     if x is None:
         return (hue, 1)
@@ -90,7 +90,7 @@ def mode66():
     hue = random.random()
     pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode66_fire_scheme, hue))
 
-def mode66_fire_scheme(hue, x):
+def mode66_fire_scheme(hue, x, n):
     other_hue = (hue + 0.5) % 1.0
     if x is None:
         return (other_hue, 1)
@@ -104,7 +104,7 @@ def mode67():
     hue = random.random()
     pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode67_fire_scheme, hue))
 
-def mode67_fire_scheme(hue, x):
+def mode67_fire_scheme(hue, x, n):
     other_hue = (hue + 0.5) % 1.0
     if x is None:
         return (other_hue, 0.2)
@@ -120,18 +120,35 @@ def mode68():
     hue = random.random()
     pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode68_fire_scheme, hue))
 
-def mode68_fire_scheme(hue, x):
+def mode68_fire_scheme(hue, x, n):
     if x is None:
         return (0, 0)
     else:
         (h, v) = x
         return (random.random(), v)
 
+def mode124():
+    colours = {}
+    pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode124_fire_scheme, colours))
+
+def mode124_fire_scheme(colours, x, n):
+    if x is None:
+        if n in colours:
+            del colours[n]
+        return (0, 0)
+    else:
+        if n not in colours:
+            colours[n] = random.random()
+        (h, v) = x
+        return (colours[n], v)
+
+
+
 def mode109():
     hue = random.random()
     pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode109_fire_scheme, hue))
 
-def mode109_fire_scheme(hue_base, x):
+def mode109_fire_scheme(hue_base, x, n):
     if x is None:
         return (0, 0)
     else:
@@ -145,7 +162,7 @@ def mode110():
     hue = random.random()
     pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode110_fire_scheme, hue))
 
-def mode110_fire_scheme(hue_base, x):
+def mode110_fire_scheme(hue_base, x, n):
     if x is None:
         return (0, 0)
     else:
@@ -161,7 +178,7 @@ def mode111():
     hue = random.random()
     pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode111_fire_scheme, hue))
 
-def mode111_fire_scheme(hue_base, x):
+def mode111_fire_scheme(hue_base, x, n):
     if x is None:
         return (0, 0)
     else:

@@ -28,7 +28,7 @@ from swirl.topologies import closest_pixels, distances_from_point, generate_pixe
 pixels = neopixel.NeoPixel(board.D18, 50)
 new_mode = threading.Event()
 
-from swirl.firefront import mode63, mode64, mode65, mode66, mode67, mode68, mode109, mode110, mode111
+from swirl.firefront import mode63, mode64, mode65, mode66, mode67, mode68, mode109, mode110, mode111, mode124
 
 from functools import partial
 from math import tau
@@ -2960,6 +2960,7 @@ def disco_manager():
                    mode121,
                    mode122,
                    mode123,
+                   mode124,
                    ]
 
     remaining_disco_modes = disco_modes.copy()
@@ -4942,6 +4943,7 @@ declare_mode("120", mode120)
 declare_mode("121", mode121)
 declare_mode("122", mode122)
 declare_mode("123", mode123)
+declare_mode("124", mode124)
 
 
 @app.route('/disco/on')
