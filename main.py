@@ -4968,7 +4968,7 @@ def go():
     while True:
         if new_mode.is_set():
             new_mode.clear()
-            print("new mode: {}".format(new_mode))
+            print("new mode: {}".format(new_mode_choice))
             m = new_mode_choice
             new_mode_choice = None
             m()
