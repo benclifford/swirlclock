@@ -42,6 +42,9 @@ def pmode_firefront(*, hue_step, colour_scheme = None):
 
           render_hv_fadepixel(pixels, schemed_display_pixels)
           fade_hv_fadepixel(display_pixels, 0.03)
+
+          del schemed_display_pixels  # just to make it clear this doesn't need to be in scope
+
           time.sleep(0.01)
 
         new_fire_pixels = []
@@ -141,6 +144,17 @@ def mode124_fire_scheme(colours, x, n):
             colours[n] = random.random()
         (h, v) = x
         return (colours[n], v)
+
+
+def mode125():
+    pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode125_fire_scheme, random.random()))
+
+def mode125_fire_scheme(hue, x, n):
+    if x is None:
+        return (0, 0)
+    else:
+        (h, v) = x
+        return ((hue + v / 4) % 1.0, v)
 
 
 
