@@ -6,6 +6,7 @@
 #     https://www.intmath.com/blog/mathematics/length-of-an-archimedean-spiral-6595
 #     https://www.giangrandi.ch/soft/spiral/spiral.shtml
 
+
 import board
 import colorsys  # from pygame
 import itertools
@@ -19,24 +20,30 @@ import flask
 
 import swirl.randomwalk as randomwalk
 from swirl.colour import different_hue, gamma, hsv_to_neo_rgb, max_pixel, scale
+from swirl.fadepixel import render_hv_fadepixel, fade_hv_fadepixel
 from swirl.topologies import closest_pixels, distances_from_point, generate_pixel_pos, pixel_to_layer, pixels_for_angle, bottoms
+
+
+# before any modes are imported
+pixels = neopixel.NeoPixel(board.D18, 50)
+new_mode = threading.Event()
+
+from swirl.firefront import mode63, mode64, mode65, mode66, mode67, mode68, mode109, mode110, mode111
 
 from functools import partial
 from math import tau
 
-pixels = neopixel.NeoPixel(board.D18, 50)
 
-new_mode = None
+
 
 disco_thread = None
 
 
 def mode1():
-    global new_mode
     pixels.auto_write = True
     pixels.fill( (0,0,0) )
     n = 0
-    while not new_mode:
+    while not new_mode.is_set():
         pixel = random.randint(0,49)
 
         if n == 0:
@@ -50,8 +57,6 @@ def mode1():
 
 
 def mode2():
-    global new_mode
-
     period = 3600.0  # seconds
     frame_period = 0.05  # seconds
 
@@ -63,7 +68,7 @@ def mode2():
 
     t = 0
 
-    while not new_mode:
+    while not new_mode.is_set():
         print("Hue: {}".format(hue))
         pixels.fill(hsv_to_neo_rgb(hue))
 
@@ -95,16 +100,14 @@ def mode62():
 
 def pmode_solid(rgb):
 
-    global new_mode
     pixels.auto_write = True
     
-    while not new_mode:
+    while not new_mode.is_set():
         pixels.fill( rgb )
         time.sleep(0.2)
 
 
 def mode31():
-    global new_mode
     pixels.auto_write = False
 
     hue = random.random()
@@ -116,7 +119,7 @@ def mode31():
     for p in range(0,50):
         brightness.append(next(rw))
 
-    while not new_mode:
+    while not new_mode.is_set():
         for p in range(0,50):
             pixels[p] = hsv_to_neo_rgb(hue, s=0.75, v=brightness[p]) 
         pixels.show()
@@ -127,12 +130,11 @@ def mode31():
 
 
 def mode76():
-  global new_mode
   pixels.auto_write = False
   angle = random.random()
   radius = 0
 
-  while not new_mode:
+  while not new_mode.is_set():
     pixels.fill( (0,0,0) )
     b1 = bottoms[radius]
     b2 = bottoms[radius + 1]
@@ -150,13 +152,12 @@ def mode76():
 
 # based on mode76 but leaving a trail
 def mode112():
-  global new_mode
   pixels.auto_write = False
   angle = random.random()
   radius = 0
   clear = True
 
-  while not new_mode:
+  while not new_mode.is_set():
     if clear:
       pixels.fill( (0,0,0) )
       clear = False
@@ -177,14 +178,13 @@ def mode112():
 
 # based on mode76 but leaving a trail, different from mode112
 def mode113():
-  global new_mode
   pixels.auto_write = False
   pixels.fill( (0,0,0) )
   angle = random.random()
   radius = 0
   history = []
 
-  while not new_mode:
+  while not new_mode.is_set():
     for p in range(0, len(history) - 1):
       pixels[history[p]] = (64,0,0)
     if len(history) > 10:
@@ -208,12 +208,11 @@ def mode113():
 
 
 def mode77():
-  global new_mode
   pixels.auto_write = False
   angle = random.random()
   radius = 0
 
-  while not new_mode:
+  while not new_mode.is_set():
     pixels.fill( (0,0,0) )
     b1 = bottoms[radius]
     b2 = bottoms[radius + 1]
@@ -231,12 +230,11 @@ def mode77():
 
 
 def mode78():
-  global new_mode
   pixels.auto_write = False
   angle = random.random()
   radius = 0
 
-  while not new_mode:
+  while not new_mode.is_set():
     pixels.fill( (0,0,0) )
     b1 = bottoms[radius]
     b2 = bottoms[radius + 1]
@@ -254,12 +252,11 @@ def mode78():
 
 
 def mode79():
-  global new_mode
   pixels.auto_write = False
   hue = random.random()
   rgb = hsv_to_neo_rgb(hue) 
 
-  while not new_mode:
+  while not new_mode.is_set():
     pixels.fill( (0,0,0) )
     for p in range(0,50):
       if random.random() > 0.5:
@@ -269,13 +266,12 @@ def mode79():
 
 
 def mode80():
-  global new_mode
   pixels.auto_write = False
   hue = random.random()
   rgb = hsv_to_neo_rgb(hue) 
   contr_rgb = hsv_to_neo_rgb((hue + 0.5)%1.0) 
 
-  while not new_mode:
+  while not new_mode.is_set():
     pixels.fill( (0,0,0) )
     for p in range(0,50):
       r = random.random()
@@ -289,7 +285,6 @@ def mode80():
 
 
 def mode93():
-  global new_mode
   pixels.auto_write = False
   hue = random.random()
   rgb = hsv_to_neo_rgb(hue) 
@@ -298,7 +293,7 @@ def mode93():
   primary_rw = randomwalk.randomwalk(low = 0.25, high = 0.75)
   contr_rw = randomwalk.randomwalk(low = 0.75, high = 1.0)
 
-  while not new_mode:
+  while not new_mode.is_set():
     pixels.fill( (0,0,0) )
     primary_thresh = next(primary_rw)
     contr_thresh = next(contr_rw)
@@ -314,10 +309,9 @@ def mode93():
 
 
 def pmode_randomwalk_on_spiral(*, delay=0.3, get_new_frame_state, pixel_colour):
-  global new_mode
   pixels.auto_write = False
 
-  while not new_mode:
+  while not new_mode.is_set():
     frame_state = get_new_frame_state()
 
     brightness = []
@@ -383,7 +377,6 @@ def mode115():
 
 
 def mode4():
-    global new_mode
     pixels.auto_write = False
     colours = {}
     for n in range(0,50):
@@ -396,7 +389,7 @@ def mode4():
 
     count = 0
 
-    while not new_mode:
+    while not new_mode.is_set():
 
         swapped = False
 
@@ -424,13 +417,11 @@ def mode4():
 
 
 def mode5():
-    global new_mode
-    while not new_mode:
+    while not new_mode.is_set():
         time.sleep(1)
 
 
 def mode7():
-    global new_mode
     pixels.auto_write = False
 
     angle = random.random()
@@ -439,19 +430,18 @@ def mode7():
       (b, frac) = pixel_to_layer(pixel)
       pixels[pixel] = hsv_to_neo_rgb((frac + angle) % 1.0)
       
-    while not new_mode:
+    while not new_mode.is_set():
       pixels.show()
       time.sleep(1)
 
 
 def mode8():
-  global new_mode
   pixels.auto_write = False
 
   rot_hue = 0
   rot_pos = 0
 
-  while not new_mode:
+  while not new_mode.is_set():
 
     for pixel in range(0,50):
       (b, frac) = pixel_to_layer(pixel)
@@ -478,7 +468,6 @@ def mode8():
 
 
 def mode9():
-  global new_mode
   pixels.auto_write = False
 
   update_period = 0.01
@@ -487,7 +476,7 @@ def mode9():
   rot_hue = 0
 
 
-  while not new_mode:
+  while not new_mode.is_set():
     pixels.fill( (0,0,0) )
 
     now = time.localtime()
@@ -529,7 +518,6 @@ def mode71():
 
 def pmode_rotator(spin_speed = 1.0/600.0):
 
-    global new_mode
     pixels.auto_write = False
 
     pixels.fill( (0,0,0) )
@@ -537,7 +525,7 @@ def pmode_rotator(spin_speed = 1.0/600.0):
 
     offset = 0
 
-    while not new_mode:
+    while not new_mode.is_set():
       for pixel in range(0,50):
         (b, proportion_around_loop) = pixel_to_layer(pixel)
         frac = (proportion_around_loop + offset) % 1.0
@@ -563,7 +551,6 @@ def pmode_rotator(spin_speed = 1.0/600.0):
       time.sleep(0.02)
 
 def mode75():
-    global new_mode
     pixels.auto_write = False
 
     pixels.fill( (0,0,0) )
@@ -579,7 +566,7 @@ def mode75():
     window_dir = 0
     target_window_dir = window_dir
 
-    while not new_mode:
+    while not new_mode.is_set():
       for pixel in range(0,50):
         (b, proportion_around_loop) = pixel_to_layer(pixel)
         frac = (proportion_around_loop + offset) % 1.0
@@ -659,7 +646,6 @@ def mode75():
 
 def mode104():
     """randomisation is the same as mode75 so factor that."""
-    global new_mode
     pixels.auto_write = False
 
     pixels.fill( (0,0,0) )
@@ -681,7 +667,7 @@ def mode104():
     cols[3] = (0,255,0)
     cols[4] = (0,0,255)
 
-    while not new_mode:
+    while not new_mode.is_set():
       pixels.fill( (0,0,0) )
       for pixel in range(0,50):
         (b, proportion_around_loop) = pixel_to_layer(pixel)
@@ -759,7 +745,6 @@ def mode104():
 
 def mode105():
     """randomisation is the same as mode75 so factor that. and mode105"""
-    global new_mode
     pixels.auto_write = False
 
     pixels.fill( (0,0,0) )
@@ -783,7 +768,7 @@ def mode105():
     cols[3] = (0,255,0)
     cols[4] = (0,0,255)
 
-    while not new_mode:
+    while not new_mode.is_set():
 
       if t_swap + 0.5 < time.time():
         t_swap = time.time()
@@ -874,7 +859,6 @@ def mode105():
 
 def mode106():
     """randomisation is the same as mode75 so factor that. and mode105"""
-    global new_mode
     pixels.auto_write = False
 
     pixels.fill( (0,0,0) )
@@ -898,7 +882,7 @@ def mode106():
     cols[3] = (0,255,0)
     cols[4] = (0,0,255)
 
-    while not new_mode:
+    while not new_mode.is_set():
 
       if t_swap + 0.5 < time.time():
         t_swap = time.time()
@@ -982,8 +966,6 @@ def mode106():
 
 def mode72():
 
-    global new_mode
-
     spin_speed = 1.0 / 6.0
 
     pixels.auto_write = False
@@ -997,7 +979,7 @@ def mode72():
 
     next_reconfig_time = 0
 
-    while not new_mode:
+    while not new_mode.is_set():
 
       if next_reconfig_time < time.time():
         next_reconfig_time = time.time() + 1.0
@@ -1046,8 +1028,6 @@ def mode72():
 
 def mode94():
 
-    global new_mode
-
     spin_speed = 1.0 / 6.0
 
     pixels.auto_write = False
@@ -1060,7 +1040,7 @@ def mode94():
 
     next_reconfig_time = 0
 
-    while not new_mode:
+    while not new_mode.is_set():
 
       now = time.time()
 
@@ -1122,9 +1102,6 @@ def mode94():
 
 def mode73():
 
-    global new_mode
-
-
     pixels.auto_write = False
 
     pixels.fill( (0,0,0) )
@@ -1132,7 +1109,7 @@ def mode73():
 
     phases = [0.0 for n in range(0,50)]
 
-    while not new_mode:
+    while not new_mode.is_set():
 
       for pixel in range(0,50):
 
@@ -1151,9 +1128,6 @@ def mode73():
 
 def mode74():
 
-    global new_mode
-
-
     pixels.auto_write = False
 
     pixels.fill( (0,0,0) )
@@ -1161,7 +1135,7 @@ def mode74():
 
     phases = [0.0 for n in range(0,50)]
 
-    while not new_mode:
+    while not new_mode.is_set():
 
       for pixel in range(0,50):
 
@@ -1190,7 +1164,6 @@ def mode74():
 
 def mode11():
 
-    global new_mode
     pixels.auto_write = False
 
     pixels.fill( (0,0,0) )
@@ -1202,7 +1175,7 @@ def mode11():
     speed = 0.2
     outwards = 0
 
-    while not new_mode:
+    while not new_mode.is_set():
 
 
       for pixel in range(0,50):
@@ -1250,11 +1223,10 @@ def mode11():
 
 def mode13():
 
-  global new_mode
   pixels.auto_write = False
 
   toggle = True
-  while not new_mode:
+  while not new_mode.is_set():
 
     if toggle:
       pixels.fill( (0,0,32) )
@@ -1289,10 +1261,9 @@ def mode57():
     pmode_dotclock(display_seconds = True)
 
 def pmode_dotclock(*, display_seconds):
-  global new_mode
   pixels.auto_write = False
 
-  while not new_mode:
+  while not new_mode.is_set():
     pixels.fill( (0,0,0) )
     
 
@@ -1364,7 +1335,6 @@ def pmode_dotclock(*, display_seconds):
 
 
 def mode15():
-  global new_mode
   pixels.auto_write = False
 
   cells = [0 for n in range(0,50)]
@@ -1374,7 +1344,7 @@ def mode15():
   first = True
   boom = False
 
-  while not new_mode:
+  while not new_mode.is_set():
 
     # move particle
     (b, frac) = pixel_to_layer(particle)
@@ -1460,12 +1430,11 @@ def generate_mode16():
 
 
 def pmode_iterator_spiral(*, iterator, delay):
-  global new_mode
   pixels.auto_write = False
 
   ps = [(0,0,0) for n in range(0,50)]
 
-  while not new_mode:
+  while not new_mode.is_set():
     for pixel in range(49,0,-1):
       ps[pixel] = ps[pixel-1]
 
@@ -1498,13 +1467,12 @@ def generate_mode35():
 
 
 def mode17():
-  global new_mode
   pixels.auto_write = False
 
   start_hue = random.random()
   rings = [start_hue for b in bottoms]
 
-  while not new_mode:
+  while not new_mode.is_set():
 
     for ring in range(len(rings)-1, 1, -1):
       rings[ring] = rings[ring-1]
@@ -1520,13 +1488,12 @@ def mode17():
     time.sleep(0.1)
 
 def mode26():
-  global new_mode
   pixels.auto_write = False
 
   start_hue = random.random()
   rings = [None for b in bottoms]
 
-  while not new_mode:
+  while not new_mode.is_set():
 
     for ring in range(len(rings)-1, 1, -1):
       rings[ring] = rings[ring-1]
@@ -1550,7 +1517,6 @@ def mode26():
 
 
 def mode18():
-    global new_mode
     pixels.auto_write = False
 
     x = 0
@@ -1567,7 +1533,7 @@ def mode18():
 
     pixel_pos = generate_pixel_pos()
 
-    while not new_mode:
+    while not new_mode.is_set():
         x = x + xv
         y = y + yv
 
@@ -1610,7 +1576,6 @@ def mode18():
 
 
 def mode19():
-    global new_mode
     pixels.auto_write = False
 
     # hue of pixel, or None if it should be blank
@@ -1633,7 +1598,7 @@ def mode19():
 
     pixel_pos = generate_pixel_pos()
 
-    while not new_mode:
+    while not new_mode.is_set():
         x = x + xv
         y = y + yv
 
@@ -1675,7 +1640,6 @@ def mode19():
         time.sleep(0.01)
 
 def mode20():
-  global new_mode
   pixels.auto_write = False
 
   particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
@@ -1684,7 +1648,7 @@ def mode20():
   first = True
   boom = False
 
-  while not new_mode:
+  while not new_mode.is_set():
 
     # move particle
     (b, frac) = pixel_to_layer(particle)
@@ -1732,7 +1696,6 @@ def mode20():
 
 def mode60():
   """This is a variant of mode20 so TODO refactor?"""
-  global new_mode
   pixels.auto_write = False
   display_pixels = [None for n in range(0,50)]
 
@@ -1746,7 +1709,7 @@ def mode60():
   tc = 0.001
   hc = 0.004
 
-  while not new_mode:
+  while not new_mode.is_set():
 
     # move particle
     (b, frac) = pixel_to_layer(particle)
@@ -1796,7 +1759,6 @@ def mode60():
 
 def mode99():
   """This is a variant of mode20 and mode60 so TODO refactor?"""
-  global new_mode
   pixels.auto_write = False
   display_pixels = [None for n in range(0,50)]
 
@@ -1812,7 +1774,7 @@ def mode99():
   tc = 0.001
   hc = 0.004
 
-  while not new_mode:
+  while not new_mode.is_set():
 
     # display state
 
@@ -1864,7 +1826,6 @@ def mode99():
 
 def mode61():
   """another reparameterisation of mode20 - TODO factor?"""
-  global new_mode
   pixels.auto_write = False
 
   particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
@@ -1873,7 +1834,7 @@ def mode61():
   first = True
   boom = False
 
-  while not new_mode:
+  while not new_mode.is_set():
 
     # move particle
     (b, frac) = pixel_to_layer(particle)
@@ -1920,7 +1881,6 @@ def mode61():
 
 def mode107():
   """another reparameterisation of mode20, based on mode61 - TODO factor?"""
-  global new_mode
   pixels.auto_write = False
 
   particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
@@ -1931,7 +1891,7 @@ def mode107():
 
   blanking_buffer = []
 
-  while not new_mode:
+  while not new_mode.is_set():
 
     # move particle
     (b, frac) = pixel_to_layer(particle)
@@ -1986,7 +1946,6 @@ def mode107():
 
 def mode108():
   """another reparameterisation of mode20, based on mode61, mode107 - TODO factor?"""
-  global new_mode
   pixels.auto_write = False
 
   particle = random.randint(bottoms[len(bottoms)-1], bottoms[len(bottoms)-2])
@@ -1997,7 +1956,7 @@ def mode108():
 
   blanking_buffer = []
 
-  while not new_mode:
+  while not new_mode.is_set():
 
     # move particle
     (b, frac) = pixel_to_layer(particle)
@@ -2058,7 +2017,6 @@ def mode108():
 
 
 def mode21():
-    global new_mode
     pixels.auto_write = False
 
     # the inner loops don't look good in this mode
@@ -2078,7 +2036,7 @@ def mode21():
         if(random.random() > 0.5):
             params[b]["speed"] = -params[b]["speed"]
 
-    while not new_mode:
+    while not new_mode.is_set():
         pixels.fill( (0,0,0) )
 
         for b in range(min_loop, len(bottoms)):
@@ -2095,13 +2053,12 @@ def mode21():
 
 
 def mode22():
-    global new_mode
     pixels.auto_write = False
 
     # None = blank, otherwise a hue
     display_pixels = [None for n in range(0,50)]
 
-    while not new_mode:
+    while not new_mode.is_set():
 
         active_pixel = random.randint(0,49)
 
@@ -2133,14 +2090,13 @@ def mode22():
 
 
 def mode101():
-    global new_mode
     pixels.auto_write = False
 
     last_pixels = [False for n in range(0,50)]
 
     display_pixels = [random.random() > 0.5 for n in range(0,50)]
 
-    while not new_mode:
+    while not new_mode.is_set():
         new_pixels = []
         for p in range(0,50):
            p_left = (p-1)%50
@@ -2187,14 +2143,13 @@ def mode101():
 
 
 def mode102():
-    global new_mode
     pixels.auto_write = False
 
     last_pixels = [False for n in range(0,50)]
 
     display_pixels = [random.random() > 0.5 for n in range(0,50)]
 
-    while not new_mode:
+    while not new_mode.is_set():
         new_pixels = []
         for p in range(0,50):
            p_left = (p-1)%50
@@ -2249,12 +2204,11 @@ def mode102():
         time.sleep(0.2)
 
 def mode81():
-    global new_mode
     pixels.auto_write = False
 
     display_pixels = [random.random() > 0.5 for n in range(0,50)]
 
-    while not new_mode:
+    while not new_mode.is_set():
         new_pixels = []
         for p in range(0,50):
            p_left = (p-1)%50
@@ -2283,7 +2237,6 @@ def mode81():
         time.sleep(0.1)
 
 def mode82():
-    global new_mode
     pixels.auto_write = False
 
     display_pixels = []
@@ -2294,7 +2247,7 @@ def mode82():
       else:
         display_pixels.append(None)
 
-    while not new_mode:
+    while not new_mode.is_set():
         new_pixels = []
         for p in range(0,50):
            p_left = (p-1)%50
@@ -2335,7 +2288,6 @@ def mode82():
 
 
 def mode83():
-    global new_mode
     pixels.auto_write = False
 
     display_pixels = []
@@ -2348,7 +2300,7 @@ def mode83():
       else:
         display_pixels.append(None)
 
-    while not new_mode:
+    while not new_mode.is_set():
         new_pixels = []
         for p in range(0,50):
            p_left = (p-1)%50
@@ -2386,7 +2338,6 @@ def mode83():
         time.sleep(0.1)
 
 def mode92():
-    global new_mode
     pixels.auto_write = False
 
     display_pixels = [random.random() > 0.5 for n in range(0,50)]
@@ -2402,7 +2353,7 @@ def mode92():
     prime_rgb = hsv_to_neo_rgb(prime_hue)
     second_rgb = hsv_to_neo_rgb(second_hue)
 
-    while not new_mode:
+    while not new_mode.is_set():
         new_pixels = []
         for p in range(0,50):
            p_left = (p-1)%50
@@ -2436,12 +2387,11 @@ def mode92():
 
 
 def mode84():
-    global new_mode
     pixels.auto_write = False
 
     hue = random.random()
 
-    while not new_mode:
+    while not new_mode.is_set():
 
       pixels.fill( (0,0,0) )
 
@@ -2467,12 +2417,11 @@ def mode84():
 
 
 def mode85():
-    global new_mode
     pixels.auto_write = False
 
     hue = random.random()
 
-    while not new_mode:
+    while not new_mode.is_set():
 
       error_r = 0
       error_g = 0
@@ -2518,7 +2467,6 @@ def mode85():
 
 
 def mode23():
-    global new_mode
     pixels.auto_write = False
 
     # None = blank, otherwise a hue
@@ -2530,7 +2478,7 @@ def mode23():
 
     rotate_time = time.time()
 
-    while not new_mode:
+    while not new_mode.is_set():
 
         # rotate along spiral with a certain percentage
         # hopefully this makes the spiralness more visible
@@ -2699,7 +2647,6 @@ def mode23():
 
 
 def mode24():
-    global new_mode
     pixels.auto_write = False
 
     gamma_factor = 1.4
@@ -2708,7 +2655,7 @@ def mode24():
     green_exp = 1
     blue_exp = 1
 
-    while not new_mode:
+    while not new_mode.is_set():
         for pixel in range(0,50):
             (b, frac) = pixel_to_layer(pixel)
 
@@ -2747,7 +2694,6 @@ class M25_state:
         self.born = time.time()
 
 def mode25():
-    global new_mode
     pixels.auto_write = False
 
     target_frac = 0.5
@@ -2758,7 +2704,7 @@ def mode25():
 
     iterations_since_last_change = 0
 
-    while not new_mode:
+    while not new_mode.is_set():
         active_pixel = random.randint(0,49)
 
         # highlight the chosen pixel
@@ -2844,7 +2790,8 @@ def mode25():
                     # one hue has won!
                     # so it's game over
                     # restart this game
-                    new_mode = mode25
+                    new_mode_choice = mode25
+                    new_mode.set()
 
         hues_sorted = sorted([state[n].hue for n in range(0,50) if state[n] is not None])
 
@@ -2895,7 +2842,7 @@ def mode25():
 
 def disco_manager():
     global disco_thread
-    global new_mode
+    global new_mode_choice
 
     me = disco_thread  # assume disco thread hasn't changed since start, a tiny race condition
 
@@ -2997,10 +2944,11 @@ def disco_manager():
 
     while disco_thread == me:
         new_mode_num = random.randint(0, len(remaining_disco_modes) - 1)
-        new_mode = remaining_disco_modes[new_mode_num]
-        print("selected new disco mode {} from {} possibilities".format(new_mode, len(remaining_disco_modes)))
+        new_mode_choice = remaining_disco_modes[new_mode_num]
+        new_mode.set()
+        print("selected new disco mode {} from {} possibilities".format(new_mode_choice, len(remaining_disco_modes)))
 
-        remaining_disco_modes.remove(new_mode)
+        remaining_disco_modes.remove(new_mode_choice)
 
         if remaining_disco_modes == []:
             remaining_disco_modes = disco_modes.copy()
@@ -3011,7 +2959,6 @@ def disco_manager():
 
 
 def mode27():
-    global new_mode
     pixels.auto_write = False
     pixels.fill( (0,0,0) )
     pixels.show()
@@ -3033,7 +2980,7 @@ def mode27():
 
     timescale = random.random()
 
-    while not new_mode:
+    while not new_mode.is_set():
 
         theta = (time.time() % 3600.0) * (timescale * 10 + 10)
 
@@ -3057,7 +3004,6 @@ def mode27():
 
 
 def mode40():
-    global new_mode
     pixels.auto_write = False
     pixels.fill( (0,0,0) )
     pixels.show()
@@ -3081,7 +3027,7 @@ def mode40():
 
     star_factor = float(random.randint(1,4)) + random.random() * 0.1
 
-    while not new_mode:
+    while not new_mode.is_set():
 
         theta = (time.time() % 3600.0) * (timescale * 10 + 10)
 
@@ -3109,7 +3055,6 @@ def mode40():
 
 
 def mode28():
-    global new_mode
     pixels.auto_write = False
     pixels.fill( (0,0,0) )
     pixels.show()
@@ -3121,7 +3066,7 @@ def mode28():
     rot = random.random()
     rot_speed = 0.001 * random.random()
 
-    while not new_mode:
+    while not new_mode.is_set():
         h = next(rw)
         pixel_pos = generate_pixel_pos(rot=rot)
 
@@ -3141,7 +3086,6 @@ def mode28():
 def mode30():
     """This could be merged with mode28 because only hue
     choice differs"""
-    global new_mode
     pixels.auto_write = False
     pixels.fill( (0,0,0) )
     pixels.show()
@@ -3153,7 +3097,7 @@ def mode30():
 
     pixel_pos = generate_pixel_pos()
 
-    while not new_mode:
+    while not new_mode.is_set():
         h = next(rw)
 
         for p in range(0,50):
@@ -3178,7 +3122,6 @@ def mode30():
 
 
 def mode96():
-    global new_mode
     pixels.auto_write = False
     pixels.fill( (0,0,0) )
     pixels.show()
@@ -3187,7 +3130,7 @@ def mode96():
     bo = random.random()
     go = random.random()
 
-    while not new_mode:
+    while not new_mode.is_set():
         for p in range(0,50):
             theta = p/50.0 * tau
             r = int(128 + 127 * math.sin(ro + theta * 2.0))
@@ -3202,7 +3145,6 @@ def mode96():
 
 
 def mode97():
-    global new_mode
     pixels.auto_write = False
     pixels.fill( (0,0,0) )
     pixels.show()
@@ -3215,7 +3157,7 @@ def mode97():
     active_count = 0
 
 
-    while not new_mode:
+    while not new_mode.is_set():
         for p in range(0,50):
             theta = p/50.0 * tau
             r = int(128 + 127 * math.sin(ro + theta * 2.0))
@@ -3241,7 +3183,6 @@ def mode97():
         time.sleep(0.02)
 
 def mode98():
-    global new_mode
     pixels.auto_write = False
     pixels.fill( (0,0,0) )
     pixels.show()
@@ -3251,7 +3192,7 @@ def mode98():
     go = random.random()
     vo = random.random()
 
-    while not new_mode:
+    while not new_mode.is_set():
         for p in range(0,50):
             theta = p/50.0 * tau
             v = math.sin(vo + theta * -2.7) * 0.5 + 0.5
@@ -3271,7 +3212,6 @@ def mode98():
 
 
 def mode32():
-    global new_mode
     pixels.auto_write = False
     pixels.fill( (0,0,0) )
     pixels.show()
@@ -3280,7 +3220,7 @@ def mode32():
     bo = random.random()
     go = random.random()
 
-    while not new_mode:
+    while not new_mode.is_set():
         for p in range(0,50):
             theta = p/50.0 * tau
             r = int(128 + 127 * math.sin(ro + theta))
@@ -3296,13 +3236,12 @@ def mode32():
 
 def mode33():
   
-  global new_mode
   pixels.auto_write = False
   pixels.fill( (0,0,0) )
   pixels.show()
 
 
-  while not new_mode:
+  while not new_mode.is_set():
 
     r_ang = random.random()
     g_ang = random.random()
@@ -3335,7 +3274,6 @@ def mode33():
 
 def mode34():
   
-  global new_mode
   pixels.auto_write = False
   pixels.fill( (0,0,0) )
   pixels.show()
@@ -3348,7 +3286,7 @@ def mode34():
   g_speed = random.random() * 0.05 - 0.025
   b_speed = random.random() * 0.05 - 0.025
 
-  while not new_mode:
+  while not new_mode.is_set():
 
     for pixel in range(0,50):
       (b, frac) = pixel_to_layer(pixel)
@@ -3379,7 +3317,6 @@ def mode34():
 
 
 def mode36():
-    global new_mode
     pixels.auto_write = False
 
     rot = 0
@@ -3392,7 +3329,7 @@ def mode36():
     hue_speed_2 = random.random() * 0.01
     hue_speed_3 = random.random() * 0.01
 
-    while not new_mode:
+    while not new_mode.is_set():
       for pixel in range(0,50):
         (b, pixel_rot) = pixel_to_layer(pixel)
 
@@ -3427,7 +3364,6 @@ def mode36():
 
 
 def mode38():
-    global new_mode
     pixels.auto_write = False
 
     rot = 0
@@ -3440,7 +3376,7 @@ def mode38():
     hue_speed_2 = random.random() * 0.01
     hue_speed_3 = random.random() * 0.01
 
-    while not new_mode:
+    while not new_mode.is_set():
       for pixel in range(0,50):
         (b, pixel_rot) = pixel_to_layer(pixel)
 
@@ -3469,7 +3405,6 @@ def mode38():
 
 
 def mode39():
-    global new_mode
     pixels.auto_write = False
 
     rot = 0
@@ -3482,7 +3417,7 @@ def mode39():
     hue_speed_2 = random.random() * 0.01
     hue_speed_3 = random.random() * 0.01
 
-    while not new_mode:
+    while not new_mode.is_set():
       for pixel in range(0,50):
         (b, pixel_rot) = pixel_to_layer(pixel)
 
@@ -3516,9 +3451,8 @@ def mode39():
 
 
 def mode37():
-    global new_mode
     pixels.auto_write = False
-    while not new_mode:
+    while not new_mode.is_set():
 
         for pixel in range(0,50):
 
@@ -3534,7 +3468,6 @@ def mode37():
 
 def mode41():
 
-    global new_mode
     pixels.auto_write = False
 
     h = 0.5
@@ -3544,7 +3477,7 @@ def mode41():
     rot = random.random()
     rot_speed = random.random() * 0.05 + 0.025
 
-    while not new_mode:
+    while not new_mode.is_set():
         pixel_pos = generate_pixel_pos(rot=rot)
 
         for p in range(0,50):
@@ -3560,12 +3493,11 @@ def mode41():
  
 
 def mode42():
-    global new_mode
     pixels.auto_write = False
 
     pixel_pos = generate_pixel_pos()
 
-    while not new_mode:
+    while not new_mode.is_set():
         hue = random.random()
         h = random.random() * 8.0 - 4.0
 
@@ -3582,7 +3514,6 @@ def mode42():
 
 def mode43():
 
-    global new_mode
     pixels.auto_write = False
 
     h = 0.5
@@ -3595,7 +3526,7 @@ def mode43():
 
     pixel_pos = generate_pixel_pos()
 
-    while not new_mode:
+    while not new_mode.is_set():
         skip = False
         pos = random.randint(0,12)
         if pos == 0:
@@ -3628,7 +3559,6 @@ def mode43():
 
 
 def mode44():
-    global new_mode
     pixels.auto_write = False
 
     n = 4
@@ -3640,7 +3570,7 @@ def mode44():
 
     pixel_pos = generate_pixel_pos()
 
-    while not new_mode:
+    while not new_mode.is_set():
         pixels.fill( (0, 0, 0) )
         used_pixels = []
 
@@ -3683,7 +3613,6 @@ def mode44():
 
 
 def mode49():
-    global new_mode
     pixels.auto_write = False
 
     display_pixels = [None for pixel in range(0,50)]
@@ -3697,7 +3626,7 @@ def mode49():
 
     pixel_pos = generate_pixel_pos()
 
-    while not new_mode:
+    while not new_mode.is_set():
         pixels.fill( (0, 0, 0) )
         used_pixels = []
 
@@ -3746,14 +3675,13 @@ def mode46():
     pmode_rgb_swirl(delay=0, k_step=0.02, active_blue=False)
 
 def pmode_rgb_swirl(*, delay, k_step, active_blue):
-    global new_mode
     pixels.auto_write = False
 
     k = 0
 
     pixel_pos = generate_pixel_pos()
 
-    while not new_mode:
+    while not new_mode.is_set():
 
         for p in range(0,50):
 
@@ -3790,7 +3718,6 @@ def mode55():
 
 
 def pmode_vertical_prism(*, k_step):
-    global new_mode
     pixels.auto_write = False
 
     k = random.random() * tau
@@ -3802,7 +3729,7 @@ def pmode_vertical_prism(*, k_step):
 
     pixel_pos = generate_pixel_pos()
 
-    while not new_mode:
+    while not new_mode.is_set():
 
         for p in range(0,50):
 
@@ -3821,7 +3748,6 @@ def pmode_vertical_prism(*, k_step):
 
 
 def mode58():
-    global new_mode
     pixels.auto_write = False
 
     k = float(random.randint(0,100)) # 100 is just some arbitrary max... would be better to work out where the three phase contacts co-incide again and use that range (and mod it there for better precision in the loop too)
@@ -3844,7 +3770,7 @@ def mode58():
     ang1 = random.random() * tau
     ang2 = (ang1 + tau / 3.0) % tau
 
-    while not new_mode:
+    while not new_mode.is_set():
 
         for p in range(0,50):
 
@@ -3871,7 +3797,6 @@ def mode58():
 
 
 def mode48():
-    global new_mode
     pixels.auto_write = False
 
     k = float(random.randint(0,100)) # 100 is just some arbitrary max... would be better to work out where the three phase contacts co-incide again and use that range (and mod it there for better precision in the loop too)
@@ -3895,7 +3820,7 @@ def mode48():
     ang2 = (ang1 + tau / 3.0) % tau
     ang3 = (ang2 + tau / 3.0) % tau
 
-    while not new_mode:
+    while not new_mode.is_set():
 
         for p in range(0,50):
 
@@ -3914,12 +3839,11 @@ def mode48():
 
 
 def mode50():
-    global new_mode
     pixels.auto_write = False
 
     pixel_pos = generate_pixel_pos()
 
-    while not new_mode:
+    while not new_mode.is_set():
 
       hue = random.random()
 
@@ -3942,12 +3866,11 @@ def mode50():
 
 def mode88():
     # like mode50, but changes hue rather than brightness
-    global new_mode
     pixels.auto_write = False
 
     pixel_pos = generate_pixel_pos()
 
-    while not new_mode:
+    while not new_mode.is_set():
 
       hue_offset = random.random()
 
@@ -3969,14 +3892,13 @@ def mode88():
 
 
 def mode51():
-    global new_mode
     pixels.auto_write = False
 
     display_pixels = [None for pixel in range(0,50)]
 
     pixel_pos = generate_pixel_pos()
 
-    while not new_mode:
+    while not new_mode.is_set():
 
       hue = random.random()
  
@@ -4005,7 +3927,6 @@ def mode51():
 
 
 def mode59():
-    global new_mode
     pixels.auto_write = False
 
     display_pixels = [None for pixel in range(0,50)]
@@ -4013,7 +3934,7 @@ def mode59():
     pixel_pos = generate_pixel_pos()
     ang = tau / 8.0
 
-    while not new_mode:
+    while not new_mode.is_set():
 
       hue = random.random()
  
@@ -4065,36 +3986,7 @@ def random_in_radius(r):
       if math.sqrt(x ** 2 + y **2) <= r **2:
         return (x,y)
 
-
-def render_hv_fadepixel(pixels, display_pixels):
-    """Renders a list of (hue, value) tuples in display_pixels
-    onto the pixels"""
-
-    for pixel in range(0,50):
-        if display_pixels[pixel] is None:
-            pixels[pixel] = (0,0,0)
-        else:
-            (hue_dp, value_dp) = display_pixels[pixel]
-            pixels[pixel] = hsv_to_neo_rgb(hue_dp, v=value_dp)
-
-    pixels.show()
-
-
-def fade_hv_fadepixel(display_pixels, amount):
-
-      for pixel in range(0,50):
-          if display_pixels[pixel] is not None:
-            (display_hue, value) = display_pixels[pixel]
-            new_value = value - amount
-            if new_value <= 0:
-              display_pixels[pixel] = None
-            else:
-              display_pixels[pixel] = (display_hue, new_value)
-
-
-
 def mode52():
-    global new_mode
     pixels.auto_write = False
 
     pixel_pos = generate_pixel_pos()
@@ -4107,7 +3999,7 @@ def mode52():
 
       centre_info.append( (x, y, hue, 1.0) )
 
-    while not new_mode:
+    while not new_mode.is_set():
 
       display_pixels = [None for pixel in range(0,50)]
 
@@ -4153,14 +4045,13 @@ def mode52():
 
 
 def mode53():
-    global new_mode
     pixels.auto_write = False
     
     display_pixels = [None for pixel in range(0,50)]
 
     hue = random.random()
 
-    while not new_mode:
+    while not new_mode.is_set():
 
         display_pixels[random.randint(0, 49)] = (hue, 1)
 
@@ -4173,7 +4064,6 @@ def mode53():
 
 
 def mode54():
-    global new_mode
     pixels.auto_write = False
     
     pixel_pos = generate_pixel_pos()
@@ -4183,7 +4073,7 @@ def mode54():
     hue = random.random()
     pixel = random.randint(0, 49)
 
-    while not new_mode:
+    while not new_mode.is_set():
 
         display_pixels[pixel] = (hue, 1)
 
@@ -4210,177 +4100,7 @@ def mode54():
             pixel = n
 
 
-def mode63():
-    pmode_firefront(hue_step = 0.01)
-
-def mode64():
-    pmode_firefront(hue_step = 0)
-
-def mode65():
-    hue = random.random()
-    pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode65_fire_scheme, hue))
-
-def mode65_fire_scheme(hue, x):
-    other_hue = (hue + 0.5) % 1.0
-    if x is None:
-        return (hue, 1)
-    else:
-        return (other_hue, 1)
-
-def mode66():
-    hue = random.random()
-    pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode66_fire_scheme, hue))
-
-def mode66_fire_scheme(hue, x):
-    other_hue = (hue + 0.5) % 1.0
-    if x is None:
-        return (other_hue, 1)
-    else:
-        (h, v) = x
-
-        return (h, v)
-
-
-def mode67():
-    hue = random.random()
-    pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode67_fire_scheme, hue))
-
-def mode67_fire_scheme(hue, x):
-    other_hue = (hue + 0.5) % 1.0
-    if x is None:
-        return (other_hue, 0.2)
-    else:
-        (h, v) = x
-
-        if v > 0.1:
-            return (hue, (v-0.1)*(1.0 / 0.9))
-        else:
-            return (other_hue, 0.2) 
-
-def mode68():
-    hue = random.random()
-    pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode68_fire_scheme, hue))
-
-def mode68_fire_scheme(hue, x):
-    if x is None:
-        return (0, 0)
-    else:
-        (h, v) = x
-        return (random.random(), v)
-
-def mode109():
-    hue = random.random()
-    pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode109_fire_scheme, hue))
-
-def mode109_fire_scheme(hue_base, x):
-    if x is None:
-        return (0, 0)
-    else:
-        (h, v) = x
-        if v > 0.5:
-            return (hue_base, 1.0)
-        else:
-            return ((hue_base + 0.5) % 1.0, 1.0)
-
-def mode110():
-    hue = random.random()
-    pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode110_fire_scheme, hue))
-
-def mode110_fire_scheme(hue_base, x):
-    if x is None:
-        return (0, 0)
-    else:
-        (h, v) = x
-        if v > 0.85:
-            return (hue_base, 1.0)
-        elif v > 0.5:
-            return (hue_base, 0.3)
-        else:
-            return (0, 0)
-
-def mode111():
-    hue = random.random()
-    pmode_firefront(hue_step = 0.01, colour_scheme = partial(mode111_fire_scheme, hue))
-
-def mode111_fire_scheme(hue_base, x):
-    if x is None:
-        return (0, 0)
-    else:
-        (h, v) = x
-        if v > 0.80:
-            return (hue_base, 1.0)
-        elif v > 0 and v < 0.2:
-            return ((hue_base + 0.5) % 1.0, 1.0)
-        else:
-            return (0, 0)
-
-
-
-
-
-def pmode_firefront(*, hue_step, colour_scheme = None):
-    global new_mode
-    pixels.auto_write = False
-    
-    pixel_pos = generate_pixel_pos()
-
-    hue = random.random()
-
-    display_pixels = [None for pixel in range(0,50)]
-
-    while not new_mode:
-
-        max_v = 0
-        for n in range(0,49):
-            if display_pixels[n] is not None:
-                (h,v) = display_pixels[n]
-                max_v = max(v, max_v)
-
-        if max_v < 0.75: 
-            hue = different_hue(hue)
-            start_pixel = random.randint(0, 49)
-            fire_pixels = [start_pixel]
-            display_pixels[start_pixel] = (hue, 1)
-  
-
-        for n in range(0, 6):
-
-          if colour_scheme is None:
-              schemed_display_pixels = display_pixels
-          else:
-              schemed_display_pixels = [colour_scheme(hv) for hv in display_pixels]
-
-          render_hv_fadepixel(pixels, schemed_display_pixels)
-          fade_hv_fadepixel(display_pixels, 0.03)
-          time.sleep(0.01)
-
-        new_fire_pixels = []
-
-        for pixel in fire_pixels:
-          if display_pixels[pixel] is not None:
-            (h, v) = display_pixels[pixel]
-
-            (x, y) = pixel_pos[pixel]
-
-            candidates = distances_from_point(x, y, pixel_pos = pixel_pos)
-
-            candidates = [(d, n) for (d, n) in candidates if display_pixels[n] is None]
-
-            if candidates != []:
-                least_d = 1.5
-
-                candidates = [(d, n) for (d, n) in candidates if d <= least_d]
-
-                hue = (hue + hue_step) % 1.0
-                for (d,n) in candidates:
-                    if random.random() > 0.5:
-                        display_pixels[n] = (hue, 1)
-                        new_fire_pixels.append(n)
-
-        fire_pixels = new_fire_pixels
-
 def mode69():
-    global new_mode
     pixels.auto_write = False
 
     rw = randomwalk.randomwalk(low = 2, high = 8)
@@ -4390,7 +4110,7 @@ def mode69():
 
     orange1_speed = 0.5 + random.random()
 
-    while not new_mode:
+    while not new_mode.is_set():
 
         gf = next(rw)
         white_centre = []
@@ -4431,7 +4151,6 @@ def mode69():
 
 
 def mode70():
-    global new_mode
     pixels.auto_write = False
 
     pixel_pos = generate_pixel_pos()
@@ -4440,7 +4159,7 @@ def mode70():
     sunrise = 5.5
     sunset = 20.43
 
-    while not new_mode:
+    while not new_mode.is_set():
 
         t = time.time()
         now = time.localtime(t)
@@ -4501,7 +4220,6 @@ def mode70():
 
 
 def mode86():
-    global new_mode
     pixels.auto_write = False
 
     display_pixels = [random.random() > 0.5 for p in range(0,50)]
@@ -4513,7 +4231,7 @@ def mode86():
     for p in range(0,50):
       distances[p] = closest_pixels(p)[0:ball_size]
 
-    while not new_mode:
+    while not new_mode.is_set():
       display_pixels = orig_pixels
 
       p = random.randint(0,49)
@@ -4553,7 +4271,6 @@ def mode86():
 
 
 def mode87():
-    global new_mode
     pixels.auto_write = False
 
     display_pixels = [random.random() > 0.5 for p in range(0,50)]
@@ -4565,7 +4282,7 @@ def mode87():
     for p in range(0,50):
       distances[p] = closest_pixels(p)[0:ball_size]
 
-    while not new_mode:
+    while not new_mode.is_set():
       display_pixels = orig_pixels
 
       pchange = random.randint(0,49)
@@ -4757,7 +4474,6 @@ def numbered_transition(r, last_col, new_col):
 def mode103():
   """Solid fills, with random transitions between. Each transition should last 1 second."""
 
-  global new_mode
   pixels.auto_write = False
 
   last_col = (0,0,0)
@@ -4765,7 +4481,7 @@ def mode103():
   pixels.fill(last_col)
 
 
-  while not new_mode:
+  while not new_mode.is_set():
     print("mode103 loop")
     new_hue = different_hue(last_hue)
     new_col = hsv_to_neo_rgb(new_hue)
@@ -4806,13 +4522,12 @@ def mode100():
 def pmode_cli(command):
     import subprocess
 
-    global new_mode
     pixels.auto_write = False
 
     # launch process
     process = subprocess.Popen(command, stdout=subprocess.PIPE)
 
-    while not new_mode:
+    while not new_mode.is_set():
       pixels.fill( (0,0,0) ) 
       # read a line and display it
       l = process.stdout.readline()
@@ -4840,7 +4555,6 @@ def pmode_cli(command):
 
 
 def mode116():
- global new_mode
 
  init_auto_and_blank()
 
@@ -4849,7 +4563,7 @@ def mode116():
 
  pixel_ring = range(bottoms[-1],bottoms[-2])
 
- while not new_mode:
+ while not new_mode.is_set():
   for p in pixel_ring:
     pixels[p] = black
   pixels.show()
@@ -4876,7 +4590,6 @@ def init_auto_and_blank() -> None:
   pixels.fill( (0,0,0) )
 
 def mode117():
- global new_mode
  init_auto_and_blank()
 
  pixel_ring = range(bottoms[-1],bottoms[-2])
@@ -4884,7 +4597,7 @@ def mode117():
  p1 = 0
  hue = random.random()
 
- while not new_mode:
+ while not new_mode.is_set():
   for p in pixel_ring:
 
     v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
@@ -4904,7 +4617,6 @@ def mode117():
   time.sleep(0.05)
 
 def mode118():
- global new_mode
  init_auto_and_blank()
 
  pixel_ring = range(bottoms[-1],bottoms[-2])
@@ -4912,7 +4624,7 @@ def mode118():
  p1 = 0
  hue = random.random()
 
- while not new_mode:
+ while not new_mode.is_set():
   for p in pixel_ring:
 
     v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
@@ -4935,7 +4647,6 @@ def mode118():
   time.sleep(0.05)
 
 def mode119():
- global new_mode
  init_auto_and_blank()
 
  pixel_ring = range(bottoms[-1],bottoms[-2])
@@ -4944,7 +4655,7 @@ def mode119():
  p1 = 0
  hue = random.random()
 
- while not new_mode: 
+ while not new_mode.is_set(): 
   for p in pixel_ring:
 
     v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
@@ -4977,7 +4688,6 @@ def mode119():
 
 
 def mode120():
- global new_mode
  init_auto_and_blank()
 
  pixel_ring = range(bottoms[-1],bottoms[-2])
@@ -4989,7 +4699,7 @@ def mode120():
  hue = random.random()
  hue2 = random.random()
 
- while not new_mode:
+ while not new_mode.is_set():
   for p in pixel_ring:
 
     v = 0.5 + 0.5 * math.sin(p1 + f1 * p/22.0 * 3.1415 * 2)
@@ -5020,7 +4730,6 @@ def mode120():
   time.sleep(0.05)
 
 def pmode_tworings(hue1, hue2):
- global new_mode
  init_auto_and_blank()
 
  pixel_ring1 = range(bottoms[-1],bottoms[-2])
@@ -5031,7 +4740,7 @@ def pmode_tworings(hue1, hue2):
 
  start_t = time.time()
 
- while not new_mode:
+ while not new_mode.is_set():
 
   now_t = time.time()
   delta_t = now_t - start_t
@@ -5076,10 +4785,11 @@ def index_page():
 
 
 def set_mode(m):
-    global new_mode
+    global new_mode_choice
     global disco_thread
     disco_thread = None
-    new_mode = m
+    new_mode_choice = m
+    new_mode.set()
     return flask.redirect("/", code=302)
 
 def declare_mode(name, func):
@@ -5227,15 +4937,17 @@ def disco_off():
     return flask.redirect("/", code=302)
 
 # set initial mode
-new_mode = mode32
+new_mode_choice = mode32
+new_mode.set()
 
 def go():
-    global new_mode
+    global new_mode_choice
     while True:
-        if new_mode:
+        if new_mode.is_set():
+            new_mode.clear()
             print("new mode: {}".format(new_mode))
-            m = new_mode
-            new_mode = None
+            m = new_mode_choice
+            new_mode_choice = None
             m()
 
 
