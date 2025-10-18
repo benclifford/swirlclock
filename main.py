@@ -376,6 +376,26 @@ def mode115():
                              delay=0.2)
 
 
+
+def mode123():
+  def two_rgbs():
+    hue = random.random()
+    hue2 = (hue+0.5)%1.0
+
+    return (hue, hue2)
+
+  def f(brightness, framestate):
+      (hue, hue2) = framestate
+      if brightness > 0.75:
+          return hsv_to_neo_rgb(hue2, v=brightness)
+      else:
+          return hsv_to_neo_rgb(hue, v=brightness)
+
+  pmode_randomwalk_on_spiral(get_new_frame_state = two_rgbs,
+                             pixel_colour=f,
+                             delay=0.2)
+
+
 def mode4():
     pixels.auto_write = False
     colours = {}
@@ -2938,7 +2958,9 @@ def disco_manager():
                    mode119,
                    mode120,
                    mode121,
-                   mode122]
+                   mode122,
+                   mode123,
+                   ]
 
     remaining_disco_modes = disco_modes.copy()
 
@@ -4919,6 +4941,7 @@ declare_mode("119", mode119)
 declare_mode("120", mode120)
 declare_mode("121", mode121)
 declare_mode("122", mode122)
+declare_mode("123", mode123)
 
 
 @app.route('/disco/on')
